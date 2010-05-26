@@ -1,0 +1,14 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Icon=basketpwd.png
+Name=Basket of passwords
+Name[ru]=Корзинка паролей
+Exec=/usr/bin/basketpwd
+Comment=The program for storage and information management about passwords
+Comment[ru]=Программа для хранения и управления информацией о паролях
+Categories=Utility;Security

@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/images" >
+        <file>images/addfolder.png</file>
+        <file>images/addrecord.png</file>
+        <file>images/changepassword.png</file>
+        <file>images/collapse.png</file>
+        <file>images/copy.png</file>
+        <file>images/delete.png</file>
+        <file>images/editrecord.png</file>
+        <file>images/exit.png</file>
+        <file>images/expand.png</file>
+        <file alias="foldercloseicon" >images/folderclose.png</file>
+        <file alias="foldericon" >images/folderopen.png</file>
+        <file>images/newfile.png</file>
+        <file>images/openfile.png</file>
+        <file alias="ProgramIcon" >images/prog.png</file>
+        <file alias="recordicon" >images/record.png</file>
+        <file>images/save.png</file>
+        <file>images/saveas.png</file>
+        <file>images/showpasswords.png</file>
+        <file>images/temp.png</file>
+        <file>images/atis.png</file>
+    </qresource>
+    <qresource prefix="/lang" >
+        <file alias="qt_ru.qm" >qt_ru.qm</file>
+        <file alias="basketpwd_en.qm" >l10n/basketpwd_en.qm</file>
+    </qresource>
+</RCC>
