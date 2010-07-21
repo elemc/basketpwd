@@ -1,6 +1,6 @@
 Name: basketpwd
 Version: 0.3.6
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Basket of passwords
 Summary(ru): Корзинка паролей
 Group: Applications/Security
@@ -66,6 +66,8 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Wed Jul 21 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-1
+- Fixup version number on GUI
 * Wed Jul 21 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-1
 - Fixup add folder if cursor stay on top level folder
 * Mon Mar 29 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.5-1
