@@ -439,13 +439,17 @@ QTreeWidgetItem *MainWindow::getParentForSelectedItem ()
         return NULL;
     else {
         QTreeWidgetItem *folder = mainTree->selectedItems()[0];
-        //if ( folder->data(0, Qt::UserRole).toInt() == 0 )
-            if ( folder->parent() )
-                return folder->parent();
-            else
-                return NULL;
-//        else
-//            return folder;
+
+        // Проверка на принадлежность к верхней папке
+        for ( int i = 0; i < mainTree->topLevelItemCount(); i++ ) {
+            if ( mainTree->topLevelItem(i) == folder )
+                return folder;
+        }
+
+        if ( folder->parent() )
+            return folder->parent();
+        else
+            return NULL;
     }
     return NULL;
 }
