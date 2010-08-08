@@ -1,21 +1,18 @@
-Name: basketpwd
-Version: 0.3.6
-Release: 3%{?dist}
-Summary: Basket of passwords
-Summary(ru): Корзинка паролей
-Group: Applications/Security
-License: GPLv2
-Source0: %{name}-%{version}.tar.bz2
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Vendor: Atis Service Ltd.
-URL: http://www.atisserv.ru/program.php
-Packager: Alexei V. Panov <avpanov@atisserv.ru>
+Name:		basketpwd
+Version:	0.3.6
+Release:	3%{?dist}
+Summary:	Basket of passwords
+Summary(ru):	Корзинка паролей
+Group:		Applications/System
+License:	GPLv2
+Source0:	%{name}-%{version}.tar.bz2
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+URL:		http://github.com/elemc/basketpwd
 
 %if %{defined fedora}
 Requires: qt >= 4.4.1 libgcrypt >= 1.4.0
 BuildRequires: qt-devel >= 4.4.1 libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils
-%endif
-%if %{defined suse_version}
+%elif %{defined suse_version}
 Source1: %{name}.desktop
 Requires: libqt4 >= 4.4.1 libgcrypt11 >= 1.4.0
 BuildRequires: libqt4-devel >= 4.4.1 libgcrypt-devel >= 1.4.0 update-desktop-files
@@ -30,13 +27,15 @@ The program for storage and information management about passwords.
 Программа для хранения и управления информацией о паролях.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q
 
 %build
-%{_libdir}/qt4/bin/qmake -spec linux-g++
+%{_bindir}/qmake-qt4 -spec linux-g++
+#%{_libdir}/qt4/bin/qmake -spec linux-g++
 make release
 
 %install
+rm -rf $RPM_BUILD_ROOT
 install -D -m 755 -p bin/%{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
 install -D -m 644 -p images/prog.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/%{name}.png
 
