@@ -1,19 +1,19 @@
 Name: basketpwd
 Version: 0.3.6
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Basket of passwords
 Summary(ru): Корзинка паролей
 Group: Applications/Security
 License: GPLv2
 Source0: %{name}-%{version}.tar.bz2
-BuildRoot: %{_tmppath}/%{name}-%{version}
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Vendor: Atis Service Ltd.
 URL: http://www.atisserv.ru/program.php
 Packager: Alexei V. Panov <avpanov@atisserv.ru>
 
 %if %{defined fedora}
 Requires: qt >= 4.4.1 libgcrypt >= 1.4.0
-BuildRequires: qt-devel >= 4.4.1 libgcrypt-devel >= 1.4.0 gcc-c++
+BuildRequires: qt-devel >= 4.4.1 libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils
 %endif
 %if %{defined suse_version}
 Source1: %{name}.desktop
@@ -37,17 +37,13 @@ The program for storage and information management about passwords.
 make release
 
 %install
-mkdir -p $RPM_BUILD_ROOT/%{_bindir}
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/doc/%{name}-%{version}
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/applications
-mkdir -p $RPM_BUILD_ROOT/%{_datadir}/pixmaps
-install bin/basketpwd $RPM_BUILD_ROOT/%{_bindir}/
-install -m 644 ChangeLog.txt $RPM_BUILD_ROOT/%{_datadir}/doc/%{name}-%{version}/ChangeLog-ru.txt
-install -m 644 images/prog.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/%{name}.png
+install -D -m 755 -p bin/%{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
+install -D -m 644 -p images/prog.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/%{name}.png
 
 %if %{defined fedora}
-install -m 644 tools/%{name}.desktop $RPM_BUILD_ROOT/%{_datadir}/applications
+desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
+desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
+
 %endif
 %if %{defined suse_version}
 %suse_update_desktop_file -i %{name} Utility
@@ -55,17 +51,18 @@ install -m 644 tools/%{name}.desktop $RPM_BUILD_ROOT/%{_datadir}/applications
 
 %files
 %defattr(-,root,root)
-%{_bindir}/basketpwd
-%dir %{_datadir}/doc/%{name}-%{version}
+%{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/pixmaps/basketpwd.png
-%{_datadir}/doc/%{name}-%{version}/ChangeLog-ru.txt
+%{_datadir}/pixmaps/%{name}.png
+%doc ChangeLog.txt
 
 %clean
 make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Sun Aug  8 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-3
+- Litle changes of spec-file
 * Wed Jul 21 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-1
 - Fixup version number on GUI
 * Wed Jul 21 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-1
