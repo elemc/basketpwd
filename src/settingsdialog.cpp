@@ -3,7 +3,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include "settingsdialog.h"
-#include "ui_settingsdialog.h"
+#include "../build/ui_settingsdialog.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -16,12 +16,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     m_ui->lineEditDefaultPath->setText(defaultPath);
 
 }
-
 SettingsDialog::~SettingsDialog()
 {
     delete m_ui;
 }
-
 void SettingsDialog::changeEvent(QEvent *e)
 {
     QDialog::changeEvent(e);
@@ -32,6 +30,15 @@ void SettingsDialog::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+void SettingsDialog::setIdentInfo(QString ident, QDateTime modified)
+{
+    m_ui->lineEditIdent->setText(ident);
+    m_ui->dateTimeEditModif->setDateTime(modified);
+}
+QString SettingsDialog::getIdent() const
+{
+    return m_ui->lineEditIdent->text();
 }
 
 void SettingsDialog::on_pushButton_clicked()
@@ -44,7 +51,6 @@ void SettingsDialog::on_pushButton_clicked()
     if ( !dir.isEmpty() )
         m_ui->lineEditDefaultPath->setText(dir);
 }
-
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
 {
     if ( m_ui->buttonBox->buttonRole( button ) == QDialogButtonBox::AcceptRole ) {
@@ -75,3 +81,4 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
         reject();
 
 }
+

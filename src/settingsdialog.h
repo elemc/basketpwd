@@ -3,6 +3,7 @@
 
 #include <QtGui/QDialog>
 #include <QAbstractButton>
+#include <QDateTime>
 
 namespace Ui {
     class SettingsDialog;
@@ -14,6 +15,8 @@ class SettingsDialog : public QDialog {
 public:
     explicit SettingsDialog(QWidget *parent = 0);
     virtual ~SettingsDialog();
+    void setIdentInfo(QString ident, QDateTime modified);
+    QString getIdent() const;
 
 protected:
     virtual void changeEvent(QEvent *e);

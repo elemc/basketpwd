@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>154</height>
+    <height>282</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,47 +15,100 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="labelDefaultPath">
-       <property name="text">
-        <string>Путь к файлу паролей:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEditDefaultPath">
-       <property name="text">
-        <string>./</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="minimumSize">
-        <size>
-         <width>30</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>30</width>
-         <height>27</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="groupBoxMainSettings">
+     <property name="title">
+      <string>Основные настройки</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="labelDefaultPath">
+          <property name="text">
+           <string>Путь к файлу паролей:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditDefaultPath">
+          <property name="text">
+           <string>./</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>27</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>27</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxDontClose">
+        <property name="text">
+         <string>При закрытии программы сворачивать в трей</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBoxDontClose">
-     <property name="text">
-      <string>При закрытии программы сворачивать в трей</string>
+    <widget class="QGroupBox" name="groupBoxDatabaseSettings">
+     <property name="title">
+      <string>Настройки файла паролей</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="labelIdent">
+          <property name="text">
+           <string>Идентификатор файла:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditIdent"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="labelModif">
+          <property name="text">
+           <string>Время последнего изменения:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateTimeEdit" name="dateTimeEditModif">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="displayFormat">
+           <string>dd.MM.yyyy HH:mm</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

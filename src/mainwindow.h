@@ -6,7 +6,11 @@
 #include <QTreeWidgetItem>
 #include <QDomElement>
 #include <QSystemTrayIcon>
+#include <QDateTime>
 #include "ui_mainwindow.h"
+
+#define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
+
 //
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -59,6 +63,10 @@ private:
     // Добавлено 0.2.6
     QString defaultPath;
     bool dontCloseApp;
+
+    // Добавлено 0.3.7
+    QString databaseIdentifier;
+    QDateTime lastModified;
 
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );

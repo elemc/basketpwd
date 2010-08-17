@@ -4,7 +4,7 @@
 #include <QTranslator>
 #include <QTextCodec>
 //
-#define PROGRAM_VERSION "0.3.6"
+#define PROGRAM_VERSION "0.3.7"
 
 int main(int argc, char ** argv)
 {

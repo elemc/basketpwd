@@ -50,6 +50,6 @@ unix {
         basket_desktop \
         basket_icon
 }
-VERSION = 0.3.6
+VERSION = 0.3.7
 OTHER_FILES += ChangeLog.txt
 TRANSLATIONS += basketpwd_en.ts

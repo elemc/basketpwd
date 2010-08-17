@@ -203,6 +203,11 @@ void MainWindow::saveDatabase()
 
     QDomDocument    doc;
     QDomElement	root = doc.createElement( trUtf8("basket-passwords") );
+    root.setAttribute(QString("ident"), databaseIdentifier);
+
+    // Сохраняем текущий параметр даты/времени
+    lastModified = QDateTime::currentDateTime();
+    root.setAttribute(QString("modified"), lastModified.toString(DATE_TIME_FORMAT));
 
     doc.appendChild( root );
 
@@ -302,6 +307,9 @@ bool MainWindow::parseDocument( QDomDocument doc )
     QDomElement rootElement = doc.documentElement();
     if ( rootElement.tagName() != "basket-passwords" )
         return false;
+
+    databaseIdentifier  = rootElement.attribute(QString("ident"), QString("default"));
+    lastModified        = QDateTime::fromString(rootElement.attribute(QString("modified"), QDateTime::currentDateTime().toString(DATE_TIME_FORMAT)), DATE_TIME_FORMAT);
 
     for(QDomNode n = rootElement.firstChild(); !n.isNull(); n = n.nextSibling())
     {
@@ -620,7 +628,8 @@ void MainWindow::setModif(bool modificator)
     QString modifFileName = trUtf8(" (без имени) ");
     if ( !fileName.isEmpty() )
         modifFileName = fileName;
-    setWindowTitle(winTitle + tr(" - ") + modifFileName + strModif);
+    QString id = QString("%1 - %2 (%3) %4").arg(winTitle).arg(databaseIdentifier).arg(lastModified.toString(DATE_TIME_FORMAT)).arg(strModif);
+    setWindowTitle(id.trimmed());
     actionSave->setEnabled( modificator );
 }
 void MainWindow::changeCurrentPassword()
@@ -884,10 +893,16 @@ void MainWindow::on_actionHelpAboutQt_triggered()
 void MainWindow::on_actionSettings_triggered()
 {
     SettingsDialog sd(this);
+    QString oldIdent = databaseIdentifier;
+    sd.setIdentInfo(databaseIdentifier, lastModified);
     //int result =
     if ( sd.exec() == QDialog::Accepted ) {
         QSettings set;
         dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
+        if ( sd.getIdent() != oldIdent ) {
+            databaseIdentifier = sd.getIdent();
+            setModif(true);
+        }
     }
 }
 void MainWindow::on_actionCopyLogin_triggered()
