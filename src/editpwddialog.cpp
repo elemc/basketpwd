@@ -6,31 +6,59 @@ editPwdDialog::editPwdDialog( QWidget * parent, Qt::WFlags f)
     setupUi(this);
 
     groupBox->hide();
-    layout()->setSizeConstraint( QLayout::SetFixedSize );
+    //layout()->setSizeConstraint( QLayout::SetFixedSize );
     //groupBox->setVisible( false );
 
-    connect ( treeWidget, SIGNAL (itemSelectionChanged()), this, SLOT(currentItemChanged()));
+    //connect ( treeWidget, SIGNAL (itemSelectionChanged()), this, SLOT(currentItemChanged()));
+    mapper = new QDataWidgetMapper(this);
+    mapper->setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
+}
+
+void editPwdDialog::setModel(BasketModel *source_model, QModelIndex index)
+{
+    model = source_model;
+    mapper->setModel(model);
+    mapper->setCurrentModelIndex(index);
+
+    // связываем
+    mapper->addMapping(lineEditName, 0);
+    mapper->addMapping(lineEditLogin, 1);
+    //mapper->addMapping(lineEditPassword, 2);
+
 
 }
+
 //
 
 void editPwdDialog::on_buttonBox_accepted()
 {
-    if ( lineEditName->text().isEmpty() )
+    /*if ( lineEditName->text().isEmpty() )
         return;
     elementName = lineEditName->text();
     elementLogin = lineEditLogin->text();
-    elementPassword = lineEditPassword->text();
+    elementPassword = lineEditPassword->text();*/
     accept();
 }
 
 void editPwdDialog::on_buttonBox_rejected()
 {
-	reject();
+    reject();
 }
 
+void editPwdDialog::currentItemChanged()
+{
+    /*if ( treeWidget->selectedItems().count()==0 ) {
+        lineEditLocation->setText( trUtf8("(корневой)") );
+        return;
+    }
 
-void editPwdDialog::setElement(QString eName, QString eLogin, QString ePwd)
+    QTreeWidgetItem *selItem = treeWidget->selectedItems()[0];
+    if ( selItem == root )
+        lineEditLocation->setText( trUtf8("(корневой)") );
+    else
+        lineEditLocation->setText( selItem->data( 0, Qt::DisplayRole ).toString() );*/
+}
+/*void editPwdDialog::setElement(QString eName, QString eLogin, QString ePwd)
 {
     lineEditName->setText( eName );
     lineEditLogin->setText ( eLogin );
@@ -43,9 +71,6 @@ void editPwdDialog::parseTreeItem ( QTreeWidgetItem *parent, QTreeWidgetItem *su
         return;
     if ( subitem->data( 0, Qt::UserRole ).toInt() == 0 )
         return;
-
-    /*qDebug("Проход +2");
-    qDebug(subitem->data( 0, Qt::DisplayRole ).toString().toUtf8());*/
 
     QTreeWidgetItem *newitem = new QTreeWidgetItem();//subitem->clone();
     newitem->setData( 0, Qt::DisplayRole, subitem->data( 0, Qt::DisplayRole ) );
@@ -62,9 +87,6 @@ void editPwdDialog::parseTreeItem ( QTreeWidgetItem *parent, QTreeWidgetItem *su
     for ( int i = 0; i < childCount; i++ ) {
         parseTreeItem (newitem, subitem->child( i ) );
     }
-
-    /*if ( newitem->childCount() > 0 )
-        newitem->setExpanded( true );*/
 
 }
 
@@ -99,20 +121,6 @@ void editPwdDialog::setMainTree( QTreeWidget *mainTree, QTreeWidgetItem *selecte
         root->setSelected( true );
 }
 
-void editPwdDialog::currentItemChanged()
-{
-    if ( treeWidget->selectedItems().count()==0 ) {
-        lineEditLocation->setText( trUtf8("(корневой)") );
-        return;
-    }
-
-    QTreeWidgetItem *selItem = treeWidget->selectedItems()[0];
-    if ( selItem == root )
-        lineEditLocation->setText( trUtf8("(корневой)") );
-    else
-        lineEditLocation->setText( selItem->data( 0, Qt::DisplayRole ).toString() );
-}
-
 QTreeWidgetItem *editPwdDialog::getParent()
 {
     if ( treeWidget->selectedItems().count()==0 )
@@ -127,3 +135,4 @@ QTreeWidgetItem *editPwdDialog::getParent()
     }
     return NULL;
 }
+*/

@@ -1,5 +1,4 @@
 #include "basketbaseitem.h"
-#include <QDebug>
 
 BasketBaseItem::BasketBaseItem(BasketBaseItem *parentItem, QObject *parent) :
     QObject(parent)
@@ -21,7 +20,6 @@ BasketBaseItem::~BasketBaseItem()
 BasketBaseItem *BasketBaseItem::childItemAt(int row) const
 {
     if( row >= 0 && row < childItems.count() ) {
-        //qDebug() << row << ":" << childItems.at(row);
         return childItems.value(row);
     }
 

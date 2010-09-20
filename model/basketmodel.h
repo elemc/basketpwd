@@ -4,6 +4,8 @@
 #include <QAbstractItemModel>
 #include <QtXml>
 #include <QDateTime>
+#include <QIcon>
+#include <QBrush>
 #include "basketbaseitem.h"
 #include "../src/basketutils.h"
 
@@ -17,8 +19,11 @@ public:
     ~BasketModel();
 
     bool setModelData(QByteArray &data, QString pwd = QString(), bool isEncryptedData = true);
+    QByteArray storeData();
     QString identifier() const;
     QDateTime lastModified() const;
+
+    BasketBaseItem *itemAtIndex(QModelIndex &index) const;
 
     // наследуемые методы
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -38,6 +43,11 @@ private:
 
     bool parseDocument(QDomDocument &doc);
     bool parseElement(BasketBaseItem *parentItem, QDomElement element);
+
+    // Декорации
+    QIcon recordIcon;
+    QIcon folderIcon;
+    QIcon folderCloseIcon;
 
 signals:
 

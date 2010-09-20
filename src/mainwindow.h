@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
+#include "../model/basketbaseitem.h"
 
 #define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
 
@@ -17,10 +18,10 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
 public slots:
-    void editPwd(QTreeWidgetItem *item);
+    void editPwd(QModelIndex index);
 private:
     bool isTreeParent ( QTreeWidgetItem *child, QTreeWidgetItem *parent );
-    void setTreeExpanded( QTreeWidgetItem *topitem, bool expand );
+    void setTreeExpanded( bool expand, QModelIndex topitem = QModelIndex() );
     void changeItemParent ( QTreeWidgetItem *source, QTreeWidgetItem *destLocation );
     void closeEvent(QCloseEvent *event);
     void changeCurrentPassword();
@@ -30,8 +31,8 @@ private:
     void addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item);
     void showPwdItem(QTreeWidgetItem *item, bool isShowPwd);
     void editElement(QTreeWidgetItem *item, QString name, QString login, QString pwd);
-    bool parseDocument( QDomDocument doc );
-    bool parseElement( QTreeWidgetItem *parent, QDomElement element );
+    /*bool parseDocument( QDomDocument doc );
+    bool parseElement( QTreeWidgetItem *parent, QDomElement element );*/
     bool querySave();
     void loadDatabase();
     void saveDatabase();
@@ -40,7 +41,7 @@ private:
     void createTreeWidget();
     void setModif(bool modificator);
     QByteArray hashPassword( QString pwd );
-    QTreeWidget *mainTree;
+    //QTreeWidget *mainTree;
 
     QTreeView *tree;
     BasketModel *model;
@@ -48,9 +49,6 @@ private:
     QString fileName;
     QByteArray mainPassword;
     bool isModified;
-    QIcon recordIcon;
-    QIcon folderIcon;
-    QIcon folderCloseIcon;
     bool    isSimpleXML;
 
     // Добавлено 0.2.5
@@ -105,8 +103,8 @@ private slots:
     void on_actionHelpAboutQt_triggered();
 
     //Прочие
-    void currentItemChanged (  );
-    void treeItemDoubleClicked ( QTreeWidgetItem *item );
+    void currentItemChanged ( QModelIndex current_index, QModelIndex previus_index );
+    void treeItemDoubleClicked ( QModelIndex index );
     void treeItemExpanded ( QTreeWidgetItem *item );
     void treeItemCollapsed ( QTreeWidgetItem *item );
 

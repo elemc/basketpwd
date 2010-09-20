@@ -1,5 +1,4 @@
 #include "basketmodel.h"
-#include <QDebug>
 
 BasketModel::BasketModel(QObject *parent) :
     QAbstractItemModel(parent)
@@ -7,6 +6,12 @@ BasketModel::BasketModel(QObject *parent) :
     rootItem = new BasketBaseItem(0, this);
     rootItem->setFolder(tr("корень"));
     showPasswords = false;
+
+    // иконки
+    recordIcon = QIcon(":/images/recordicon");
+    folderIcon = QIcon(":/images/foldericon");
+    folderCloseIcon = QIcon(":/images/foldercloseicon");
+
 }
 BasketModel::~BasketModel()
 {
@@ -61,7 +66,6 @@ bool BasketModel::parseElement(BasketBaseItem *parentItem, QDomElement element)
         QString folderName = element.attribute( "name", trUtf8("Без имени") );
         BasketBaseItem *fold = new BasketBaseItem( parentItem, this );
         fold->setFolder(folderName);
-        //qDebug() << "Folder: " << fold->name();
 
         // добавляем папочку в дерево
         parentItem->addChild(fold);
@@ -88,8 +92,6 @@ bool BasketModel::parseElement(BasketBaseItem *parentItem, QDomElement element)
         BasketBaseItem *itemPwd = new BasketBaseItem( parentItem, this );
         itemPwd->setPassword(name, login, cipherPwd);
 
-        //qDebug() << "Password: " << itemPwd->name();
-
         // добавляем запись в дерево
         parentItem->addChild(itemPwd);
     }
@@ -103,6 +105,17 @@ QString BasketModel::identifier() const
 QDateTime BasketModel::lastModified() const
 {
     return lastDBModified;
+}
+BasketBaseItem *BasketModel::itemAtIndex(QModelIndex &index) const
+{
+    if ( !index.isValid() )
+        return 0;
+
+    BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
+    if ( !item )
+        return 0;
+
+    return item;
 }
 
 // блок наследуемых методов
@@ -151,7 +164,6 @@ QModelIndex BasketModel::index(int row, int column, const QModelIndex &parent) c
         parentItem = rootItem;
     else
         parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
-    //qDebug() << "index:parent" << parentItem->name();
     BasketBaseItem *childItem = parentItem->childItemAt(row);
     if ( childItem )
         return createIndex(row, column, childItem);
@@ -176,26 +188,41 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
     if ( !index.isValid() )
         return QVariant();
 
+    BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
+    if ( !item )
+        return QVariant();
+
     if ( role == Qt::DisplayRole ) {
-        if ( BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer()) ) {
-            switch(index.column()) {
-            case 0:
-                return item->name();
-                break;
-            case 1:
-                return item->login();
-                break;
-            case 2:
-                if ( showPasswords )
-                    return item->password();
-                else if ( !item->isFolder() )
-                    return tr("* * *");
-                break;
-            default:
-                break;
-            }
+        switch(index.column()) {
+        case 0:
+            return item->name();
+            break;
+        case 1:
+            return item->login();
+            break;
+        case 2:
+            if ( showPasswords )
+                return item->password();
+            else if ( !item->isFolder() )
+                return tr("* * *");
+            break;
+        default:
+            break;
         }
     }
+    else if ( role == Qt::DecorationRole && index.column() == 0 ) {
+        if ( item->isFolder() )
+            return folderIcon;
+        else
+            return recordIcon;
+    }
+    else if ( role == Qt::TextColorRole ) {
+        QBrush blue_brush;
+        blue_brush.setColor(Qt::darkBlue);
+        if ( !item->isFolder() )
+            return blue_brush;
+    }
+
 
     return QVariant();
 }
