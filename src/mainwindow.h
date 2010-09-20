@@ -8,6 +8,7 @@
 #include <QSystemTrayIcon>
 #include <QDateTime>
 #include "ui_mainwindow.h"
+#include "../model/basketmodel.h"
 
 #define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
 
@@ -40,6 +41,10 @@ private:
     void setModif(bool modificator);
     QByteArray hashPassword( QString pwd );
     QTreeWidget *mainTree;
+
+    QTreeView *tree;
+    BasketModel *model;
+
     QString fileName;
     QByteArray mainPassword;
     bool isModified;

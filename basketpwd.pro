@@ -21,7 +21,9 @@ HEADERS = src/mainwindow.h \
     src/changepassword.h \
     src/editfolderdialog.h \
     aboutdialog.h \
-    src/settingsdialog.h
+    src/settingsdialog.h \
+    model/basketbaseitem.h \
+    model/basketmodel.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
     src/editpwddialog.cpp \
@@ -29,14 +31,18 @@ SOURCES = src/mainwindow.cpp \
     src/changepassword.cpp \
     src/editfolderdialog.cpp \
     aboutdialog.cpp \
-    src/settingsdialog.cpp
+    src/settingsdialog.cpp \
+    model/basketbaseitem.cpp \
+    model/basketmodel.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 LIBS += -lgcrypt
 win32 { 
-    LIBS += -L"d:\develop\tools\gcrypt\lib" -lgpg-error -lmingw32
+    LIBS += -L"d:\develop\tools\gcrypt\lib" \
+        -lgpg-error \
+        -lmingw32
     INCLUDEPATH += "d:\develop\tools\gcrypt\include" \
-                    "d:\develop\tools\mingw\include"
+        "d:\develop\tools\mingw\include"
     CONFIG += static
 }
 unix { 

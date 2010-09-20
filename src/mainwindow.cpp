@@ -31,7 +31,13 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     folderCloseIcon = QIcon(":/images/foldercloseicon");
 
     mainTree = new QTreeWidget( );
-    setCentralWidget(mainTree);
+    //setCentralWidget(mainTree);
+    model = new BasketModel(this);
+    tree = new QTreeView( this );
+    tree->setModel( model );
+
+    setCentralWidget(tree);
+
     connect ( mainTree, SIGNAL (itemSelectionChanged()), this, SLOT(currentItemChanged()));
 
     newDatabase();
@@ -362,9 +368,9 @@ void MainWindow::loadDatabase()
     }
     BasketUtils butil;
     QByteArray cipherData = inFile.readAll();
-    QByteArray bufferData;
+    //QByteArray bufferData;
 
-    if (!isSimpleXML)
+    /*if (!isSimpleXML)
         bufferData = butil.decrypt( cipherData, hashPassword(tempPassword).toHex() );
     else
         bufferData = cipherData;
@@ -380,11 +386,18 @@ void MainWindow::loadDatabase()
                                trUtf8("Вы ввели неправильный пароль. Доступ к файлу запрещен!") );
         fileName = "";
         return;
-    }
+    }*/
 
+    bool fill_result = model->setModelData(cipherData, hashPassword(tempPassword).toHex(), !isSimpleXML);
     // Если же все-таки файл может быть прочитан
-    if ( parseDocument ( doc ) )
+    //if ( parseDocument ( doc ) )
+    if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
+        databaseIdentifier = model->identifier();
+        lastModified = model->lastModified();
+    }
+    else
+        QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
     setModif ( false );
     allowActions( true );
 }
