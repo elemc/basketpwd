@@ -15,10 +15,8 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     model = new BasketModel(this);
     tree = new QTreeView( this );
     tree->setModel( model );
+    tree->setDragDropMode( QAbstractItemView::DragDrop );
     setCentralWidget(tree);
-
-//    delegate = new ChangePasswordDelegate( tree );
-//    tree->setItemDelegateForColumn(2, delegate);
 
     connect ( tree->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
 
@@ -598,7 +596,8 @@ void MainWindow::triggeredTrayIcon()
 }
 void MainWindow::addItemToModel(bool isFolder)
 {
-    QModelIndex idx = tree->currentIndex();
+
+    QModelIndex idx = tree->selectionModel()->currentIndex();
     if ( !idx.isValid() )
         model->insertRow(model->rowCount(), QModelIndex(), isFolder);
     else if ( model->indexIsFolder(idx) ){
@@ -610,6 +609,7 @@ void MainWindow::addItemToModel(bool isFolder)
 }
 
 // Слоты
+// File actions
 void MainWindow::on_actionExit_triggered()
 {
     close();
@@ -619,6 +619,19 @@ void MainWindow::on_actionNew_triggered()
     if ( querySave() )
         newDatabase( true );
 }
+void MainWindow::on_actionSave_triggered()
+{
+    if ( fileName.isEmpty() )
+        saveAs();
+    else
+        saveDatabase();
+}
+void MainWindow::on_actionSaveAs_triggered()
+{
+    saveAs();
+}
+
+// Edit actions
 void MainWindow::on_actionEditAddFolder_triggered()
 {
     addItemToModel(true);
@@ -627,6 +640,42 @@ void MainWindow::on_actionEditAddPwd_triggered()
 {
     addItemToModel(false);
 }
+void MainWindow::on_actionEditEdit_triggered()
+{
+    //editPwd( );
+    if ( tree->currentIndex().isValid() ) {
+        ChangePassword dlg(this);
+        dlg.setNewPassword(true);
+        if ( dlg.exec() == QDialog::Accepted ) {
+            model->setPassword(tree->currentIndex(), dlg.getNewPassword());
+        }
+    }
+}
+void MainWindow::on_actionEditDel_triggered()
+{
+    QModelIndex idx = tree->selectionModel()->currentIndex();
+    if ( !idx.isValid() )
+        return;
+
+    QString cap, t;
+    if ( model->indexIsFolder(idx) ) {
+        cap = tr("группы");
+        t = tr("группу");
+    }
+    else {
+        cap = tr("записи");
+        t = tr("запись");
+    }
+
+    if ( QMessageBox::question(this,
+                               tr("Удаление %1").arg(cap),
+                               tr("Вы действительно хотите удалить %1").arg(t),
+                               QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No )
+        return;
+
+    model->removeRow(idx.row(), idx.parent());
+}
+
 void MainWindow::on_actionShowPwd_triggered(bool checked)
 {
     bool acceptDlg = false;
@@ -650,52 +699,6 @@ void MainWindow::on_actionShowPwd_triggered(bool checked)
     else {
         actionShowPwd->setChecked( false );
     }
-}
-void MainWindow::on_actionEditEdit_triggered()
-{
-    //editPwd( );
-    if ( tree->currentIndex().isValid() ) {
-        ChangePassword dlg(this);
-        dlg.setNewPassword(true);
-        if ( dlg.exec() == QDialog::Accepted ) {
-            model->setPassword(tree->currentIndex(), dlg.getNewPassword());
-        }
-    }
-}
-void MainWindow::on_actionSave_triggered()
-{
-    if ( fileName.isEmpty() )
-        saveAs();
-    else
-        saveDatabase();
-}
-void MainWindow::on_actionSaveAs_triggered()
-{
-    saveAs();
-}
-void MainWindow::on_actionEditDel_triggered()
-{
-    /*QTreeWidgetItem *item = mainTree->selectedItems()[0];
-    QString itemStr = "";
-    if ( item->data( 0, Qt::UserRole ).toInt() == 0 )
-        itemStr = trUtf8("запись");
-    else
-        itemStr = trUtf8("папку");
-
-    QString itemName = item->data( 0, Qt::DisplayRole ).toString();
-    int questresult = QMessageBox::question( this, trUtf8("Удаление"),
-                               trUtf8("Вы действительно хотите удалить %1 с именем %2").arg( itemStr, itemName ),
-                               QMessageBox::Yes | QMessageBox::No, QMessageBox::No );
-    if ( questresult == QMessageBox::Yes )
-    {
-        if ( item->parent() )
-            item->parent()->removeChild( item );
-        else
-            item->~QTreeWidgetItem();
-
-        setModif ( true );
-    }*/
-    // TODO: Сделать удаление записи/папки
 }
 void MainWindow::on_actionOpen_triggered()
 {

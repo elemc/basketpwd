@@ -44,7 +44,12 @@ public:
 
     // наследуемые методы редактирования
     bool setData(const QModelIndex &index, const QVariant &value, int role);
-    bool insertRow(int row, const QModelIndex &parent, bool isFolder = false);
+    bool insertRow(int row, const QModelIndex &parent = QModelIndex(), bool isFolder = false);
+    bool removeRow(int row, const QModelIndex &parent = QModelIndex());
+
+    // копирование/перемещение
+    Qt::DropActions supportedDropActions() const;
+    Qt::DropActions supportedDragActions() const;
 
 private:
     BasketBaseItem *rootItem;

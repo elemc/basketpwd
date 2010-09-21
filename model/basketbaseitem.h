@@ -28,6 +28,8 @@ public:
     void setLogin(QString login);
     void setEncryptedPassword(QString pwd);
     void addChild(BasketBaseItem *child);
+    void removeChild(BasketBaseItem *child);
+    void removeChildAt(int i);
 
 private:
     BasketBaseItem *_parentItem;

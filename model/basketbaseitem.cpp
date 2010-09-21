@@ -83,6 +83,17 @@ void BasketBaseItem::addChild(BasketBaseItem *child)
     if ( is_folder )
         childItems.append(child);
 }
+void BasketBaseItem::removeChild(BasketBaseItem *child)
+{
+    if ( is_folder )
+        childItems.removeOne(child);
+}
+void BasketBaseItem::removeChildAt(int i)
+{
+    if ( is_folder )
+        childItems.removeAt(i);
+}
+
 void BasketBaseItem::setName(QString name)
 {
     itemName = name;

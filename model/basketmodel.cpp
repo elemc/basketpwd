@@ -203,8 +203,8 @@ Qt::ItemFlags BasketModel::flags(const QModelIndex &index) const
     if (!index.isValid())
          return 0;
 
-    Qt::ItemFlags selFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-    Qt::ItemFlags editFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+    Qt::ItemFlags selFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    Qt::ItemFlags editFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled;
 
     BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
     if ( !item )
@@ -387,5 +387,22 @@ bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
     parentItem->addChild(newItem);
 
     endInsertRows();
+    return true;
+}
+bool BasketModel::removeRow(int row, const QModelIndex &parent)
+{
+    beginRemoveRows(parent, row, row);
+    BasketBaseItem *pitem;
+
+    if ( !parent.isValid() )
+        pitem = rootItem;
+
+    pitem = static_cast<BasketBaseItem *>(parent.internalPointer());
+    if ( !pitem )
+        pitem = rootItem;
+
+    pitem->removeChildAt(row);
+    endRemoveRows();
+
     return true;
 }
