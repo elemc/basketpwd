@@ -2,11 +2,22 @@
 #define MAINWINDOW_H
 //
 #include <QMainWindow>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QDomElement>
 #include <QSystemTrayIcon>
 #include <QDateTime>
+#include <QMessageBox>
+#include <QInputDialog>
+#include <QTextStream>
+#include <QFile>
+#include <QBuffer>
+#include <QFileInfo>
+#include <QDataStream>
+#include <QFileDialog>
+#include <QClipboard>
+#include <QCloseEvent>
+#include <QCryptographicHash>
+#include <QSettings>
+#include <QTreeView>
+
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
 #include "../model/basketbaseitem.h"
@@ -18,21 +29,22 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
 public slots:
-    void editPwd(QModelIndex index);
+
 private:
-    bool isTreeParent ( QTreeWidgetItem *child, QTreeWidgetItem *parent );
-    void setTreeExpanded( bool expand, QModelIndex topitem = QModelIndex() );
+    /*bool isTreeParent ( QTreeWidgetItem *child, QTreeWidgetItem *parent );
     void changeItemParent ( QTreeWidgetItem *source, QTreeWidgetItem *destLocation );
-    void closeEvent(QCloseEvent *event);
-    void changeCurrentPassword();
     QTreeWidgetItem *getParentForSelectedItem ();
-    void allowActions ( bool yes );
     void changePasswordInItem (QTreeWidgetItem *item, QString newPassword);
     void addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item);
     void showPwdItem(QTreeWidgetItem *item, bool isShowPwd);
-    void editElement(QTreeWidgetItem *item, QString name, QString login, QString pwd);
-    /*bool parseDocument( QDomDocument doc );
-    bool parseElement( QTreeWidgetItem *parent, QDomElement element );*/
+    void editElement(QTreeWidgetItem *item, QString name, QString login, QString pwd);*/
+
+    void addItemToModel(bool isFolder);
+    void closeEvent(QCloseEvent *event);
+    void changeCurrentPassword();
+    void allowActions ( bool yes );
+
+    void setTreeExpanded( bool expand, QModelIndex topitem = QModelIndex() );
     bool querySave();
     void loadDatabase();
     void saveDatabase();
@@ -45,6 +57,7 @@ private:
 
     QTreeView *tree;
     BasketModel *model;
+    //ChangePasswordDelegate *delegate;
 
     QString fileName;
     QByteArray mainPassword;
@@ -105,8 +118,8 @@ private slots:
     //Прочие
     void currentItemChanged ( QModelIndex current_index, QModelIndex previus_index );
     void treeItemDoubleClicked ( QModelIndex index );
-    void treeItemExpanded ( QTreeWidgetItem *item );
-    void treeItemCollapsed ( QTreeWidgetItem *item );
+//    void treeItemExpanded ( QTreeWidgetItem *item );
+//    void treeItemCollapsed ( QTreeWidgetItem *item );
 
     void statusMessageChanged( QString message );
     void iconActivated( QSystemTrayIcon::ActivationReason reason );

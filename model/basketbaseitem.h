@@ -24,6 +24,9 @@ public:
 
     void setFolder(QString name);
     void setPassword(QString name, QString login, QString pwd);
+    void setName(QString name);
+    void setLogin(QString login);
+    void setEncryptedPassword(QString pwd);
     void addChild(BasketBaseItem *child);
 
 private:

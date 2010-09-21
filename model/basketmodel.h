@@ -19,9 +19,17 @@ public:
     ~BasketModel();
 
     bool setModelData(QByteArray &data, QString pwd = QString(), bool isEncryptedData = true);
+    void setUpNewModel(QString pwd = QString());
+    bool changePassword(QString newPassword);
+
     QByteArray storeData();
     QString identifier() const;
     QDateTime lastModified() const;
+    QString hash() const;
+    void setPassword(QModelIndex index, QString newPassword);
+    void setShowPasswords(bool statusShow);
+    bool statusShowPasswords() const;
+    bool indexIsFolder(QModelIndex idx = QModelIndex()) const;
 
     BasketBaseItem *itemAtIndex(QModelIndex &index) const;
 
@@ -34,15 +42,21 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
+    // наследуемые методы редактирования
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    bool insertRow(int row, const QModelIndex &parent, bool isFolder = false);
+
 private:
     BasketBaseItem *rootItem;
     bool showPasswords;
 
     QString     databaseIdentifier;
     QDateTime   lastDBModified;
+    QString     hashPassword;
 
     bool parseDocument(QDomDocument &doc);
     bool parseElement(BasketBaseItem *parentItem, QDomElement element);
+    bool changeItemPassword(BasketBaseItem *item, QString newPassword);
 
     // Декорации
     QIcon recordIcon;

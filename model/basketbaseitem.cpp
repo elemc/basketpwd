@@ -83,3 +83,17 @@ void BasketBaseItem::addChild(BasketBaseItem *child)
     if ( is_folder )
         childItems.append(child);
 }
+void BasketBaseItem::setName(QString name)
+{
+    itemName = name;
+}
+void BasketBaseItem::setLogin(QString login)
+{
+    if ( !isFolder() )
+        itemLogin = login;
+}
+void BasketBaseItem::setEncryptedPassword(QString pwd)
+{
+    if ( !isFolder() )
+        itemPassword = pwd;
+}

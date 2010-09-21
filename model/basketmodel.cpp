@@ -3,9 +3,10 @@
 BasketModel::BasketModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
-    rootItem = new BasketBaseItem(0, this);
+    rootItem        = new BasketBaseItem(0, this);
     rootItem->setFolder(tr("корень"));
-    showPasswords = false;
+    showPasswords   = false;
+    hashPassword    = QString();
 
     // иконки
     recordIcon = QIcon(":/images/recordicon");
@@ -36,8 +37,61 @@ bool BasketModel::setModelData(QByteArray &data, QString pwd, bool isEncryptedDa
         return false;
     }
 
+    hashPassword = pwd;
     endResetModel();
     return parseDocument(doc);
+}
+void BasketModel::setUpNewModel(QString pwd)
+{
+    beginResetModel();
+    delete rootItem;
+    rootItem = new BasketBaseItem(0, this);
+    rootItem->setFolder(tr("корень"));
+
+    hashPassword = pwd;
+    endResetModel();
+}
+bool BasketModel::changePassword(QString newPassword)
+{
+    beginResetModel();
+    if ( hash().isEmpty() )
+        return true;
+    changeItemPassword(rootItem, newPassword);
+    hashPassword = newPassword;
+    endResetModel();
+
+    return true;
+}
+bool BasketModel::changeItemPassword(BasketBaseItem *item, QString newPassword)
+{
+    if ( item->isFolder() ) {
+        bool result = true;
+        for ( int i = 0; i < item->childCount(); i++ ) {
+            BasketBaseItem *child = item->childItemAt(i);
+            result &= changeItemPassword(child, newPassword);
+        }
+
+        return result;
+    }
+    else {
+
+        BasketUtils butil;
+        QString clearPwd = butil.decrypt(item->password(), hash() );
+        QString newPwd = butil.crypt(clearPwd, newPassword);
+        item->setEncryptedPassword(newPwd);
+    }
+
+    return true;
+}
+bool BasketModel::indexIsFolder(QModelIndex idx) const
+{
+    if ( !idx.isValid() )
+        return true;
+
+    if ( BasketBaseItem *item = static_cast<BasketBaseItem *>(idx.internalPointer()) )
+        return item->isFolder();
+
+    return false;
 }
 
 // приваты обработки
@@ -117,6 +171,31 @@ BasketBaseItem *BasketModel::itemAtIndex(QModelIndex &index) const
 
     return item;
 }
+QString BasketModel::hash() const
+{
+    return hashPassword;
+}
+void BasketModel::setShowPasswords(bool statusShow)
+{
+    showPasswords = statusShow;
+    reset();
+}
+bool BasketModel::statusShowPasswords() const
+{
+    return showPasswords;
+}
+void BasketModel::setPassword(QModelIndex idx, QString newPassword)
+{
+    if ( !idx.isValid() )
+        return;
+
+    if ( BasketBaseItem *item = static_cast<BasketBaseItem *>(idx.internalPointer()) ) {
+        BasketUtils butil;
+        item->setEncryptedPassword(butil.crypt(newPassword, hashPassword));
+        emit dataChanged(index(idx.row(), 0, idx.parent()), index(idx.row(), 2, idx.parent()));
+    }
+
+}
 
 // блок наследуемых методов
 Qt::ItemFlags BasketModel::flags(const QModelIndex &index) const
@@ -124,7 +203,17 @@ Qt::ItemFlags BasketModel::flags(const QModelIndex &index) const
     if (!index.isValid())
          return 0;
 
-     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    Qt::ItemFlags selFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    Qt::ItemFlags editFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+
+    BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
+    if ( !item )
+        return 0;
+
+    if ( (item->isFolder() && index.column() > 0) ||
+         (!item->isFolder() && index.column() == 2) )
+        return selFlags;
+    return editFlags;
 }
 int BasketModel::columnCount(const QModelIndex &parent) const
 {
@@ -192,7 +281,7 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
     if ( !item )
         return QVariant();
 
-    if ( role == Qt::DisplayRole ) {
+    if ( role == Qt::DisplayRole || role == Qt::EditRole ) {
         switch(index.column()) {
         case 0:
             return item->name();
@@ -201,9 +290,12 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
             return item->login();
             break;
         case 2:
-            if ( showPasswords )
-                return item->password();
-            else if ( !item->isFolder() )
+            if ( showPasswords ) {
+                BasketUtils butil;
+                QString clearPassword = butil.decrypt(item->password(), hash());
+                return clearPassword;
+            }
+            else if ( !item->isFolder() && role == Qt::DisplayRole )
                 return tr("* * *");
             break;
         default:
@@ -238,4 +330,62 @@ int BasketModel::rowCount(const QModelIndex &parent) const
         item = static_cast<BasketBaseItem *>(parent.internalPointer());
 
     return item->childCount();
+}
+
+// наследуемые редактирование
+bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if ( !index.isValid() )
+        return false;
+
+    BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
+    if ( !item )
+        return false;
+
+    if ( role != Qt::EditRole )
+        return QAbstractItemModel::setData(index, value, role);
+
+    if ( item->isFolder() ) {
+        if ( index.column() == 0 )
+            item->setName( value.toString() );
+        else
+            return false;
+    }
+    else {
+        switch( index.column() ) {
+        case 0:
+            item->setName(value.toString());
+            break;
+        case 1:
+            item->setLogin(value.toString());
+            break;
+        case 2:
+            return false;
+        }
+    }
+
+    return true;
+}
+bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
+{
+    beginInsertRows(parent, row, row);
+    //return insertRows(row, 1, parent, isFolder);
+    BasketBaseItem *parentItem;
+    if ( parent.isValid() )
+        parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
+    else
+        parentItem = rootItem;
+    if ( !parentItem )
+        parentItem = rootItem;
+
+    BasketBaseItem *newItem = new BasketBaseItem(parentItem, this);
+    if ( !isFolder )
+        newItem->setPassword(tr("Новый пароль"), QString(), QString());
+    else
+        newItem->setFolder(tr("Новая папка"));
+
+    parentItem->addChild(newItem);
+
+    endInsertRows();
+    return true;
 }

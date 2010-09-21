@@ -10,26 +10,20 @@ OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
 FORMS = ui/mainwindow.ui \
-    ui/editPwd.ui \
     ui/changepassword.ui \
-    ui/editfolderdialog.ui \
     aboutdialog.ui \
     ui/settingsdialog.ui
 HEADERS = src/mainwindow.h \
-    src/editpwddialog.h \
     src/basketutils.h \
     src/changepassword.h \
-    src/editfolderdialog.h \
     aboutdialog.h \
     src/settingsdialog.h \
     model/basketbaseitem.h \
     model/basketmodel.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
-    src/editpwddialog.cpp \
     src/basketutils.cpp \
     src/changepassword.cpp \
-    src/editfolderdialog.cpp \
     aboutdialog.cpp \
     src/settingsdialog.cpp \
     model/basketbaseitem.cpp \

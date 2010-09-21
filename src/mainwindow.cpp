@@ -1,22 +1,6 @@
 #include "mainwindow.h"
-#include <QMessageBox>
-#include <QInputDialog>
-#include "editpwddialog.h"
-#include <QDomDocument>
-#include <QDomText>
-#include <QTextStream>
-#include <QFile>
-#include <QBuffer>
-#include <QFileInfo>
-#include <QDataStream>
-#include <QFileDialog>
-#include <QClipboard>
-#include <QCloseEvent>
-#include <QCryptographicHash>
-#include <QSettings>
 #include "basketutils.h"
 #include "changepassword.h"
-#include "editfolderdialog.h"
 #include "../aboutdialog.h"
 #include "settingsdialog.h"
 
@@ -32,6 +16,9 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     tree = new QTreeView( this );
     tree->setModel( model );
     setCentralWidget(tree);
+
+//    delegate = new ChangePasswordDelegate( tree );
+//    tree->setItemDelegateForColumn(2, delegate);
 
     connect ( tree->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
 
@@ -175,17 +162,18 @@ void MainWindow::createTreeWidget()
 // Работа с файлом
 void MainWindow::newDatabase( bool isInteracrive )
 {
-        fileName = "";
-        setModif(false);
-        //mainTree->clear();
-        // TODO: Сделать очистку модели
-        createTreeWidget();
-        mainPassword = QByteArray();
+    fileName = "";
+    setModif(false);
 
-        if ( isInteracrive )
-            changeCurrentPassword();
-        else
-            allowActions ( false );
+    // TODO: Сделать очистку модели
+    createTreeWidget();
+    mainPassword = QByteArray();
+    model->setUpNewModel( mainPassword );
+
+    if ( isInteracrive )
+        changeCurrentPassword();
+    else
+        allowActions ( false );
 }
 void MainWindow::saveAs()
 {
@@ -248,83 +236,6 @@ void MainWindow::saveDatabase()
 
     setModif ( false );
 }
-/*bool MainWindow::parseElement( QTreeWidgetItem *parent, QDomElement element )
-{
-    //Смотрим, что это папка или запись
-    if ( element.tagName() == "folder" ) {
-        QString folderName = element.attribute( "name", trUtf8("Без имени") );
-        QTreeWidgetItem *item = new QTreeWidgetItem( QStringList() << folderName );
-        item->setData(0, Qt::UserRole, 1);
-        item->setData(0, Qt::DecorationRole, folderCloseIcon );
-
-        // добавляем папочку в дерево
-        if ( parent == NULL )
-            mainTree->addTopLevelItem( item );
-        else
-            parent->addChild( item );
-
-        // парсируем, все, что внутри
-        for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
-        {
-            if ( n.isElement() )
-                parseElement ( item, n.toElement() );
-        }
-
-    }
-    else if ( element.tagName() == "item" ) {
-        QString name = element.attribute( "name", trUtf8("Без имени") );
-        QString login, cipherPwd;
-
-        // определяем логин
-        QDomNodeList listLogin = element.elementsByTagName("login");
-        QDomNodeList listPwd = element.elementsByTagName("pwd");
-        if ( listLogin.count() > 0 )
-            login = listLogin.at(0).toElement().text();
-        if ( listPwd.count() > 0 )
-            cipherPwd = listPwd.at(0).toElement().text();
-
-        QTreeWidgetItem *item = new QTreeWidgetItem();
-        item->setText(0, name);
-        item->setData(0, Qt::UserRole, 0);	//0-элемент, 1 - группа
-        item->setData(0, Qt::DecorationRole, recordIcon );
-        item->setText(1, login);
-
-        item->setText( 2, trUtf8("* * *") );
-
-        if (!isSimpleXML)
-            item->setData( 2, Qt::UserRole, cipherPwd );
-        else {
-            BasketUtils butil;
-            QString arr = butil.crypt(cipherPwd, mainPassword.toHex());
-            item->setData( 2, Qt::UserRole, arr );
-        }
-
-        // добавляем запись в дерево
-        if ( parent == NULL )
-            mainTree->addTopLevelItem( item );
-        else
-            parent->addChild( item );
-    }
-
-    return true;
-}
-bool MainWindow::parseDocument( QDomDocument doc )
-{
-    QDomElement rootElement = doc.documentElement();
-    if ( rootElement.tagName() != "basket-passwords" )
-        return false;
-
-    databaseIdentifier  = rootElement.attribute(QString("ident"), QString("default"));
-    lastModified        = QDateTime::fromString(rootElement.attribute(QString("modified"), QDateTime::currentDateTime().toString(DATE_TIME_FORMAT)), DATE_TIME_FORMAT);
-
-    for(QDomNode n = rootElement.firstChild(); !n.isNull(); n = n.nextSibling())
-    {
-        if ( n.isElement() )
-            parseElement ( NULL, n.toElement() );
-    }
-
-    return true;
-}*/
 void MainWindow::loadDatabase()
 {
     // Обнуляем кнопочку показа паролей, иначе уязвимость
@@ -372,6 +283,9 @@ void MainWindow::loadDatabase()
         mainPassword = hashPassword(tempPassword);
         databaseIdentifier = model->identifier();
         lastModified = model->lastModified();
+        tree->resizeColumnToContents(0);
+        tree->resizeColumnToContents(1);
+        tree->resizeColumnToContents(2);
     }
     else
         QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
@@ -398,7 +312,7 @@ bool MainWindow::querySave()
 }
 
 // Работа с деревом
-void MainWindow::addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item)
+/*void MainWindow::addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item)
 {
         QDomDocument doc = domRoot->ownerDocument();
         if ( item == NULL )
@@ -433,7 +347,7 @@ void MainWindow::addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item)
 }
 QTreeWidgetItem *MainWindow::getParentForSelectedItem ()
 {
-    /*if ( mainTree->selectedItems().count() == 0 )
+    if ( mainTree->selectedItems().count() == 0 )
         return NULL;
     else {
         QTreeWidgetItem *folder = mainTree->selectedItems()[0];
@@ -449,14 +363,14 @@ QTreeWidgetItem *MainWindow::getParentForSelectedItem ()
         else
             return NULL;
     }
-    return NULL;*/
+    return NULL;
     // FIXME: Не помню зачем я это делалs
     return 0;
 }
 void MainWindow::changeItemParent ( QTreeWidgetItem *source, QTreeWidgetItem *destLocation )
 {
     // если произошла смена родителя-владельца
-    /*if ( source->parent() != destLocation ) {
+    if ( source->parent() != destLocation ) {
         QTreeWidgetItem *newitem = source->clone();
 
         if ( !destLocation )  // если родителя нет (в корень)
@@ -471,50 +385,8 @@ void MainWindow::changeItemParent ( QTreeWidgetItem *source, QTreeWidgetItem *de
         mainTree->setCurrentItem( newitem );
     }
     else
-        mainTree->setCurrentItem( source );*/
+        mainTree->setCurrentItem( source );
     // TODO: Сделать перенос записи между группами
-}
-void MainWindow::editPwd(QModelIndex index)
-{
-    /*if ( item == NULL ) {
-        if ( mainTree->selectedItems().count() == 0 )
-            return;
-        else
-            item = mainTree->selectedItems()[0];
-    }*/
-    if ( !index.isValid() )
-        return;
-
-    /*if ( item->data(0, Qt::UserRole).toInt() == 0) {
-        BasketUtils butil;
-        editPwdDialog dlg( this );
-        dlg.setElement( item->text(0),
-                        item->text(1),
-                        butil.decrypt(item->data(2, Qt::UserRole).toString(), mainPassword.toHex()) );
-        dlg.setMainTree( mainTree, getParentForSelectedItem() );
-        if ( dlg.exec() == QDialog::Accepted ) {
-            editElement ( item, dlg.getElementName(), dlg.getElementLogin(), dlg.getElementPassword() );
-            changeItemParent ( item, dlg.getParent() );
-            setModif ( true );
-        }
-    }
-    else {
-        editFolderDialog dlg( this, item );
-        if ( mainTree->selectedItems().count() == 0 )
-            dlg.setMainTree( mainTree, NULL );
-        else
-            dlg.setMainTree( mainTree, mainTree->selectedItems()[0] );
-        dlg.setMainTree( mainTree, getParentForSelectedItem() );
-        dlg.setFolderName( item->data(0, Qt::DisplayRole ).toString() );
-        if ( !dlg.exec() )
-            return; // выходим, если отмена
-
-        item->setData( 0, Qt::DisplayRole, dlg.getFolderName() );
-        changeItemParent ( item, dlg.getParent() );
-        setModif ( true );
-    }*/
-    // TODO: Сделать редактирование записи и группы
-
 }
 void MainWindow::editElement(QTreeWidgetItem *item, QString name, QString login, QString pwd)
 {
@@ -525,12 +397,12 @@ void MainWindow::editElement(QTreeWidgetItem *item, QString name, QString login,
         item->setText(1, login);
 
         if ( actionShowPwd->isChecked() ) {
-                item->setText(2, pwd);
-                item->setData( 2, Qt::UserRole, butil.crypt(pwd, mainPassword.toHex()) );
+            item->setText(2, pwd);
+            item->setData( 2, Qt::UserRole, butil.crypt(pwd, mainPassword.toHex()) );
         }
         else {
-                item->setText( 2, trUtf8("* * *") );
-                item->setData( 2, Qt::UserRole, butil.crypt(pwd, mainPassword.toHex()) );
+            item->setText( 2, trUtf8("* * *") );
+            item->setData( 2, Qt::UserRole, butil.crypt(pwd, mainPassword.toHex()) );
         }
 }
 void MainWindow::showPwdItem(QTreeWidgetItem *item, bool isShowPwd)
@@ -559,6 +431,43 @@ void MainWindow::changePasswordInItem (QTreeWidgetItem *item, QString newPasswor
                         changePasswordInItem ( item->child(i), newPassword );
         }
 }
+void MainWindow::treeItemExpanded ( QTreeWidgetItem *item )
+{
+    if (!item)
+        return;
+
+    // TODO: Сделать реакцию на развертывание
+    //if ( item->data(0, Qt::UserRole).toInt() == 1 );
+        //item->setData( 0, Qt::DecorationRole, folderIcon );
+}
+void MainWindow::treeItemCollapsed ( QTreeWidgetItem *item )
+{
+    if (!item)
+        return;
+
+    // TODO: Сделать реакцию на сворачивание
+    //if ( item->data(0, Qt::UserRole).toInt() == 1 )
+        //item->setData( 0, Qt::DecorationRole, folderCloseIcon );
+
+    // Проверка на выделенную запись
+    //if ( isTreeParent ( mainTree->currentItem(), item ) )
+    //    mainTree->setCurrentItem( item );
+}
+bool MainWindow::isTreeParent( QTreeWidgetItem *child, QTreeWidgetItem *parent )
+{
+    if ( !child->parent() )
+        return false;
+
+    QTreeWidgetItem *tempParent = child->parent();
+    while ( tempParent ) {
+        if ( tempParent == parent )
+            return true;
+        else
+            tempParent = tempParent->parent();
+    }
+
+    return false;
+}*/
 void MainWindow::setTreeExpanded(bool expand, QModelIndex topitem)
 {
     if ( !topitem.isValid() ) {// передан NULL
@@ -581,43 +490,6 @@ void MainWindow::treeItemDoubleClicked (QModelIndex index)
     // TODO: Сделать активацию, открытие диалога редактирования
 
 }
-void MainWindow::treeItemExpanded ( QTreeWidgetItem *item )
-{
-    if (!item)
-        return;
-
-    // TODO: Сделать реакцию на развертывание
-    //if ( item->data(0, Qt::UserRole).toInt() == 1 );
-        //item->setData( 0, Qt::DecorationRole, folderIcon );
-}
-void MainWindow::treeItemCollapsed ( QTreeWidgetItem *item )
-{
-    if (!item)
-        return;
-
-    // TODO: Сделать реакцию на сворачивание
-    //if ( item->data(0, Qt::UserRole).toInt() == 1 )
-        //item->setData( 0, Qt::DecorationRole, folderCloseIcon );
-
-    // Проверка на выделенную запись
-    /*if ( isTreeParent ( mainTree->currentItem(), item ) )
-        mainTree->setCurrentItem( item );*/
-}
-bool MainWindow::isTreeParent( QTreeWidgetItem *child, QTreeWidgetItem *parent )
-{
-    if ( !child->parent() )
-        return false;
-
-    QTreeWidgetItem *tempParent = child->parent();
-    while ( tempParent ) {
-        if ( tempParent == parent )
-            return true;
-        else
-            tempParent = tempParent->parent();
-    }
-
-    return false;
-}
 
 // Остальное
 void MainWindow::setModif(bool modificator)
@@ -635,22 +507,20 @@ void MainWindow::setModif(bool modificator)
 }
 void MainWindow::changeCurrentPassword()
 {
-    /*ChangePassword cpDlg( this );
+    ChangePassword cpDlg( this );
     if ( mainPassword.isNull() )
         cpDlg.setNewPassword( true );
     if ( cpDlg.exec() ) {
         if ((( cpDlg.getCurrentPassword().isEmpty() ) && ( mainPassword.isNull() )) || ( hashPassword(cpDlg.getCurrentPassword()) == mainPassword ) ) {
-            for ( int i = 0; i < mainTree->topLevelItemCount(); i++ )
-                changePasswordInItem ( mainTree->topLevelItem(i), hashPassword(cpDlg.getNewPassword()).toHex() );
-
-            mainPassword = hashPassword(cpDlg.getNewPassword());
+            QByteArray tempPassword = hashPassword(cpDlg.getNewPassword());
+            if ( model->changePassword( tempPassword.toHex() ) )
+                mainPassword = tempPassword;
             setModif( true );
             allowActions( true );
         }
     }
     else if ( mainPassword.isNull() )
-        allowActions ( false );*/
-    // TODO: Сделать изменение пароля на список
+        allowActions ( false );
 }
 void MainWindow::currentItemChanged ( QModelIndex current_index, QModelIndex previus_index )
 {
@@ -667,6 +537,7 @@ void MainWindow::currentItemChanged ( QModelIndex current_index, QModelIndex pre
 
     actionCopyToClipboard->setEnabled( isAct );
     actionCopyLogin->setEnabled( isAct );
+    actionEditEdit->setEnabled( isAct );
 }
 void MainWindow::allowActions( bool yes )
 {
@@ -725,11 +596,23 @@ void MainWindow::triggeredTrayIcon()
     else
         hide();
 }
+void MainWindow::addItemToModel(bool isFolder)
+{
+    QModelIndex idx = tree->currentIndex();
+    if ( !idx.isValid() )
+        model->insertRow(model->rowCount(), QModelIndex(), isFolder);
+    else if ( model->indexIsFolder(idx) ){
+        model->insertRow(model->rowCount(idx), idx, isFolder);
+    }
+    else {
+        model->insertRow(model->rowCount(idx.parent()), idx.parent(), isFolder);
+    }
+}
 
 // Слоты
 void MainWindow::on_actionExit_triggered()
 {
-        close();
+    close();
 }
 void MainWindow::on_actionNew_triggered()
 {
@@ -738,81 +621,46 @@ void MainWindow::on_actionNew_triggered()
 }
 void MainWindow::on_actionEditAddFolder_triggered()
 {
-    /*editFolderDialog dlg( this );
-
-    dlg.setMainTree( mainTree, getParentForSelectedItem() );
-    if ( !dlg.exec() )
-        return;
-
-    QTreeWidgetItem *item = new QTreeWidgetItem( QStringList() << dlg.getFolderName() );
-    item->setData(0, Qt::UserRole, 1);
-    //item->setData(0, Qt::DecorationRole, folderIcon );
-
-    QTreeWidgetItem *folder = dlg.getParent();
-    if ( folder ) {
-        folder->addChild( item );
-        folder->setExpanded( true );
-    }
-    else
-        mainTree->addTopLevelItem( item );
-
-    mainTree->setCurrentItem( item );
-    setModif ( true );*/
-
-    // TODO: Сделать добавление новой папки
-
+    addItemToModel(true);
 }
 void MainWindow::on_actionEditAddPwd_triggered()
 {
-    /*BasketUtils butil;
-    editPwdDialog dlg( this );
-    dlg.setMainTree( mainTree, getParentForSelectedItem() );
-    if ( dlg.exec() == QDialog::Accepted ) {
-        QTreeWidgetItem *item = new QTreeWidgetItem( );
-        editElement ( item, dlg.getElementName(), dlg.getElementLogin(), dlg.getElementPassword() );
-
-        QTreeWidgetItem *folder = dlg.getParent();
-        if ( folder == NULL )
-            mainTree->addTopLevelItem( item );
-        else {
-            folder->addChild( item );
-            folder->setExpanded(true);
-        }
-        mainTree->setCurrentItem( item );
-        setModif ( true );
-    }*/
-
-    // TODO: Сделать добавление новой записи
+    addItemToModel(false);
 }
 void MainWindow::on_actionShowPwd_triggered(bool checked)
 {
-        /*bool acceptDlg = false;
-        QString tempPassword;
+    bool acceptDlg = false;
+    QString tempPassword;
 
-        if ( checked )
-                tempPassword = QInputDialog::getText( this, trUtf8("Запрос пароля"),
-                        trUtf8("<b><p>Внимание! Потенциально опасно отображать пароли!</p>\n<p>Если Вы находитесь перед компьютером не один, нажмите кнопку \"Отмена\"</p></b>\nПодтвердите свой пароль:"),
-                        QLineEdit::Password, QString(), &acceptDlg );
+    if ( checked )
+        tempPassword = QInputDialog::getText( this, trUtf8("Запрос пароля"),
+                trUtf8("<b><p>Внимание! Потенциально опасно отображать пароли!</p>\n<p>Если Вы находитесь перед компьютером не один, нажмите кнопку \"Отмена\"</p></b>\nПодтвердите свой пароль:"),
+                QLineEdit::Password, QString(), &acceptDlg );
+    else {
+        acceptDlg = true;
+    }
+
+    if ( (acceptDlg) ) {
+        if ( (( checked ) && (hashPassword(tempPassword) == mainPassword) ) || ( !checked ) )
+            model->setShowPasswords( checked );
         else {
-                //tempPassword = mainPassword;
-                acceptDlg = true;
+            actionShowPwd->setChecked( false );
         }
-
-
-        if ( (acceptDlg) ) {
-            if ( (( checked ) && (hashPassword(tempPassword) == mainPassword) ) || ( !checked ) )
-                for ( int i = 0; i < mainTree->topLevelItemCount(); i++ )
-                        showPwdItem ( mainTree->topLevelItem(i), checked );
-            else
-                actionShowPwd->setChecked( false );
-        }
-        else
-                actionShowPwd->setChecked( false );*/
-    // TODO: Сделать показ/скрытие паролей
+    }
+    else {
+        actionShowPwd->setChecked( false );
+    }
 }
 void MainWindow::on_actionEditEdit_triggered()
 {
-        //editPwd( NULL );
+    //editPwd( );
+    if ( tree->currentIndex().isValid() ) {
+        ChangePassword dlg(this);
+        dlg.setNewPassword(true);
+        if ( dlg.exec() == QDialog::Accepted ) {
+            model->setPassword(tree->currentIndex(), dlg.getNewPassword());
+        }
+    }
 }
 void MainWindow::on_actionSave_triggered()
 {

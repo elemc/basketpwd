@@ -6,15 +6,11 @@ ChangePassword::ChangePassword(QWidget *parent) :
     m_ui(new Ui::ChangePassword)
 {
     m_ui->setupUi(this);
-/*    connect ( m_ui->lineEditNewPassword, SIGNAL (textChanged()), this, SLOT (checkTextChanged()) );
-    connect ( m_ui->lineEditConfirmPassword, SIGNAL (textChanged()), this, SLOT (checkTextChanged()) );*/
 }
-
 ChangePassword::~ChangePassword()
 {
     delete m_ui;
 }
-
 void ChangePassword::changeEvent(QEvent *e)
 {
     switch(e->type()) {
@@ -56,7 +52,3 @@ void ChangePassword::setNewPassword( bool isNewPassword )
     m_ui->lineEditCurrentPassword->setVisible( !isNewPassword );
 }
 
-/*void ChangePassword::checkTextChanged()
-{
-
-}*/
