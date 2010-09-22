@@ -28,6 +28,7 @@ public:
     void setLogin(QString login);
     void setEncryptedPassword(QString pwd);
     void addChild(BasketBaseItem *child);
+    void insertChild(int i, BasketBaseItem *child);
     void removeChild(BasketBaseItem *child);
     void removeChildAt(int i);
 

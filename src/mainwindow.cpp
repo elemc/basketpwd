@@ -606,15 +606,14 @@ void MainWindow::triggeredTrayIcon()
 }
 void MainWindow::addItemToModel(bool isFolder)
 {
-
     QModelIndex idx = tree->selectionModel()->currentIndex();
     if ( !idx.isValid() )
         model->insertRow(model->rowCount(), QModelIndex(), isFolder);
     else if ( model->indexIsFolder(idx) ){
-        model->insertRow(model->rowCount(idx), idx, isFolder);
+        model->insertRow(idx.row(), idx, isFolder);
     }
     else {
-        model->insertRow(model->rowCount(idx.parent()), idx.parent(), isFolder);
+        model->insertRow(idx.row(), idx.parent(), isFolder);
     }
 }
 

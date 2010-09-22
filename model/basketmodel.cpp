@@ -468,7 +468,6 @@ bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int r
 bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
 {
     beginInsertRows(parent, row, row);
-    //return insertRows(row, 1, parent, isFolder);
     BasketBaseItem *parentItem;
     if ( parent.isValid() )
         parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
@@ -483,7 +482,7 @@ bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
     else
         newItem->setFolder(tr("Новая папка"));
 
-    parentItem->addChild(newItem);
+    parentItem->insertChild(row, newItem);
 
     endInsertRows();
     return true;
@@ -514,7 +513,7 @@ Qt::DropActions BasketModel::supportedDropActions() const
 QStringList BasketModel::mimeTypes() const
 {
     QStringList types;
-    types << "application/basketpwd.records";
+    types << DRAG_AND_DROP_MIME;
     return types;
 }
 QMimeData *BasketModel::mimeData(const QModelIndexList &indexes) const
@@ -531,6 +530,17 @@ QMimeData *BasketModel::mimeData(const QModelIndexList &indexes) const
     }*/
     qDebug() << encodedData;
 
-    mimeData->setData("application/basketpwd.records", encodedData);
+    mimeData->setData(DRAG_AND_DROP_MIME, encodedData);
     return mimeData;
+}
+bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+                               int row, int column, const QModelIndex &parent)
+{
+    if ( action == Qt::IgnoreAction )
+        return true;
+
+    if ( !data->hasFormat(DRAG_AND_DROP_MIME) )
+        return false;
+
+
 }

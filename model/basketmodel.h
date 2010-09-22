@@ -10,6 +10,7 @@
 #include "../src/basketutils.h"
 
 #define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
+#define DRAG_AND_DROP_MIME QString("application/basketpwd.records")
 
 class BasketModel : public QAbstractItemModel
 {
@@ -49,6 +50,7 @@ public:
     Qt::DropActions supportedDropActions() const;
     QStringList mimeTypes() const;
     QMimeData *mimeData(const QModelIndexList &indexes) const;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent = QModelIndex());
 
 private:
     BasketBaseItem *rootItem;

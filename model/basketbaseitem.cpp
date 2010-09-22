@@ -83,6 +83,11 @@ void BasketBaseItem::addChild(BasketBaseItem *child)
     if ( is_folder )
         childItems.append(child);
 }
+void BasketBaseItem::insertChild(int i, BasketBaseItem *child)
+{
+    if ( is_folder )
+        childItems.insert(i, child);
+}
 void BasketBaseItem::removeChild(BasketBaseItem *child)
 {
     if ( is_folder )
