@@ -4,7 +4,7 @@
 #include <QTranslator>
 #include <QTextCodec>
 //
-#define PROGRAM_VERSION "0.3.7"
+//#define PROGRAM_VERSION QString(VER)
 
 int main(int argc, char ** argv)
 {
@@ -27,7 +27,7 @@ int main(int argc, char ** argv)
     qApp->setOrganizationName(QObject::trUtf8("Атис Сервис"));
     qApp->setOrganizationDomain(QObject::tr("atisserv.ru"));
     qApp->setApplicationName(QObject::trUtf8("Корзинка паролей"));
-    qApp->setApplicationVersion(QString(PROGRAM_VERSION));
+    qApp->setApplicationVersion(QString(VER));
 
     MainWindow win;
 

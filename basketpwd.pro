@@ -50,6 +50,8 @@ unix {
         basket_desktop \
         basket_icon
 }
-VERSION = 0.3.7
+VERSION = 0.4.0
+VERSTR = '\\"$${VERSION}\\"'
+DEFINES += VER=\"$${VERSTR}\"
 OTHER_FILES += ChangeLog.txt
 TRANSLATIONS += basketpwd_en.ts
