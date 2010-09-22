@@ -41,6 +41,38 @@ bool BasketModel::setModelData(QByteArray &data, QString pwd, bool isEncryptedDa
     endResetModel();
     return parseDocument(doc);
 }
+QByteArray BasketModel::modelDataToXML(bool encrypted)
+{
+    QDomDocument doc;
+    QDomElement	root = doc.createElement( "basket-passwords" );
+    root.setAttribute(QString("ident"), identifier());
+    lastDBModified = QDateTime::currentDateTime();
+    root.setAttribute(QString("modified"), lastDBModified.toString(DATE_TIME_FORMAT));
+
+    doc.appendChild( root );
+    for ( int i = 0; i < rootItem->childCount(); i++ ) {
+        QDomElement child = convertBasketItemToDomElement(rootItem->childItemAt(i), doc);
+        root.appendChild(child);
+    }
+
+    QByteArray clearBuffer;
+    QBuffer clearFile ( &clearBuffer );
+    if ( !clearFile.open( QIODevice::WriteOnly | QIODevice::Text ) )
+        return QByteArray();
+
+    QTextStream clearStream(&clearFile);
+    doc.save(clearStream, 4);
+    clearFile.close();
+
+    if ( !encrypted )
+        return clearBuffer;
+
+    BasketUtils butil;
+    QByteArray encryptedBuffer = butil.crypt(clearBuffer, hash());
+
+    return encryptedBuffer;
+}
+
 void BasketModel::setUpNewModel(QString pwd)
 {
     beginResetModel();
@@ -196,24 +228,91 @@ void BasketModel::setPassword(QModelIndex idx, QString newPassword)
     }
 
 }
+QDomElement BasketModel::convertBasketItemToDomElement(BasketBaseItem *item, QDomDocument &doc) const
+{
+    QDomElement itemElem;
+    if ( item->isFolder() ) {
+        itemElem = doc.createElement("folder");
+        itemElem.setAttribute("name", item->name());
+
+        for ( int i = 0; i < item->childCount(); i++ ) {
+            QDomElement childElem = convertBasketItemToDomElement(item->childItemAt(i), doc);
+            itemElem.appendChild(childElem);
+        }
+    }
+    else {
+        itemElem = doc.createElement("item");
+        itemElem.setAttribute("name", item->name());
+
+        QDomElement login, pwd;
+        login = doc.createElement("login");
+        pwd = doc.createElement("pwd");
+
+        QDomText tlogin, tpwd;
+        tlogin = doc.createTextNode(item->login());
+        tpwd = doc.createTextNode(item->password());
+
+        login.appendChild(tlogin);
+        pwd.appendChild(tpwd);
+
+        itemElem.appendChild(login);
+        itemElem.appendChild(pwd);
+    }
+
+    return itemElem;
+}
+QByteArray BasketModel::indexesToXML(const QModelIndexList &indexes) const
+{
+    QDomDocument doc;
+    QDomElement	root = doc.createElement( "basket-passwords-items" );
+
+    doc.appendChild( root );
+
+    foreach(QModelIndex idx, indexes) {
+        if ( !idx.isValid() )
+            continue;
+        if ( idx.column() != 0 )
+            continue;
+
+        BasketBaseItem *item = static_cast<BasketBaseItem *>(idx.internalPointer());
+        if ( !item )
+            continue;
+
+        QDomElement child = convertBasketItemToDomElement(item, doc);
+        root.appendChild(child);
+    }
+
+    QByteArray clearBuffer;
+    QBuffer clearFile ( &clearBuffer );
+    if ( !clearFile.open( QIODevice::WriteOnly | QIODevice::Text ) )
+        return QByteArray();
+
+    QTextStream clearStream(&clearFile);
+    doc.save(clearStream, 4);
+    clearFile.close();
+
+    return clearBuffer;
+}
 
 // блок наследуемых методов
 Qt::ItemFlags BasketModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
-         return 0;
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
-    Qt::ItemFlags selFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-    Qt::ItemFlags editFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled;
+    if (!index.isValid())
+        return Qt::ItemIsDropEnabled | defaultFlags;
 
     BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
     if ( !item )
         return 0;
 
-    if ( (item->isFolder() && index.column() > 0) ||
-         (!item->isFolder() && index.column() == 2) )
-        return selFlags;
-    return editFlags;
+    if ( (item->isFolder() && index.column() == 0) || (!item->isFolder() && index.column() != 2 ))
+        defaultFlags |= Qt::ItemIsEditable | Qt::ItemIsDragEnabled;
+
+    if ( item->isFolder() )
+        defaultFlags |= Qt::ItemIsDropEnabled;
+
+    return defaultFlags;
 }
 int BasketModel::columnCount(const QModelIndex &parent) const
 {
@@ -405,4 +504,33 @@ bool BasketModel::removeRow(int row, const QModelIndex &parent)
     endRemoveRows();
 
     return true;
+}
+
+// drag & drop
+Qt::DropActions BasketModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+QStringList BasketModel::mimeTypes() const
+{
+    QStringList types;
+    types << "application/basketpwd.records";
+    return types;
+}
+QMimeData *BasketModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData();
+    QByteArray encodedData = indexesToXML(indexes);
+
+    /*QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            QString text = data(index, Qt::DisplayRole).toString();
+            stream << text;
+        }
+    }*/
+    qDebug() << encodedData;
+
+    mimeData->setData("application/basketpwd.records", encodedData);
+    return mimeData;
 }

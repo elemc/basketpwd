@@ -22,7 +22,7 @@ public:
     void setUpNewModel(QString pwd = QString());
     bool changePassword(QString newPassword);
 
-    QByteArray storeData();
+    QByteArray modelDataToXML(bool encrypted = true);
     QString identifier() const;
     QDateTime lastModified() const;
     QString hash() const;
@@ -30,7 +30,6 @@ public:
     void setShowPasswords(bool statusShow);
     bool statusShowPasswords() const;
     bool indexIsFolder(QModelIndex idx = QModelIndex()) const;
-
     BasketBaseItem *itemAtIndex(QModelIndex &index) const;
 
     // наследуемые методы
@@ -47,9 +46,9 @@ public:
     bool insertRow(int row, const QModelIndex &parent = QModelIndex(), bool isFolder = false);
     bool removeRow(int row, const QModelIndex &parent = QModelIndex());
 
-    // копирование/перемещение
     Qt::DropActions supportedDropActions() const;
-    Qt::DropActions supportedDragActions() const;
+    QStringList mimeTypes() const;
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
 
 private:
     BasketBaseItem *rootItem;
@@ -62,6 +61,8 @@ private:
     bool parseDocument(QDomDocument &doc);
     bool parseElement(BasketBaseItem *parentItem, QDomElement element);
     bool changeItemPassword(BasketBaseItem *item, QString newPassword);
+    QDomElement convertBasketItemToDomElement(BasketBaseItem *item, QDomDocument &doc) const;
+    QByteArray indexesToXML(const QModelIndexList &indexes) const;
 
     // Декорации
     QIcon recordIcon;

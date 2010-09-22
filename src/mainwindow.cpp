@@ -15,7 +15,9 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     model = new BasketModel(this);
     tree = new QTreeView( this );
     tree->setModel( model );
-    tree->setDragDropMode( QAbstractItemView::DragDrop );
+    tree->setDragEnabled(true);
+    tree->setAcceptDrops(true);
+    tree->setDropIndicatorShown(true);
     setCentralWidget(tree);
 
     connect ( tree->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
@@ -190,7 +192,7 @@ void MainWindow::saveAs()
 }
 void MainWindow::saveDatabase()
 {
-    QString ext = fileName.right(4);
+    /*QString ext = fileName.right(4);
 
     QDomDocument    doc;
     QDomElement	root = doc.createElement( trUtf8("basket-passwords") );
@@ -202,8 +204,8 @@ void MainWindow::saveDatabase()
 
     doc.appendChild( root );
 
-    /*for ( int i = 0; i < mainTree->topLevelItemCount(); i++ )
-            addTreeItemToDom( &root, mainTree->topLevelItem(i) );*/
+    for ( int i = 0; i < mainTree->topLevelItemCount(); i++ )
+            addTreeItemToDom( &root, mainTree->topLevelItem(i) );
     // TODO: Сделать сохранение списка
 
     QByteArray bufferArray;
@@ -219,17 +221,25 @@ void MainWindow::saveDatabase()
     outFile.close();
 
     //Пишем в истинный файл
-    BasketUtils butil;
-    QFile filew ( fileName );
-    result = filew.open( QIODevice::WriteOnly );
-    if ( !result ) {
-        QMessageBox::critical( this, trUtf8("Ошибка доступа к файлу"),
-                               trUtf8("Ошибка открытия файла %1 для записи").arg( fileName ) );
+    BasketUtils butil;*/
+    QByteArray buf = model->modelDataToXML();
+    if ( buf.isEmpty() ) {
+        QMessageBox::critical(this,
+                              tr("Ошибка сохранения данных"),
+                              tr("Произошла ошибка при попытке составить XML-файл, обратитесь к разработчику!"));
         return;
     }
 
-    QByteArray ciphBuf = butil.crypt( bufferArray, mainPassword.toHex() );
-    filew.write( ciphBuf );
+    QFile filew ( fileName );
+    bool result = filew.open( QIODevice::WriteOnly );
+    if ( !result ) {
+        QMessageBox::critical( this,
+                               tr("Ошибка доступа к файлу"),
+                               tr("Ошибка открытия файла %1 для записи").arg( fileName ) );
+        return;
+    }
+
+    filew.write( buf );
     filew.close();
 
     setModif ( false );
