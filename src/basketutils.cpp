@@ -3,21 +3,16 @@
 #if QT_VERSION >= 0x040300
 #include <QCryptographicHash>
 #endif
-#include <QDebug>
-
-//
 BasketUtils::BasketUtils(  ) 
 	: QObject()
 {
     errorState = false;
     errorMsg = "";
 }
-//
 QByteArray BasketUtils::hashPassword( QString password )
 {
 #if QT_VERSION >= 0x040300
     QByteArray hash = QCryptographicHash::hash( password.toUtf8(), QCryptographicHash::Md5 );
-    qDebug() << hash.toHex() << hash.size();
     return hash;
 #else
     char *hash_ptr = new char[16];
@@ -29,6 +24,21 @@ QByteArray BasketUtils::hashPassword( QString password )
     }
 
     return QByteArray();
+#endif
+}
+QString BasketUtils::toHex(QByteArray data)
+{
+#if QT_VERSION >= 0x040300
+    return data.toHex();
+#else
+    QByteArray result;
+    for ( int i = 0; i < data.size(); i++ ) {
+        char ca = data[i];
+        QChar a(ca);
+        ushort num = a.unicode();
+        result += QByteArray::number(num, 16);
+    }
+    return QString(result);
 #endif
 }
 
@@ -61,7 +71,6 @@ QByteArray BasketUtils::crypt(QByteArray buf, QString pwd) //Пароль уже
         free (cipher);
     }
     else {
-        qDebug ("Ошибка: [%s]", errorMsg.toUtf8().data());
         return NULL;
     }
     // Конец служебного блока данных
@@ -93,9 +102,6 @@ QByteArray BasketUtils::crypt(QByteArray buf, QString pwd) //Пароль уже
             QByteArray ciph16 = QByteArray( cipher, 16 );
             cipherBuffer.append(ciph16);
             free (cipher);
-        }
-        else {
-            qDebug ("Ошибка: [%s]", errorMsg.toUtf8().data());
         }
     }
 

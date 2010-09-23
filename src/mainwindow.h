@@ -14,7 +14,6 @@
 #include <QFileDialog>
 #include <QClipboard>
 #include <QCloseEvent>
-#include <QCryptographicHash>
 #include <QSettings>
 #include <QTreeView>
 

@@ -282,7 +282,7 @@ void MainWindow::loadDatabase()
     }
     QByteArray cipherData = inFile.readAll();
 
-    bool fill_result = model->setModelData(cipherData, hashPassword(tempPassword).toHex(), !isSimpleXML);
+    bool fill_result = model->setModelData(cipherData, BasketUtils::toHex(hashPassword(tempPassword)), !isSimpleXML);
     // Если же все-таки файл может быть прочитан
     if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
@@ -352,7 +352,7 @@ void MainWindow::changeCurrentPassword()
     if ( cpDlg.exec() ) {
         if ((( cpDlg.getCurrentPassword().isEmpty() ) && ( mainPassword.isNull() )) || ( hashPassword(cpDlg.getCurrentPassword()) == mainPassword ) ) {
             QByteArray tempPassword = hashPassword(cpDlg.getNewPassword());
-            if ( model->changePassword( tempPassword.toHex() ) )
+            if ( model->changePassword( BasketUtils::toHex(tempPassword) ) )
                 mainPassword = tempPassword;
             setModif( true );
             allowActions( true );
