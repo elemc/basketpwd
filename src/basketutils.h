@@ -16,7 +16,7 @@ public:
 
         QString errorMessage() { return errorMsg; };
         bool isError() { return errorState; };
-        QString hashPassword ( QString password );
+        static QByteArray hashPassword ( QString password );
 
 private:
         gcry_error_t error;

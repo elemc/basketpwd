@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "basketutils.h"
 #include "changepassword.h"
 #include "../aboutdialog.h"
 #include "settingsdialog.h"
@@ -286,8 +285,6 @@ void MainWindow::loadDatabase()
     // Если же все-таки файл может быть прочитан
     if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
-//        databaseIdentifier = model->identifier();
-//        lastModified = model->lastModified();
         tree->resizeColumnToContents(0);
         tree->resizeColumnToContents(1);
         tree->resizeColumnToContents(2);
@@ -395,8 +392,7 @@ void MainWindow::allowActions( bool yes )
 }
 QByteArray MainWindow::hashPassword( QString pwd )
 {
-    QByteArray hash = QCryptographicHash::hash( pwd.toUtf8(), QCryptographicHash::Md5 );
-    return hash;
+    return BasketUtils::hashPassword(pwd);
 }
 void MainWindow::statusMessageChanged( QString message )
 {

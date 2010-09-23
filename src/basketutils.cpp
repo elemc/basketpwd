@@ -1,7 +1,9 @@
 #include <QVariant>
 #include "basketutils.h"
+#if QT_VERSION >= 0x040300
 #include <QCryptographicHash>
-//#include "gcrypt.h"
+#endif
+#include <QDebug>
 
 //
 BasketUtils::BasketUtils(  ) 
@@ -11,10 +13,23 @@ BasketUtils::BasketUtils(  )
     errorMsg = "";
 }
 //
-QString BasketUtils::hashPassword( QString password )
+QByteArray BasketUtils::hashPassword( QString password )
 {
+#if QT_VERSION >= 0x040300
     QByteArray hash = QCryptographicHash::hash( password.toUtf8(), QCryptographicHash::Md5 );
-    return hash.toHex();
+    qDebug() << hash.toHex() << hash.size();
+    return hash;
+#else
+    char *hash_ptr = new char[16];
+    gcry_md_hash_buffer(GCRY_MD_MD5, hash_ptr, password.toUtf8(), password.size());
+    if ( hash_ptr ) {
+        QByteArray hash = QByteArray(hash_ptr, 16);
+        delete [] hash_ptr;
+        return hash;
+    }
+
+    return QByteArray();
+#endif
 }
 
 QByteArray BasketUtils::crypt(QByteArray buf, QString pwd) //Пароль уже передается в виже HEX хэша
