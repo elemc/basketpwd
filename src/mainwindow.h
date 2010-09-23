@@ -31,14 +31,6 @@ Q_OBJECT
 public slots:
 
 private:
-    /*bool isTreeParent ( QTreeWidgetItem *child, QTreeWidgetItem *parent );
-    void changeItemParent ( QTreeWidgetItem *source, QTreeWidgetItem *destLocation );
-    QTreeWidgetItem *getParentForSelectedItem ();
-    void changePasswordInItem (QTreeWidgetItem *item, QString newPassword);
-    void addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item);
-    void showPwdItem(QTreeWidgetItem *item, bool isShowPwd);
-    void editElement(QTreeWidgetItem *item, QString name, QString login, QString pwd);*/
-
     void addItemToModel(bool isFolder);
     void closeEvent(QCloseEvent *event);
     void changeCurrentPassword();
@@ -53,11 +45,9 @@ private:
     void createTreeWidget();
     void setModif(bool modificator);
     QByteArray hashPassword( QString pwd );
-    //QTreeWidget *mainTree;
 
     QTreeView *tree;
     BasketModel *model;
-    //ChangePasswordDelegate *delegate;
 
     QString fileName;
     QByteArray mainPassword;
@@ -118,12 +108,12 @@ private slots:
     //Прочие
     void currentItemChanged ( QModelIndex current_index, QModelIndex previus_index );
     void treeItemDoubleClicked ( QModelIndex index );
-//    void treeItemExpanded ( QTreeWidgetItem *item );
-//    void treeItemCollapsed ( QTreeWidgetItem *item );
 
     void statusMessageChanged( QString message );
     void iconActivated( QSystemTrayIcon::ActivationReason reason );
     void trayIconClose();
+
+    void onModelDataChanged();
 };
 #endif
 

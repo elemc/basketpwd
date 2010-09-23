@@ -27,6 +27,8 @@ public:
     QString identifier() const;
     QDateTime lastModified() const;
     QString hash() const;
+    QString cleanPassword(QModelIndex idx) const;
+    QString login(QModelIndex idx) const;
     void setPassword(QModelIndex index, QString newPassword);
     void setShowPasswords(bool statusShow);
     bool statusShowPasswords() const;
@@ -74,7 +76,7 @@ private:
     QIcon folderCloseIcon;
 
 signals:
-
+    void modelDataChanged();
 public slots:
 
 };

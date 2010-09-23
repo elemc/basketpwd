@@ -92,6 +92,8 @@ bool BasketModel::changePassword(QString newPassword)
     hashPassword = newPassword;
     endResetModel();
 
+    emit modelDataChanged();
+
     return true;
 }
 bool BasketModel::changeItemPassword(BasketBaseItem *item, QString newPassword)
@@ -275,6 +277,7 @@ void BasketModel::setPassword(QModelIndex idx, QString newPassword)
         BasketUtils butil;
         item->setEncryptedPassword(butil.crypt(newPassword, hashPassword));
         emit dataChanged(index(idx.row(), 0, idx.parent()), index(idx.row(), 2, idx.parent()));
+        emit modelDataChanged();
     }
 
 }
@@ -342,6 +345,31 @@ QByteArray BasketModel::indexesToXML(const QModelIndexList &indexes) const
     clearFile.close();
 
     return clearBuffer;
+}
+QString BasketModel::cleanPassword(QModelIndex idx) const
+{
+    if ( !idx.isValid() )
+        return QString();
+
+    BasketBaseItem *item = itemAtIndex(idx);
+    if ( !item )
+        return QString();
+
+    QString encPwd = item->password();
+    BasketUtils butil;
+    QString cleanPwd = butil.decrypt(encPwd, hash());
+
+    return cleanPwd;
+}
+QString BasketModel::login(QModelIndex idx) const
+{
+    BasketBaseItem *item = itemAtIndex(idx);
+    if ( !item )
+        return QString();
+
+    QString login = item->login();
+
+    return login;
 }
 
 // блок наследуемых методов
@@ -495,8 +523,10 @@ bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int r
         return QAbstractItemModel::setData(index, value, role);
 
     if ( item->isFolder() ) {
-        if ( index.column() == 0 )
+        if ( index.column() == 0 ) {
             item->setName( value.toString() );
+            emit modelDataChanged();
+        }
         else
             return false;
     }
@@ -504,9 +534,11 @@ bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int r
         switch( index.column() ) {
         case 0:
             item->setName(value.toString());
+            emit modelDataChanged();
             break;
         case 1:
             item->setLogin(value.toString());
+            emit modelDataChanged();
             break;
         case 2:
             return false;
@@ -535,6 +567,7 @@ bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
     parentItem->insertChild(row, newItem);
 
     endInsertRows();
+    emit modelDataChanged();
     return true;
 }
 bool BasketModel::removeRow(int row, const QModelIndex &parent)
@@ -551,6 +584,7 @@ bool BasketModel::removeRow(int row, const QModelIndex &parent)
 
     pitem->removeChildAt(row);
     endRemoveRows();
+    emit modelDataChanged();
 
     return true;
 }
@@ -630,6 +664,6 @@ bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     else if ( action == Qt::MoveAction ) {
 
     }*/
-
+    emit modelDataChanged();
     return true;
 }

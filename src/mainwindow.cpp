@@ -21,7 +21,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     setCentralWidget(tree);
 
     connect ( tree->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
-
+    connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
     newDatabase();
 
     //Пытаемся обнаружить и загрузить файл с паролями по-умолчанию
@@ -320,162 +320,6 @@ bool MainWindow::querySave()
 }
 
 // Работа с деревом
-/*void MainWindow::addTreeItemToDom(QDomElement *domRoot, QTreeWidgetItem *item)
-{
-        QDomDocument doc = domRoot->ownerDocument();
-        if ( item == NULL )
-                return;
-
-        if ( item->data(0, Qt::UserRole).toInt() == 0 ) {
-
-                QDomElement elem = doc.createElement("item");
-                elem.setAttribute(trUtf8("name"), item->data(0, Qt::DisplayRole).toString() );
-                QDomElement login = doc.createElement("login");
-                QDomElement pwd = doc.createElement("pwd");
-
-                QDomText t_login = doc.createTextNode( item->data(1, Qt::DisplayRole).toString() );
-
-                QDomText t_pwd;
-                t_pwd = doc.createTextNode( item->data(2, Qt::UserRole).toString() );
-
-                domRoot->appendChild(elem);
-                elem.appendChild(login);
-                elem.appendChild(pwd);
-                login.appendChild(t_login);
-                pwd.appendChild(t_pwd);
-        }
-        else {
-                QDomElement folder = doc.createElement("folder");
-                folder.setAttribute(trUtf8("name"), item->data(0, Qt::DisplayRole).toString());
-                domRoot->appendChild(folder);
-
-                for ( int i = 0; i < item->childCount(); i++ )
-                        addTreeItemToDom ( &folder, item->child(i) );
-        }
-}
-QTreeWidgetItem *MainWindow::getParentForSelectedItem ()
-{
-    if ( mainTree->selectedItems().count() == 0 )
-        return NULL;
-    else {
-        QTreeWidgetItem *folder = mainTree->selectedItems()[0];
-
-        // Проверка на принадлежность к верхней папке
-        for ( int i = 0; i < mainTree->topLevelItemCount(); i++ ) {
-            if ( mainTree->topLevelItem(i) == folder )
-                return folder;
-        }
-
-        if ( folder->parent() )
-            return folder->parent();
-        else
-            return NULL;
-    }
-    return NULL;
-    // FIXME: Не помню зачем я это делалs
-    return 0;
-}
-void MainWindow::changeItemParent ( QTreeWidgetItem *source, QTreeWidgetItem *destLocation )
-{
-    // если произошла смена родителя-владельца
-    if ( source->parent() != destLocation ) {
-        QTreeWidgetItem *newitem = source->clone();
-
-        if ( !destLocation )  // если родителя нет (в корень)
-            mainTree->addTopLevelItem( newitem );
-        else {
-            destLocation->addChild( newitem );
-            destLocation->setExpanded( true );
-        }
-
-        source->~QTreeWidgetItem();
-        setModif( true );
-        mainTree->setCurrentItem( newitem );
-    }
-    else
-        mainTree->setCurrentItem( source );
-    // TODO: Сделать перенос записи между группами
-}
-void MainWindow::editElement(QTreeWidgetItem *item, QString name, QString login, QString pwd)
-{
-        BasketUtils butil;
-        item->setText(0, name);
-        item->setData(0, Qt::UserRole, 0);	//0-элемент, 1 - группа
-        //item->setData(0, Qt::DecorationRole, recordIcon );
-        item->setText(1, login);
-
-        if ( actionShowPwd->isChecked() ) {
-            item->setText(2, pwd);
-            item->setData( 2, Qt::UserRole, butil.crypt(pwd, mainPassword.toHex()) );
-        }
-        else {
-            item->setText( 2, trUtf8("* * *") );
-            item->setData( 2, Qt::UserRole, butil.crypt(pwd, mainPassword.toHex()) );
-        }
-}
-void MainWindow::showPwdItem(QTreeWidgetItem *item, bool isShowPwd)
-{
-        BasketUtils butil;
-        if ( item->data(0, Qt::UserRole).toInt() == 0 ) {
-                if ( isShowPwd )
-                        item->setData( 2, Qt::DisplayRole, butil.decrypt(item->data(2, Qt::UserRole).toString(), mainPassword.toHex()) );
-                else
-                        item->setData(2, Qt::DisplayRole, trUtf8("* * *"));
-        }
-        else {
-                for ( int i = 0; i < item->childCount(); i++ )
-                        showPwdItem ( item->child(i), isShowPwd );
-        }
-}
-void MainWindow::changePasswordInItem (QTreeWidgetItem *item, QString newPassword)
-{
-        BasketUtils butil;
-        if ( item->data(0, Qt::UserRole).toInt() == 0 ) {
-            QString cleanPwd = butil.decrypt(item->data( 2, Qt::UserRole ).toString(), mainPassword.toHex());
-            item->setData( 2, Qt::UserRole, butil.crypt(cleanPwd, newPassword) );
-        }
-        else {
-                for ( int i = 0; i < item->childCount(); i++ )
-                        changePasswordInItem ( item->child(i), newPassword );
-        }
-}
-void MainWindow::treeItemExpanded ( QTreeWidgetItem *item )
-{
-    if (!item)
-        return;
-
-    // TODO: Сделать реакцию на развертывание
-    //if ( item->data(0, Qt::UserRole).toInt() == 1 );
-        //item->setData( 0, Qt::DecorationRole, folderIcon );
-}
-void MainWindow::treeItemCollapsed ( QTreeWidgetItem *item )
-{
-    if (!item)
-        return;
-
-    // TODO: Сделать реакцию на сворачивание
-    //if ( item->data(0, Qt::UserRole).toInt() == 1 )
-        //item->setData( 0, Qt::DecorationRole, folderCloseIcon );
-
-    // Проверка на выделенную запись
-    //if ( isTreeParent ( mainTree->currentItem(), item ) )
-    //    mainTree->setCurrentItem( item );
-}
-bool MainWindow::isTreeParent( QTreeWidgetItem *child, QTreeWidgetItem *parent )
-{
-    if ( !child->parent() )
-        return false;
-
-    QTreeWidgetItem *tempParent = child->parent();
-    while ( tempParent ) {
-        if ( tempParent == parent )
-            return true;
-        else
-            tempParent = tempParent->parent();
-    }
-
-    return false;
-}*/
 void MainWindow::setTreeExpanded(bool expand, QModelIndex topitem)
 {
     if ( !topitem.isValid() ) {// передан NULL
@@ -639,6 +483,27 @@ void MainWindow::on_actionSaveAs_triggered()
 {
     saveAs();
 }
+void MainWindow::on_actionOpen_triggered()
+{
+    if ( !querySave() )
+        return;
+
+    QFileDialog openDlg ( this, trUtf8("Выберите файл для загрузки") );
+    openDlg.setAcceptMode( QFileDialog::AcceptOpen );
+    openDlg.setDefaultSuffix( "cxml" );
+    openDlg.setNameFilters( QStringList() << trUtf8("Шифрованные XML файлы (%1)").arg( "*.cxml" )
+                            << trUtf8("Файлы Cryptolog (%1)").arg("*.crypt")
+                            << trUtf8("Любые файлы (%1)").arg("*") );
+    if ( openDlg.exec() ) {
+        if ( openDlg.selectedFiles().count() == 0 )
+            return;
+        newDatabase();
+        fileName = openDlg.selectedFiles()[0];
+        loadDatabase();
+        setModif ( false );
+    }
+
+}
 
 // Edit actions
 void MainWindow::on_actionEditAddFolder_triggered()
@@ -684,7 +549,50 @@ void MainWindow::on_actionEditDel_triggered()
 
     model->removeRow(idx.row(), idx.parent());
 }
+void MainWindow::on_actionSettings_triggered()
+{
+    SettingsDialog sd(this);
+    QString oldIdent = databaseIdentifier;
+    sd.setIdentInfo(databaseIdentifier, lastModified);
+    if ( sd.exec() == QDialog::Accepted ) {
+        QSettings set;
+        dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
+        if ( sd.getIdent() != oldIdent ) {
+            databaseIdentifier = sd.getIdent();
+            setModif(true);
+        }
+    }
+}
+void MainWindow::on_actionChangeCurrentPassword_triggered()
+{
+    changeCurrentPassword();
+}
+void MainWindow::on_actionCopyToClipboard_triggered()
+{
+    if ( tree->currentIndex().isValid() ) {
+        QClipboard *clipboard = QApplication::clipboard();
+        QString encPwd = model->cleanPassword(tree->currentIndex());
+        clipboard->setText(encPwd);
+    }
+}
+void MainWindow::on_actionCopyLogin_triggered()
+{
+    if ( tree->currentIndex().isValid() ) {
+        QClipboard *clipboard = QApplication::clipboard();
+        QString login = model->login(tree->currentIndex());
+        clipboard->setText(login);
+    }
+}
 
+// View actions
+void MainWindow::on_actionViewExpand_triggered()
+{
+    setTreeExpanded ( true );
+}
+void MainWindow::on_actionViewUnExpand_triggered()
+{
+    setTreeExpanded ( false );
+}
 void MainWindow::on_actionShowPwd_triggered(bool checked)
 {
     bool acceptDlg = false;
@@ -709,51 +617,7 @@ void MainWindow::on_actionShowPwd_triggered(bool checked)
         actionShowPwd->setChecked( false );
     }
 }
-void MainWindow::on_actionOpen_triggered()
-{
-    if ( !querySave() )
-        return;
 
-    QFileDialog openDlg ( this, trUtf8("Выберите файл для загрузки") );
-    openDlg.setAcceptMode( QFileDialog::AcceptOpen );
-    openDlg.setDefaultSuffix( "cxml" );
-    openDlg.setNameFilters( QStringList() << trUtf8("Шифрованные XML файлы (%1)").arg( "*.cxml" )
-                            << trUtf8("Файлы Cryptolog (%1)").arg("*.crypt")
-                            << trUtf8("Любые файлы (%1)").arg("*") );
-    if ( openDlg.exec() ) {
-        if ( openDlg.selectedFiles().count() == 0 )
-            return;
-        newDatabase();
-        fileName = openDlg.selectedFiles()[0];
-        loadDatabase();
-        setModif ( false );
-    }
-
-}
-void MainWindow::on_actionChangeCurrentPassword_triggered()
-{
-    changeCurrentPassword();
-}
-void MainWindow::on_actionCopyToClipboard_triggered()
-{
-    /*if ( mainTree->selectedItems().count() == 0 )
-        return;
-    QTreeWidgetItem *current = mainTree->selectedItems()[0];
-
-    QClipboard *clipboard = QApplication::clipboard();
-    BasketUtils butil;
-    QString pwd = butil.decrypt( current->data(2, Qt::UserRole).toString(), mainPassword.toHex());
-    clipboard->setText( pwd );*/
-    // TODO: Сделать копирование пароля в буфер обмена
-}
-void MainWindow::on_actionViewExpand_triggered()
-{
-    setTreeExpanded ( true );
-}
-void MainWindow::on_actionViewUnExpand_triggered()
-{
-    setTreeExpanded ( false );
-}
 void MainWindow::on_actionHelpAbout_triggered()
 {
     AboutDialog dlg(this);
@@ -763,33 +627,13 @@ void MainWindow::on_actionHelpAboutQt_triggered()
 {
     QMessageBox::aboutQt(this, trUtf8("Информация об установленной версии Qt"));
 }
-void MainWindow::on_actionSettings_triggered()
-{
-    SettingsDialog sd(this);
-    QString oldIdent = databaseIdentifier;
-    sd.setIdentInfo(databaseIdentifier, lastModified);
-    //int result =
-    if ( sd.exec() == QDialog::Accepted ) {
-        QSettings set;
-        dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
-        if ( sd.getIdent() != oldIdent ) {
-            databaseIdentifier = sd.getIdent();
-            setModif(true);
-        }
-    }
-}
-void MainWindow::on_actionCopyLogin_triggered()
-{
-    /*if ( mainTree->selectedItems().count() == 0 )
-        return;
-    QTreeWidgetItem *current = mainTree->selectedItems()[0];
-
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(current->data(1, Qt::DisplayRole).toString());*/
-    // TODO: Копирование логина в буфер обмена
-}
 void MainWindow::trayIconClose()
 {
     dontCloseApp = false;
     close();
+}
+
+void MainWindow::onModelDataChanged()
+{
+    setModif(true);
 }
