@@ -176,9 +176,10 @@ void MainWindow::saveAs()
     QFileDialog saveDlg;
     saveDlg.setAcceptMode( QFileDialog::AcceptSave );
     saveDlg.setDefaultSuffix( "cxml" );
+#if QT_VERSION >= 0x040400
     saveDlg.setNameFilters( QStringList() << trUtf8("Шифрованные XML файлы (%1)").arg( "*.cxml" )
-    //                        << trUtf8("Файлы XML для переноса между версиями (%1)").arg("*.xml")
                             << trUtf8("Любые файлы (%1)").arg("*") );
+#endif
     if ( saveDlg.exec() ) {
         if ( saveDlg.selectedFiles().count() > 0 )
             fileName = saveDlg.selectedFiles()[0];
@@ -330,7 +331,11 @@ void MainWindow::setModif(bool modificator)
 {
     isModified = modificator;
     QCoreApplication *app = QCoreApplication::instance();
+#if QT_VERSION >= 0x040400
     QString winTitle = trUtf8("%1 v%2").arg(app->applicationName()).arg(app->applicationVersion());
+#else
+    QString winTitle = trUtf8("%1 v%2").arg(app->applicationName()).arg(QString(VER));
+#endif
     QString strModif = (modificator ? tr("*") : tr(""));
     QString modifFileName = trUtf8(" (без имени) ");
     if ( !fileName.isEmpty() )
@@ -472,9 +477,11 @@ void MainWindow::on_actionOpen_triggered()
     QFileDialog openDlg ( this, trUtf8("Выберите файл для загрузки") );
     openDlg.setAcceptMode( QFileDialog::AcceptOpen );
     openDlg.setDefaultSuffix( "cxml" );
+#if QT_VERSION >= 0x040400
     openDlg.setNameFilters( QStringList() << trUtf8("Шифрованные XML файлы (%1)").arg( "*.cxml" )
                             << trUtf8("Файлы Cryptolog (%1)").arg("*.crypt")
                             << trUtf8("Любые файлы (%1)").arg("*") );
+#endif
     if ( openDlg.exec() ) {
         if ( openDlg.selectedFiles().count() == 0 )
             return;
