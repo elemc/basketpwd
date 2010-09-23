@@ -27,7 +27,9 @@ int main(int argc, char ** argv)
     qApp->setOrganizationName(QObject::trUtf8("Атис Сервис"));
     qApp->setOrganizationDomain(QObject::tr("atisserv.ru"));
     qApp->setApplicationName(QObject::trUtf8("Корзинка паролей"));
+#if QT_VERSION >= 0x040400
     qApp->setApplicationVersion(QString(VER));
+#endif
 
     MainWindow win;
 

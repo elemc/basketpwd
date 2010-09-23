@@ -26,19 +26,63 @@ QByteArray BasketUtils::hashPassword( QString password )
     return QByteArray();
 #endif
 }
-QString BasketUtils::toHex(QByteArray data)
+QByteArray BasketUtils::toHex(QByteArray rawdata)
 {
 #if QT_VERSION >= 0x040300
-    return data.toHex();
+    return rawdata.toHex();
 #else
-    QByteArray result;
-    for ( int i = 0; i < data.size(); i++ ) {
-        char ca = data[i];
-        QChar a(ca);
-        ushort num = a.unicode();
-        result += QByteArray::number(num, 16);
+    // This code coping from Qt sources v4.6.3
+    QByteArray hex(rawdata.size() * 2, Qt::Uninitialized);
+    char *hexData = hex.data();
+    const uchar *data = (const uchar *)rawdata.data();
+    for (int i = 0; i < rawdata.size(); ++i) {
+        int j = (data[i] >> 4) & 0xf;
+        if (j <= 9)
+            hexData[i*2] = (j + '0');
+         else
+            hexData[i*2] = (j + 'a' - 10);
+        j = data[i] & 0xf;
+        if (j <= 9)
+            hexData[i*2+1] = (j + '0');
+         else
+            hexData[i*2+1] = (j + 'a' - 10);
     }
-    return QString(result);
+    return hex;
+#endif
+}
+QByteArray BasketUtils::fromHex(QByteArray hexEncoded)
+{
+#if QT_VERSION >= 0x040300
+    return QByteArray::fromHex(hexEncoded);
+#else
+    // This code coping from Qt sources v4.6.3
+    QByteArray res((hexEncoded.size() + 1)/ 2, Qt::Uninitialized);
+    uchar *result = (uchar *)res.data() + res.size();
+
+    bool odd_digit = true;
+    for (int i = hexEncoded.size() - 1; i >= 0; --i) {
+        int ch = hexEncoded.at(i);
+        int tmp;
+        if (ch >= '0' && ch <= '9')
+            tmp = ch - '0';
+        else if (ch >= 'a' && ch <= 'f')
+            tmp = ch - 'a' + 10;
+        else if (ch >= 'A' && ch <= 'F')
+            tmp = ch - 'A' + 10;
+        else
+            continue;
+        if (odd_digit) {
+            --result;
+            *result = tmp;
+            odd_digit = false;
+        } else {
+            *result |= tmp << 4;
+            odd_digit = true;
+        }
+    }
+
+    res.remove(0, result - (const uchar *)res.constData());
+    return res;
 #endif
 }
 
@@ -110,7 +154,7 @@ QByteArray BasketUtils::crypt(QByteArray buf, QString pwd) //Пароль уже
 QString BasketUtils::crypt(QString buf, QString pwd)
 {
     QByteArray cipherBuf = crypt ( buf.toUtf8(), pwd );
-    return cipherBuf.toHex();
+    return toHex(cipherBuf);
 }
 QByteArray BasketUtils::decrypt(QByteArray buf, QString pwd)
 {
@@ -118,8 +162,8 @@ QByteArray BasketUtils::decrypt(QByteArray buf, QString pwd)
         return NULL;
     }
 
-    QByteArray key  = QByteArray().append(pwd.left(16));//QByteArray::fromHex(pwd.toUtf8());//
-    QByteArray iv   = QByteArray().append(pwd.right(16));//QByteArray::fromHex(pwd.toUtf8());//
+    QByteArray key  = QByteArray().append(pwd.left(16));
+    QByteArray iv   = QByteArray().append(pwd.right(16));
 
     QByteArray cipherBuffer;
     int lastBlockSize = 0;
@@ -149,9 +193,6 @@ QByteArray BasketUtils::decrypt(QByteArray buf, QString pwd)
             if (i != 0)
                 cipherBuffer.append(ciph16);
         }
-        else {
-            qDebug ("Ошибка: [%s]", errorMsg.toUtf8().data());
-        }
     }
 
 
@@ -159,7 +200,7 @@ QByteArray BasketUtils::decrypt(QByteArray buf, QString pwd)
 }
 QString BasketUtils::decrypt(QString cryptbuf, QString pwd)
 {
-    QByteArray buf = decrypt ( QByteArray::fromHex(cryptbuf.toLatin1()), pwd );
+    QByteArray buf = decrypt ( fromHex(cryptbuf.toLatin1()), pwd );
     return QString::fromUtf8( buf );
 	
 }
