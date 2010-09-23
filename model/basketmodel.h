@@ -22,10 +22,12 @@ public:
     bool setModelData(QByteArray &data, QString pwd = QString(), bool isEncryptedData = true);
     void setUpNewModel(QString pwd = QString());
     bool changePassword(QString newPassword);
+    void setIdentifier(QString newIdent);
 
     QByteArray modelDataToXML(bool encrypted = true);
     QString identifier() const;
     QDateTime lastModified() const;
+    QString lastModifiedStr() const;
     QString hash() const;
     QString cleanPassword(QModelIndex idx) const;
     QString login(QModelIndex idx) const;

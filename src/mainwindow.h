@@ -22,7 +22,7 @@
 #include "../model/basketmodel.h"
 #include "../model/basketbaseitem.h"
 
-#define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
+//#define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
 
 //
 class MainWindow : public QMainWindow, public Ui::MainWindow
@@ -36,7 +36,6 @@ private:
     void changeCurrentPassword();
     void allowActions ( bool yes );
 
-    void setTreeExpanded( bool expand, QModelIndex topitem = QModelIndex() );
     bool querySave();
     void loadDatabase();
     void saveDatabase();
@@ -71,8 +70,8 @@ private:
     bool dontCloseApp;
 
     // Добавлено 0.3.7
-    QString databaseIdentifier;
-    QDateTime lastModified;
+//    QString databaseIdentifier;
+//    QDateTime lastModified;
 
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
@@ -96,10 +95,6 @@ private slots:
     void on_actionEditDel_triggered();
     void on_actionShowPwd_triggered(bool checked);
     void on_actionCopyToClipboard_triggered();
-
-    // Вид
-    void on_actionViewExpand_triggered();
-    void on_actionViewUnExpand_triggered();
 
     // Помощь
     void on_actionHelpAbout_triggered();

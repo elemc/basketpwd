@@ -115,11 +115,6 @@ void MainWindow::createTrayIcon()
 }
 void MainWindow::createTreeWidget()
 {
-        // TODO
-//        mainTree->setColumnCount(3); //ну типа для Наименование, Логин и скрытый по-умолчанию пароль
-//        mainTree->setSortingEnabled( true );
-//        mainTree->setHeaderLabels( QStringList() << trUtf8("Наименование") << trUtf8("Имя (логин)") << trUtf8("Пароль") );
-
         //Определяем первичный размер колонок
         int widthTree = tree->width();
         tree->setColumnWidth(0, widthTree / 100 * 50);
@@ -138,6 +133,8 @@ void MainWindow::createTreeWidget()
         tree->addAction( actionEditEdit );
         tree->addAction( actionEditDel );
 
+        connect ( this->actionViewExpand, SIGNAL(triggered()), tree, SLOT(expandAll()));
+        connect ( this->actionViewUnExpand, SIGNAL(triggered()), tree, SLOT(collapseAll()));
         //connect (tree, SIGNAL())
         /*connect (mainTree,
                  SIGNAL (itemActivated(QTreeWidgetItem*,int)),
@@ -289,8 +286,8 @@ void MainWindow::loadDatabase()
     // Если же все-таки файл может быть прочитан
     if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
-        databaseIdentifier = model->identifier();
-        lastModified = model->lastModified();
+//        databaseIdentifier = model->identifier();
+//        lastModified = model->lastModified();
         tree->resizeColumnToContents(0);
         tree->resizeColumnToContents(1);
         tree->resizeColumnToContents(2);
@@ -320,18 +317,6 @@ bool MainWindow::querySave()
 }
 
 // Работа с деревом
-void MainWindow::setTreeExpanded(bool expand, QModelIndex topitem)
-{
-    if ( !topitem.isValid() ) {// передан NULL
-        for (int i = 0; i < model->rowCount(); i++ )
-            setTreeExpanded ( expand, model->index(i, 0) );
-    }
-    else {
-        tree->setExpanded(topitem, expand);
-        for (int j = 0; j < model->rowCount(topitem); j++ )
-            setTreeExpanded ( expand, model->index(j, 0, topitem) );
-    }
-}
 void MainWindow::treeItemDoubleClicked (QModelIndex index)
 {
     if ( !index.isValid() )
@@ -353,7 +338,7 @@ void MainWindow::setModif(bool modificator)
     QString modifFileName = trUtf8(" (без имени) ");
     if ( !fileName.isEmpty() )
         modifFileName = fileName;
-    QString id = QString("%1 - %2 (%3) %4").arg(winTitle).arg(databaseIdentifier).arg(lastModified.toString(DATE_TIME_FORMAT)).arg(strModif);
+    QString id = QString("%1 - %2 (%3) %4").arg(winTitle).arg(model->identifier()).arg(model->lastModifiedStr()).arg(strModif);
     setWindowTitle(id.trimmed());
     actionSave->setEnabled( modificator );
 }
@@ -552,13 +537,13 @@ void MainWindow::on_actionEditDel_triggered()
 void MainWindow::on_actionSettings_triggered()
 {
     SettingsDialog sd(this);
-    QString oldIdent = databaseIdentifier;
-    sd.setIdentInfo(databaseIdentifier, lastModified);
+    QString oldIdent = model->identifier();
+    sd.setIdentInfo(model->identifier(), model->lastModified());
     if ( sd.exec() == QDialog::Accepted ) {
         QSettings set;
         dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
         if ( sd.getIdent() != oldIdent ) {
-            databaseIdentifier = sd.getIdent();
+            model->setIdentifier(sd.getIdent());
             setModif(true);
         }
     }
@@ -585,14 +570,6 @@ void MainWindow::on_actionCopyLogin_triggered()
 }
 
 // View actions
-void MainWindow::on_actionViewExpand_triggered()
-{
-    setTreeExpanded ( true );
-}
-void MainWindow::on_actionViewUnExpand_triggered()
-{
-    setTreeExpanded ( false );
-}
 void MainWindow::on_actionShowPwd_triggered(bool checked)
 {
     bool acceptDlg = false;

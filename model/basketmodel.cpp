@@ -81,13 +81,18 @@ void BasketModel::setUpNewModel(QString pwd)
     rootItem->setFolder(tr("корень"));
 
     hashPassword = pwd;
+
+    lastDBModified = QDateTime::currentDateTime();
+    databaseIdentifier = "generic";
     endResetModel();
 }
 bool BasketModel::changePassword(QString newPassword)
 {
     beginResetModel();
-    if ( hash().isEmpty() )
+    if ( hash().isEmpty() ) {
+        hashPassword = newPassword;
         return true;
+    }
     changeItemPassword(rootItem, newPassword);
     hashPassword = newPassword;
     endResetModel();
@@ -236,6 +241,10 @@ bool BasketModel::parseElementForDND(int row, const QModelIndex &parent, QDomEle
     return true;
 }
 
+void BasketModel::setIdentifier(QString newIdent)
+{
+    databaseIdentifier = newIdent;
+}
 QString BasketModel::identifier() const
 {
     return databaseIdentifier;
@@ -243,6 +252,10 @@ QString BasketModel::identifier() const
 QDateTime BasketModel::lastModified() const
 {
     return lastDBModified;
+}
+QString BasketModel::lastModifiedStr() const
+{
+    return lastDBModified.toString(DATE_TIME_FORMAT);
 }
 BasketBaseItem *BasketModel::itemAtIndex(QModelIndex &index) const
 {
@@ -577,8 +590,9 @@ bool BasketModel::removeRow(int row, const QModelIndex &parent)
 
     if ( !parent.isValid() )
         pitem = rootItem;
+    else
+        pitem = static_cast<BasketBaseItem *>(parent.internalPointer());
 
-    pitem = static_cast<BasketBaseItem *>(parent.internalPointer());
     if ( !pitem )
         pitem = rootItem;
 
@@ -591,8 +605,8 @@ bool BasketModel::removeRow(int row, const QModelIndex &parent)
 bool BasketModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     bool result = true;
-    for ( int i = row; i < count; i ++ )
-        result &= removeRow(row + i, parent);
+    for ( int i = row; i < row+count; i++ )
+        result &= removeRow(i, parent);
 
     return result;
 }
