@@ -184,6 +184,56 @@ bool BasketModel::parseElement(BasketBaseItem *parentItem, QDomElement element)
 
     return true;
 }
+bool BasketModel::parseElementForDND(int row, const QModelIndex &parent, QDomElement element)
+{
+    if ( element.tagName() == "folder" ) {
+        if ( !insertRow(row, parent, true) )
+            return false;
+
+        QModelIndex idx = index(row, 0, parent);
+        BasketBaseItem *item;
+        if ( !idx.isValid() )
+            return false;
+        item = static_cast<BasketBaseItem *>(idx.internalPointer());
+        if ( !item )
+            return false;
+        item->setName(element.attribute("name", QString()));
+        // парсим подчиненных
+        for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling()) {
+            if ( n.isElement() )
+                parseElementForDND( rowCount(idx), idx, n.toElement() );
+        }
+    }
+    else if ( element.tagName() == "item" ) {
+        if ( !insertRow(row, parent, false) )
+            return false;
+        QModelIndex idx = index(row, 0, parent);
+        BasketBaseItem *item;
+        if ( !idx.isValid() )
+            return false;
+        item = static_cast<BasketBaseItem *>(idx.internalPointer());
+        if ( !item )
+            return false;
+
+        QString name = element.attribute( "name", trUtf8("Без имени") );
+        QString login, cipherPwd;
+
+        // определяем логин
+        QDomNodeList listLogin = element.elementsByTagName("login");
+        QDomNodeList listPwd = element.elementsByTagName("pwd");
+        if ( listLogin.count() > 0 )
+            login = listLogin.at(0).toElement().text();
+        if ( listPwd.count() > 0 )
+            cipherPwd = listPwd.at(0).toElement().text();
+
+        item->setName(name);
+        item->setLogin(login);
+        item->setEncryptedPassword(cipherPwd);
+    }
+
+    return true;
+}
+
 QString BasketModel::identifier() const
 {
     return databaseIdentifier;
@@ -504,6 +554,14 @@ bool BasketModel::removeRow(int row, const QModelIndex &parent)
 
     return true;
 }
+bool BasketModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    bool result = true;
+    for ( int i = row; i < count; i ++ )
+        result &= removeRow(row + i, parent);
+
+    return result;
+}
 
 // drag & drop
 Qt::DropActions BasketModel::supportedDropActions() const
@@ -521,21 +579,13 @@ QMimeData *BasketModel::mimeData(const QModelIndexList &indexes) const
     QMimeData *mimeData = new QMimeData();
     QByteArray encodedData = indexesToXML(indexes);
 
-    /*QDataStream stream(&encodedData, QIODevice::WriteOnly);
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            QString text = data(index, Qt::DisplayRole).toString();
-            stream << text;
-        }
-    }*/
-    qDebug() << encodedData;
-
     mimeData->setData(DRAG_AND_DROP_MIME, encodedData);
     return mimeData;
 }
 bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
                                int row, int column, const QModelIndex &parent)
 {
+    Q_UNUSED(column)
     if ( action == Qt::IgnoreAction )
         return true;
 
@@ -543,4 +593,43 @@ bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
         return false;
 
 
+    BasketBaseItem *parentItem;
+    int beginRow = row;
+    if ( row == -1  && parent.isValid() )
+        beginRow = rowCount(parent);
+    else if ( row == -1 )
+        beginRow = rowCount();
+
+    if ( !parent.isValid() )
+        parentItem = rootItem;
+    else {
+        parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
+        if ( !parentItem )
+            parentItem = rootItem;
+    }
+
+    QByteArray buf = data->data(DRAG_AND_DROP_MIME);
+    QDomDocument doc;
+    if ( !doc.setContent(buf) )
+        return false;
+
+
+    QDomElement rootElement = doc.documentElement();
+    if ( rootElement.tagName() != "basket-passwords-items" )
+        return false;
+
+    for(QDomNode n = rootElement.firstChild(); !n.isNull(); n = n.nextSibling())
+    {
+        if ( n.isElement() )
+            parseElementForDND( beginRow, parent, n.toElement() );
+    }
+
+    /*if ( action == Qt::CopyAction ) {
+
+    }
+    else if ( action == Qt::MoveAction ) {
+
+    }*/
+
+    return true;
 }

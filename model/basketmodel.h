@@ -46,6 +46,7 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     bool insertRow(int row, const QModelIndex &parent = QModelIndex(), bool isFolder = false);
     bool removeRow(int row, const QModelIndex &parent = QModelIndex());
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
     Qt::DropActions supportedDropActions() const;
     QStringList mimeTypes() const;
@@ -62,6 +63,7 @@ private:
 
     bool parseDocument(QDomDocument &doc);
     bool parseElement(BasketBaseItem *parentItem, QDomElement element);
+    bool parseElementForDND(int row, const QModelIndex &parent, QDomElement element);
     bool changeItemPassword(BasketBaseItem *item, QString newPassword);
     QDomElement convertBasketItemToDomElement(BasketBaseItem *item, QDomDocument &doc) const;
     QByteArray indexesToXML(const QModelIndexList &indexes) const;
