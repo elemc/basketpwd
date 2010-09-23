@@ -57,6 +57,12 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent = QModelIndex());
 
+protected:
+#if QT_VERSION < 0x040600
+    void beginResetModel();
+    void endResetModel();
+#endif
+
 private:
     BasketBaseItem *rootItem;
     bool showPasswords;

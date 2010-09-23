@@ -34,6 +34,11 @@ void AboutDialog::on_buttonBox_rejected()
 
 QString AboutDialog::captionLabel()
 {
+#if QT_VERSION >= 0x040400
+    QString app_ver = qApp->applicationVersion();
+#else
+    QString app_ver = QString(VER);
+#endif
     QString captLabel = QString(trUtf8(
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\n\">"
 "<html>"
@@ -63,7 +68,7 @@ QString AboutDialog::captionLabel()
 "</p>"
 "</body>"
 "</html>"
-).arg(qApp->applicationVersion()));
+).arg(app_ver));
     return captLabel;
 }
 

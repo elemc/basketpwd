@@ -91,7 +91,11 @@ void BasketBaseItem::insertChild(int i, BasketBaseItem *child)
 void BasketBaseItem::removeChild(BasketBaseItem *child)
 {
     if ( is_folder )
+#if QT_VERSION >= 0x040400
         childItems.removeOne(child);
+#else
+        childItems.removeAt(childItems.indexOf(child));
+#endif
 }
 void BasketBaseItem::removeChildAt(int i)
 {

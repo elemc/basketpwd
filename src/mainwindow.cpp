@@ -19,7 +19,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     tree->setDropIndicatorShown(true);
     setCentralWidget(tree);
 
-    connect ( tree->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
+    connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
     newDatabase();
 
@@ -369,9 +369,8 @@ void MainWindow::currentItemChanged ( QModelIndex current_index, QModelIndex pre
         actionCopyLogin->setEnabled( false );
         return;
     }
-    BasketBaseItem *item = model->itemAtIndex(current_index);
     bool isAct = true;
-    if (item->isFolder())
+    if (model->indexIsFolder(current_index))
         isAct = false;
 
     actionCopyToClipboard->setEnabled( isAct );

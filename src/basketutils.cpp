@@ -32,7 +32,7 @@ QByteArray BasketUtils::toHex(QByteArray rawdata)
     return rawdata.toHex();
 #else
     // This code coping from Qt sources v4.6.3
-    QByteArray hex(rawdata.size() * 2, Qt::Uninitialized);
+    QByteArray hex(rawdata.size() * 2, 0);
     char *hexData = hex.data();
     const uchar *data = (const uchar *)rawdata.data();
     for (int i = 0; i < rawdata.size(); ++i) {
@@ -56,7 +56,7 @@ QByteArray BasketUtils::fromHex(QByteArray hexEncoded)
     return QByteArray::fromHex(hexEncoded);
 #else
     // This code coping from Qt sources v4.6.3
-    QByteArray res((hexEncoded.size() + 1)/ 2, Qt::Uninitialized);
+    QByteArray res((hexEncoded.size() + 1)/ 2, 0);
     uchar *result = (uchar *)res.data() + res.size();
 
     bool odd_digit = true;

@@ -681,3 +681,14 @@ bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
     emit modelDataChanged();
     return true;
 }
+
+// лишние методы, созданы для совместимости с предыдущими версиями
+#if QT_VERSION < 0x040600
+void BasketModel::beginResetModel()
+{
+}
+void BasketModel::endResetModel()
+{
+    reset();
+}
+#endif
