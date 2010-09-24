@@ -4,7 +4,8 @@ QT = gui \
     xml
 CONFIG += qt \
     warn_on \
-    debug_and_release
+    debug_and_release \
+    windows
 DESTDIR = bin
 OBJECTS_DIR = build
 MOC_DIR = build
