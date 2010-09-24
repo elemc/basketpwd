@@ -46,6 +46,9 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
+
+    // Добавлено в версии 0.4.1 смена стиля окон
+    initChangeStyles();
 }
 MainWindow::~MainWindow() {
     if ( quitAction )
@@ -76,8 +79,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
 
-    if ( querySave() )
+    if ( querySave() ) {
+        QSettings set;
+        if ( !globalStyle.isEmpty() )
+            set.setValue(tr("Style"), globalStyle);
         event->accept();
+    }
     else
         event->ignore();
 }
@@ -152,6 +159,40 @@ void MainWindow::createTreeWidget()
         // TODO: Сделать слоты реакций
         //mainTree->sortByColumn(0, Qt::AscendingOrder );
         // TODO: Сделать сортировку
+}
+void MainWindow::initChangeStyles()
+{
+    QSettings set;
+    globalStyle = set.value(tr("Style"), QString()).toString();
+    if ( !globalStyle.isEmpty() )
+        QApplication::setStyle( globalStyle );
+
+    // Заполняем меню смены стиля
+    globalStyle = QString();
+    // Изменение стилей на лету
+    QMenu *styleChange = new QMenu(trUtf8("Сменить &оформление приложения"), this);
+    QActionGroup *styleGroup = new QActionGroup( this );
+    foreach ( QString styleName, QStyleFactory::keys() ) {
+        QString visibleStyleName = styleName;
+        if ( styleName == QString("WindowsXP") )
+            visibleStyleName = QString( "Windows XP" );
+        else if ( styleName == QString("WindowsVista") )
+            visibleStyleName = QString( "Windows Vista" );
+
+        QAction *styleAction = new QAction( visibleStyleName, this );
+        styleAction->setProperty("style_name", styleName);
+        styleAction->setCheckable( true );
+        styleGroup->addAction( styleAction );
+
+        if ( QApplication::style()->objectName() == QString(styleName).toLower() )
+            styleAction->setChecked( true );
+    }
+    connect(styleGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotChangeStypeApp(QAction*)));
+    styleChange->addActions(styleGroup->actions());
+//    QAction *separator = QAction(this);
+//    separator->setSeparator(true);
+    menuView->addSeparator();
+    menuView->addMenu(styleChange);
 }
 
 // Собственные процедуры
@@ -615,4 +656,11 @@ void MainWindow::trayIconClose()
 void MainWindow::onModelDataChanged()
 {
     setModif(true);
+}
+void MainWindow::slotChangeStypeApp(QAction *styleAct)
+{
+    globalStyle = styleAct->property("style_name").toString();
+    if ( !globalStyle.isEmpty() )
+        QApplication::setStyle( globalStyle );
+
 }

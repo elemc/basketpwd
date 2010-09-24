@@ -51,7 +51,7 @@ unix {
         basket_desktop \
         basket_icon
 }
-VERSION = 0.4.0
+VERSION = 0.4.1
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 OTHER_FILES += ChangeLog.txt

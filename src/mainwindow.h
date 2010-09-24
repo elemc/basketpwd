@@ -16,6 +16,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 #include <QTreeView>
+#include <QStyleFactory>
 
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
@@ -41,6 +42,7 @@ private:
     void saveAs();
     void newDatabase( bool isInteracrive = false );
     void createTreeWidget();
+    void initChangeStyles();
     void setModif(bool modificator);
     QByteArray hashPassword( QString pwd );
 
@@ -68,10 +70,8 @@ private:
     QString defaultPath;
     bool dontCloseApp;
 
-    // Добавлено 0.3.7
-//    QString databaseIdentifier;
-//    QDateTime lastModified;
-
+    // Добавлено 0.4.1
+    QString globalStyle;
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -108,6 +108,7 @@ private slots:
     void trayIconClose();
 
     void onModelDataChanged();
+    void slotChangeStypeApp(QAction *styleAct);
 };
 #endif
 
