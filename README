@@ -34,6 +34,20 @@ Installation for Fedora Linux 13 (Goddard)
 * install package basketpwd:
  # yum install basketpwd
 
+Installation for Slackware Linux
+================================
+$ git clone git://github.com/elemc/basketpwd.git		# clone repository from git
+$ cd basketpwd							# enter to application directory
+$ tools/make-source-archive					# make a tarboll for building
+$ cp ../basketpwd*.tar.bz2 tools/SlackBuild/			# copy tarboll to SlackBuild directory
+$ cd tools/SlackBuild
+if version of tarboll not equal version in basketpwd.SlackBuild, then edit to equal.
+$ su -								# enter in root account
+# ./basketpwd.SlackBuild					# build a package
+SlackBuild script tell where him create a package file, type
+# installpkg /path/to/package/basketpwd*.tgz
+
+
 Reporting bugs
 ==============
 

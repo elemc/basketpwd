@@ -1,2 +1,43 @@
+General information
+===================
 Basket of Passwords
-It's a simple application for storing user login, passwords and additional information by group.
+The program for storage and information management about passwords.
+
+You can download the source code from
+	http://github.com/elemc/basketpwd/tarball/master
+or
+	http://github.com/elemc/basketpwd/zipball/master
+or alternatively you can use GIT to get latest development version:
+	git clone git://github.com/elemc/basketpwd.git
+
+Dependencies
+============
+* Qt libraries version 4.2.1 or later
+* libgcrypt version 1.4.0 or later
+
+Installation
+============
+
+On GNU/Linux or FreeBSD
+$ qmake (or qmake-qt4 in many linux distributives as Fedora Linux for example)
+$ make release
+# make install INSTALL_ROOT=/usr (for installing in /usr prefix)
+ or
+$ sudo make install INSTALL_ROOT=/usr (if sudo configured)
+
+Installation for Fedora Linux 13 (Goddard)
+==========================================
+* add repository rpmatis:
+ # rpm -ivh http://repo.atisserv.ru/rpmatis/fedora/13/x86_64/rpmatis-release-13-3.noarch.rpm
+* run yum update:
+ # yum update
+* install package basketpwd:
+ # yum install basketpwd
+
+Reporting bugs
+==============
+
+Please send bug reports to the <elemc@atisserv.ru>
+or post to issue in http://github.com/elemc/basketpwd/issues
+
+This all
