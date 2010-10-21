@@ -1,6 +1,6 @@
 Name:		basketpwd
-Version:	0.3.6
-Release:	3%{?dist}
+Version:	0.4.0
+Release:	1%{?dist}
 Summary:	Basket of passwords
 Summary(ru):	Корзинка паролей
 Group:		Applications/System
@@ -9,14 +9,8 @@ Source0:	%{name}-%{version}.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:		http://github.com/elemc/basketpwd
 
-%if %{defined fedora}
-Requires: qt >= 4.4.1 libgcrypt >= 1.4.0
-BuildRequires: qt-devel >= 4.4.1 libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils
-%elif %{defined suse_version}
-Source1: %{name}.desktop
-Requires: libqt4 >= 4.4.1 libgcrypt11 >= 1.4.0
-BuildRequires: libqt4-devel >= 4.4.1 libgcrypt-devel >= 1.4.0 update-desktop-files
-%endif
+Requires: qt libgcrypt >= 1.4.0
+BuildRequires: qt-devel libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils
 
 %description 
 Basket of passwords
@@ -39,14 +33,8 @@ rm -rf $RPM_BUILD_ROOT
 install -D -m 755 -p bin/%{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
 install -D -m 644 -p images/prog.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/%{name}.png
 
-%if %{defined fedora}
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
-
-%endif
-%if %{defined suse_version}
-%suse_update_desktop_file -i %{name} Utility
-%endif
 
 %files
 %defattr(-,root,root)
@@ -60,6 +48,8 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Fri Sep 24 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.0-1
+- Very big changes, application now use model/view
 * Sun Aug  8 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-3
 - Litle changes of spec-file
 * Wed Jul 21 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-1
