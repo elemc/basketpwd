@@ -24,8 +24,8 @@ The program for storage and information management about passwords.
 %setup -q
 
 %build
-%{_bindir}/qmake-qt4 -spec linux-g++
-#%{_libdir}/qt4/bin/qmake -spec linux-g++
+#%{_bindir}/qmake-qt4 -spec linux-g++
+%{_libdir}/qt4/bin/qmake -spec linux-g++
 make release
 
 %install
