@@ -1,5 +1,5 @@
 Name:		basketpwd
-Version:	0.4.0
+Version:	0.4.1
 Release:	1%{?dist}
 Summary:	Basket of passwords
 Summary(ru):	Корзинка паролей
@@ -24,7 +24,6 @@ The program for storage and information management about passwords.
 %setup -q
 
 %build
-#%{_bindir}/qmake-qt4 -spec linux-g++
 %{_libdir}/qt4/bin/qmake -spec linux-g++
 make release
 
@@ -48,6 +47,9 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Mon Nov  1 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.1-1
+- Litle changes in code
+- add style change in menu
 * Fri Sep 24 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.0-1
 - Very big changes, application now use model/view
 * Sun Aug  8 2010 Alexei Panov <avpanov@atisserv.ru> - 0.3.6-3
