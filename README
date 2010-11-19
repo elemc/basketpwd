@@ -14,21 +14,30 @@ Dependencies
 ============
 * Qt libraries version 4.2.1 or later
 * libgcrypt version 1.4.0 or later
+* cmake (optional)
 
 Installation
 ============
 
-On GNU/Linux or FreeBSD
+On GNU/Linux or FreeBSD (without cmake)
 $ qmake (or qmake-qt4 in many linux distributives as Fedora Linux for example)
 $ make release
 # make install INSTALL_ROOT=/usr (for installing in /usr prefix)
  or
 $ sudo make install INSTALL_ROOT=/usr (if sudo configured)
 
-Installation for Fedora Linux 13 (Goddard)
-==========================================
+With cmake
+Run bellow commands in source folder
+$ mkdir build; cd build
+$ cmake .. -DCMAKE_INSTALL_PREFIX=/usr #(if you have install application in /usr or simple 'cmake ..' if you have install into /usr/local)
+
+Installation for Fedora Linux
+=============================
 * add repository rpmatis:
- # rpm -ivh http://repo.atisserv.ru/rpmatis/fedora/13/x86_64/rpmatis-release-13-3.noarch.rpm
+ for Fedora 13
+    # yum localinstall http://repo.atisserv.ru/rpmatis/fedora/13/x86_64/rpmatis-release-13-3.noarch.rpm --nogpgcheck
+ for Fedora 14
+    # yum localinstall http://repo.atisserv.ru/rpmatis/fedora/14/i386/rpmatis-fedora-release-14-1.fc14.noarch.rpm --nogpgcheck
 * run yum update:
  # yum update
 * install package basketpwd:
@@ -51,7 +60,7 @@ SlackBuild script tell where him create a package file, type
 Reporting bugs
 ==============
 
-Please send bug reports to the <elemc@atisserv.ru>
+Please send bug reports to the <elemc AT atisserv DOT ru>
 or post to issue in http://github.com/elemc/basketpwd/issues
 
-This all
+Thanks

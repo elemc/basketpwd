@@ -3,7 +3,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include "settingsdialog.h"
-#include "../build/ui_settingsdialog.h"
+#include "ui_settingsdialog.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),

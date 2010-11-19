@@ -1,0 +1,2 @@
+#define VER "@PROJECT_VERSION@"
+

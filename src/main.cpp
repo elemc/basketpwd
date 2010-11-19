@@ -3,8 +3,7 @@
 #include <QMessageBox>
 #include <QTranslator>
 #include <QTextCodec>
-//
-//#define PROGRAM_VERSION QString(VER)
+#include "config.h"
 
 int main(int argc, char ** argv)
 {
