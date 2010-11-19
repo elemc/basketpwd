@@ -1,6 +1,6 @@
 Name:		basketpwd
 Version:	0.4.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Basket of passwords
 Summary(ru):	Корзинка паролей
 Group:		Applications/System
@@ -10,7 +10,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:		http://github.com/elemc/basketpwd
 
 Requires: qt libgcrypt >= 1.4.0
-BuildRequires: qt-devel libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils
+BuildRequires: qt-devel libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils cmake
 
 %description 
 Basket of passwords
@@ -24,29 +24,33 @@ The program for storage and information management about passwords.
 %setup -q
 
 %build
-%{_libdir}/qt4/bin/qmake -spec linux-g++
-make release
+%cmake .
+make VERBOSE=1 %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -D -m 755 -p bin/%{name} $RPM_BUILD_ROOT/%{_bindir}/%{name}
-install -D -m 644 -p images/prog.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/%{name}.png
-
+make install DESTDIR=$RPM_BUILD_ROOT
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
+
+%check
+ctest
 
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/pixmaps/%{name}.png
-%doc ChangeLog.txt
+%doc ChangeLog.txt README
 
 %clean
 make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Sat Nov 20 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.1-2
+- add cmake rules
+- change spec for use cmake
 * Mon Nov  1 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.1-1
 - Litle changes in code
 - add style change in menu
