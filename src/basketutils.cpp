@@ -3,6 +3,7 @@
 #if QT_VERSION >= 0x040300
 #include <QCryptographicHash>
 #endif
+
 BasketUtils::BasketUtils(  ) 
 	: QObject()
 {
@@ -16,12 +17,15 @@ QByteArray BasketUtils::hashPassword( QString password )
     return hash;
 #else
     char *hash_ptr = new char[16];
-    gcry_md_hash_buffer(GCRY_MD_MD5, hash_ptr, password.toUtf8(), password.size());
+    char *pwd = new char[password.size()];
+    qstrcpy(pwd, password.toUtf8().data());
+    hash_ptr = (char*)MD5((unsigned char *)pwd, password.size(), NULL);
     if ( hash_ptr ) {
-        QByteArray hash = QByteArray(hash_ptr, 16);
-        delete [] hash_ptr;
+        QByteArray hash = QByteArray( hash_ptr, 16 );
+        delete [] pwd;
         return hash;
     }
+    delete [] pwd;
 
     return QByteArray();
 #endif
@@ -112,7 +116,8 @@ QByteArray BasketUtils::crypt(QByteArray buf, QString pwd) //Пароль уже
     if (cipher != NULL) {
         QByteArray ciph16 = QByteArray( cipher, 16 );
         cipherBuffer.append(ciph16);
-        free (cipher);
+        //free (cipher);
+        delete [] cipher;
     }
     else {
         return NULL;
@@ -145,7 +150,7 @@ QByteArray BasketUtils::crypt(QByteArray buf, QString pwd) //Пароль уже
         if (cipher != NULL) {
             QByteArray ciph16 = QByteArray( cipher, 16 );
             cipherBuffer.append(ciph16);
-            free (cipher);
+            delete [] cipher;
         }
     }
 
@@ -195,7 +200,6 @@ QByteArray BasketUtils::decrypt(QByteArray buf, QString pwd)
         }
     }
 
-
     return cipherBuffer;
 }
 QString BasketUtils::decrypt(QString cryptbuf, QString pwd)
@@ -205,144 +209,41 @@ QString BasketUtils::decrypt(QString cryptbuf, QString pwd)
 	
 }
 
-// Шифрует блок в 16 байт
+char *BasketUtils::openssl_crypt(char *data, int datalen, char *key, char *iv, int enc)
+{
+    char *temp_iv = new char[16];
+    qstrcpy(temp_iv, iv);
+
+    AES_KEY aes_key;
+    if ( enc == AES_ENCRYPT )
+        AES_set_encrypt_key((unsigned char*)key, qstrlen(key)*8, &aes_key);
+    else
+        AES_set_decrypt_key((unsigned char*)key, qstrlen(key)*8, &aes_key);
+
+    quint8 *out_data = new quint8[datalen];
+    if ( !out_data ) {
+        errorMsg = trUtf8("Ошибка выделения памяти для выходного буфера!");
+        errorState = true;
+        return NULL;
+    }
+
+    AES_cbc_encrypt((unsigned char*)data, (unsigned char*)out_data, datalen, &aes_key, (unsigned char *)temp_iv, enc);
+    if ( !out_data ) {
+        errorMsg = trUtf8("Ошибка процесса расшифровки данных!");
+        errorState = true;
+        return NULL;
+    }
+    delete [] temp_iv;
+
+    return (char *)out_data;
+}
 char *BasketUtils::crypt16(char *data, int datalen, char *key, char *iv)
 {
-    // Проверка на размер данных/ключа/вектора
-    //int datalen = sizeof(data) * sizeof(QChar); //strlen(data);
-    if ( datalen != 16 ) {
-        errorMsg = trUtf8("Неверный размер буфера данных, требуется передать 16 байт, а передано %1").arg(QVariant(datalen).toString());
-        errorState = true;
-        return NULL;
-    }
-    int keylen = strlen(key);
-    if ( keylen != 16 ) {
-        errorMsg = trUtf8("Неверный размер ключа, требуется передать 16 байт, а передано %1").arg(QVariant(keylen).toString());
-        errorState = true;
-        return NULL;
-    }
-    int ivlen = strlen(iv);
-    if ( ivlen != 16 ) {
-        errorMsg = trUtf8("Неверный размер вектора, требуется передавать 16 байт, а передано %1").arg(QVariant(ivlen).toString());
-        errorState = true;
-        return NULL;
-    }
-
-    // Контекст
-    gcry_cipher_hd_t handle;
-
-    // Открываем контекст шифрования
-    error = gcry_cipher_open (&handle, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CBC, 0);
-
-    if (error) {
-        errorMsg = trUtf8("Ошибка открытия контекста. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    // Устанавливаем ключ
-    error = gcry_cipher_setkey(handle, key, keylen);
-
-    if (error) {
-        errorMsg = trUtf8("Ошибка установки ключа. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    // Устанавливаем вектор
-    error = gcry_cipher_setiv(handle, iv, ivlen);
-    if (error) {
-        errorMsg = trUtf8("Ошибка установки вектора. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    // Выделяем память для хранения выходного буфера
-    char* out = (char*) gcry_calloc(datalen, 1);
-
-    // Собственно шифруем данные
-    error = gcry_cipher_encrypt(handle, (unsigned char *)out, datalen, (unsigned char *)data, datalen);
-
-    if (error) {
-        errorMsg = trUtf8("Ошибка шифрации данных. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    gcry_cipher_close(handle);
-    /* "отпускаем" контекст */
-
-    return out;
+    return openssl_crypt(data, datalen, key, iv, AES_ENCRYPT);
 }
-
-// Расшифровывает блок в 16 байт
 char *BasketUtils::decrypt16(char *data, int datalen, char *key, char *iv)
 {
-    // Проверка на размер данных/ключа/вектора
-    //int datalen = sizeof(data) * sizeof(QChar); //strlen(data);
-    if ( datalen != 16 ) {
-        errorMsg = trUtf8("Неверный размер буфера данных, требуется передать 16 байт, а передано %1").arg(QVariant(datalen).toString());
-        errorState = true;
-        return NULL;
-    }
-    int keylen = strlen(key);
-    if ( keylen != 16 ) {
-        errorMsg = trUtf8("Неверный размер ключа, требуется передать 16 байт, а передано %1").arg(QVariant(keylen).toString());
-        errorState = true;
-        return NULL;
-    }
-    int ivlen = strlen(iv);
-    if ( ivlen != 16 ) {
-        errorMsg = trUtf8("Неверный размер вектора, требуется передавать 16 байт, а передано %1").arg(QVariant(ivlen).toString());
-        errorState = true;
-        return NULL;
-    }
-
-    // Контекст
-    gcry_cipher_hd_t handle;
-
-    // Открываем контекст шифрования
-    error = gcry_cipher_open (&handle, GCRY_CIPHER_AES128, GCRY_CIPHER_MODE_CBC, 0);
-
-    if (error) {
-        errorMsg = trUtf8("Ошибка открытия контекста. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    // Устанавливаем ключ
-    error = gcry_cipher_setkey(handle, key, keylen);
-
-    if (error) {
-        errorMsg = trUtf8("Ошибка установки ключа. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    // Устанавливаем вектор
-    error = gcry_cipher_setiv(handle, iv, ivlen);
-    if (error) {
-        errorMsg = trUtf8("Ошибка установки вектора. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    // Выделяем память для хранения выходного буфера
-    char* out = (char*) gcry_calloc(datalen, 1);
-
-    // Собственно шифруем данные
-    error = gcry_cipher_decrypt(handle, (unsigned char *)out, datalen, (unsigned char *)data, datalen);
-
-    if (error) {
-        errorMsg = trUtf8("Ошибка дешифрации данных. [%1]").arg( QString::fromUtf8( gcry_strerror(error) ));
-        errorState = true;
-        return NULL;
-    }
-
-    gcry_cipher_close(handle);
-    /* "отпускаем" контекст */
-
-    return out;
+    return openssl_crypt(data, datalen, key, iv, AES_DECRYPT);
 }
 
 int BasketUtils::strmagiclen(const char *str)

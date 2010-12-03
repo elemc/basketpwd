@@ -327,12 +327,16 @@ void MainWindow::loadDatabase()
     // Если же все-таки файл может быть прочитан
     if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
-        tree->resizeColumnToContents(0);
+        // FIXME: Is not working
+        /*tree->resizeColumnToContents(0);
         tree->resizeColumnToContents(1);
-        tree->resizeColumnToContents(2);
+        tree->resizeColumnToContents(2);*/
+        tree->setColumnWidth(0, 300);
+        tree->setColumnWidth(1, 200);
     }
     else
         QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
+
     setModif ( false );
     allowActions( true );
 }

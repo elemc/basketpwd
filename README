@@ -13,7 +13,8 @@ or alternatively you can use GIT to get latest development version:
 Dependencies
 ============
 * Qt libraries version 4.2.1 or later
-* libgcrypt version 1.4.0 or later
+* libgcrypt version 1.4.0 or later (WARNING!!! It is required only for basketpwd version < 0.4.2)
+* openssl version 0.9.7a or later (This required for basketpwd version >= 0.4.2)
 * cmake (optional)
 
 Installation

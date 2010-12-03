@@ -4,9 +4,9 @@ if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX /usr/local)
 endif ()
 
-set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
+#set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
-set (PROJECT_VERSION 0.4.1)
+set (PROJECT_VERSION 0.4.2)
 set (HEADERS 
 	aboutdialog.h
 	src/basketutils.h
@@ -48,7 +48,8 @@ configure_file (
 include_directories (model src ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package (Qt4 REQUIRED)
-find_package (LibGcrypt REQUIRED)
+#find_package (LibGcrypt REQUIRED)
+find_package (OpenSSL REQUIRED)
 include (${QT_USE_FILE})
 qt4_add_resources (QRC_SOURCES ${RESOURCES})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
@@ -78,7 +79,7 @@ source_group ("Resource Files" FILES ${QRC_SOURCES})
 
 add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS})
 
-target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${LIBGCRYPT_LIBRARIES})
+target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 install (TARGETS ${PROJECT} DESTINATION bin)
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
 install (FILES ${ICON_FILE} DESTINATION share/pixmaps)

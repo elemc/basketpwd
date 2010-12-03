@@ -2,7 +2,10 @@
 #define BASKETUTILS_H
 //
 #include <QObject>
-#include <gcrypt.h>
+#include <openssl/aes.h>
+#if QT_VERSION < 0x040300
+#include <openssl/md5.h>
+#endif
 //
 class BasketUtils : public QObject
 {
@@ -21,12 +24,13 @@ public:
         static QByteArray fromHex(QByteArray hex);
 
 private:
-        gcry_error_t error;
+        //gcry_error_t error;
         QString errorMsg;
         bool errorState;
 
         char *crypt16(char* data, int datalen, char* key, char* iv);
         char *decrypt16(char* data, int datalen, char* key, char* iv);
+        char *openssl_crypt(char *data, int datalen, char *key, char *iv, int enc);
 
         int strmagiclen(const char *str);
 };

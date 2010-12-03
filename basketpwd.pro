@@ -31,7 +31,7 @@ SOURCES = src/mainwindow.cpp \
     model/basketmodel.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
-LIBS += -lgcrypt
+LIBS += -lcrypto -lssl #-lgcrypt -lssl
 win32 { 
     LIBS += -L"d:\develop\tools\gcrypt\lib" \
         -lgpg-error \
@@ -51,8 +51,9 @@ unix {
         basket_desktop \
         basket_icon
 }
-VERSION = 0.4.1
+VERSION = 0.4.2
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
+DEFINES += QMAKE_SET=1
 OTHER_FILES += ChangeLog.txt
 TRANSLATIONS += basketpwd_en.ts

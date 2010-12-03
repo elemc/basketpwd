@@ -3,7 +3,9 @@
 #include <QMessageBox>
 #include <QTranslator>
 #include <QTextCodec>
+#ifndef QMAKE_SET
 #include "config.h"
+#endif
 
 int main(int argc, char ** argv)
 {
