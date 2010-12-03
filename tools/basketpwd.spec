@@ -1,6 +1,6 @@
 Name:		basketpwd
-Version:	0.4.1
-Release:	2%{?dist}
+Version:	0.4.2
+Release:	1%{?dist}
 Summary:	Basket of passwords
 Summary(ru):	Корзинка паролей
 Group:		Applications/System
@@ -9,8 +9,8 @@ Source0:	%{name}-%{version}.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:		http://github.com/elemc/basketpwd
 
-Requires: qt libgcrypt >= 1.4.0
-BuildRequires: qt-devel libgcrypt-devel >= 1.4.0 gcc-c++ desktop-file-utils cmake
+Requires: qt
+BuildRequires: qt-devel openssl-devel gcc-c++ desktop-file-utils cmake
 
 %description 
 Basket of passwords
@@ -48,6 +48,9 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Fri Dec  3 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.2-1
+- change crypt library from libgcrypt to openssl
+- little GUI changes
 * Sat Nov 20 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.1-2
 - add cmake rules
 - change spec for use cmake
