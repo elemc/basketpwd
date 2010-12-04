@@ -33,11 +33,6 @@ RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 LIBS += -lcrypto -lssl #-lgcrypt -lssl
 win32 { 
-    LIBS += -L"d:\develop\tools\gcrypt\lib" \
-        -lgpg-error \
-        -lmingw32
-    INCLUDEPATH += "d:\develop\tools\gcrypt\include" \
-        "d:\develop\tools\mingw\include"
     CONFIG += static
 }
 unix { 

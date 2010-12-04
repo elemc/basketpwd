@@ -34,10 +34,11 @@ Section $(TITLE_SecMain) SecMain
 	File "/home/alex/workspace/basketpwd/README"
 	File "/home/alex/workspace/basketpwd/ChangeLog.txt"
 	File "/home/alex/workspace/basketpwd/tools/basketpwd.exe.manifest"
-        File "/usr/i686-pc-mingw32/sys-root/mingw/bin/libgcrypt-11.dll"
-        File "/usr/i686-pc-mingw32/sys-root/mingw/bin/mingwm10.dll"
+        File "/usr/i686-pc-mingw32/sys-root/mingw/bin/libcrypto-10.dll"
+        File "/usr/i686-pc-mingw32/sys-root/mingw/bin/libpng14-14.dll"
         File "/usr/i686-pc-mingw32/sys-root/mingw/bin/libgcc_s_sjlj-1.dll"
-	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/libgpg-error-0.dll"
+	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/libstdc++-6.dll"
+	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/zlib1.dll"
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKCU "Software\$(CompanyName)\$(TITLE_SecMain)" "" $INSTDIR
 SectionEnd
