@@ -33,5 +33,6 @@ private:
         char *openssl_crypt(char *data, int datalen, char *key, char *iv, int enc);
 
         int strmagiclen(const char *str);
+        void bastrcpy(char *dest, char *src, int len);
 };
 #endif

@@ -212,7 +212,7 @@ QString BasketUtils::decrypt(QString cryptbuf, QString pwd)
 char *BasketUtils::openssl_crypt(char *data, int datalen, char *key, char *iv, int enc)
 {
     char *temp_iv = new char[16];
-    qstrcpy(temp_iv, iv);
+    bastrcpy(temp_iv, iv, 16);
 
     AES_KEY aes_key;
     if ( enc == AES_ENCRYPT )
@@ -256,4 +256,16 @@ int BasketUtils::strmagiclen(const char *str)
     else {
         return lastCountBytes;
     }
+}
+
+void BasketUtils::bastrcpy(char *dest, char *src, int len)
+{
+    if (!dest)
+        return;
+    if ( !src ) {
+        dest = 0;
+        return;
+    }
+    for ( int i = 0; i < len; i++ )
+        dest[i] = src[i];
 }
