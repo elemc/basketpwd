@@ -57,7 +57,15 @@ $ su -								# enter in root account
 SlackBuild script tell where him create a package file, type
 # installpkg /path/to/package/basketpwd*.tgz
 
-
+Installation for OpenSUSE Linux
+===============================
+First, add repository:
+    * for 11.2		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.2
+    * for 11.3		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.3
+    * for Facctory	http://download.opensuse.org/repositories/home:/elemc/openSUSE_Factory
+ and install package named basketpwd, as example
+    zypper in basketpwd
+ 
 Reporting bugs
 ==============
 
