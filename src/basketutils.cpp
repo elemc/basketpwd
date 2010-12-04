@@ -263,7 +263,6 @@ void BasketUtils::bastrcpy(char *dest, char *src, int len)
     if (!dest)
         return;
     if ( !src ) {
-        dest = 0;
         return;
     }
     for ( int i = 0; i < len; i++ )

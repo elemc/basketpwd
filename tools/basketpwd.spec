@@ -1,6 +1,6 @@
 Name:		basketpwd
 Version:	0.4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Basket of passwords
 Summary(ru):	Корзинка паролей
 Group:		Applications/System
@@ -48,6 +48,8 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Sun Dec  5 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.2-2
+- fix crashing qstrcpy
 * Fri Dec  3 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.2-1
 - change crypt library from libgcrypt to openssl
 - little GUI changes
