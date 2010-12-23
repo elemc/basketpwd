@@ -214,7 +214,7 @@ void MainWindow::newDatabase( bool isInteracrive )
 }
 void MainWindow::saveAs()
 {
-    QFileDialog saveDlg;
+    QFileDialog saveDlg ( this, trUtf8("Выберите файл для сохранения"), getDefaultDirectory() );
     saveDlg.setAcceptMode( QFileDialog::AcceptSave );
     saveDlg.setDefaultSuffix( "cxml" );
 #if QT_VERSION >= 0x040400
@@ -518,7 +518,7 @@ void MainWindow::on_actionOpen_triggered()
     if ( !querySave() )
         return;
 
-    QFileDialog openDlg ( this, trUtf8("Выберите файл для загрузки") );
+    QFileDialog openDlg ( this, trUtf8("Выберите файл для загрузки"), getDefaultDirectory() );
     openDlg.setAcceptMode( QFileDialog::AcceptOpen );
     openDlg.setDefaultSuffix( "cxml" );
 #if QT_VERSION >= 0x040400
@@ -667,4 +667,10 @@ void MainWindow::slotChangeStypeApp(QAction *styleAct)
     if ( !globalStyle.isEmpty() )
         QApplication::setStyle( globalStyle );
 
+}
+QString MainWindow::getDefaultDirectory() const
+{
+    QSettings set;
+    QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
+    return defaultPath;
 }

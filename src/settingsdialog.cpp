@@ -13,6 +13,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     QSettings set;
     QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
+    int csi = set.value(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState()).toInt();
+    Qt::CheckState cs = csi == 0 ? Qt::Unchecked : Qt::Checked;
+    m_ui->checkBoxDontClose->setCheckState(cs);
     m_ui->lineEditDefaultPath->setText(defaultPath);
 
 }

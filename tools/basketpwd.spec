@@ -1,16 +1,16 @@
-Name:		basketpwd
-Version:	0.4.2
-Release:	2%{?dist}
-Summary:	Basket of passwords
+Name:			basketpwd
+Version:		0.4.3
+Release:		1%{?dist}
+Summary:		Basket of passwords
 Summary(ru):	Корзинка паролей
-Group:		Applications/System
-License:	GPLv2
-Source0:	%{name}-%{version}.tar.bz2
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-URL:		http://github.com/elemc/basketpwd
+Group:			Applications/System
+License:		GPLv2
+Source0:		%{name}-%{version}.tar.bz2
+BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+URL:			http://github.com/elemc/basketpwd
 
-Requires: qt
-BuildRequires: qt-devel openssl-devel gcc-c++ desktop-file-utils cmake
+Requires:		qt openssl
+BuildRequires:	qt-devel openssl-devel gcc-c++ desktop-file-utils cmake
 
 %description 
 Basket of passwords
@@ -48,6 +48,9 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Thu Dec 23 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.3-1
+- fix checkbox in settings dialog
+- changed default folder for open/save file dialog
 * Sun Dec  5 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.2-2
 - fix crashing qstrcpy
 * Fri Dec  3 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.2-1

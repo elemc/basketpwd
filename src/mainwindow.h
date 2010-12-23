@@ -109,6 +109,8 @@ private slots:
 
     void onModelDataChanged();
     void slotChangeStypeApp(QAction *styleAct);
+
+    QString getDefaultDirectory() const;
 };
 #endif
 
