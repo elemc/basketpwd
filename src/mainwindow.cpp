@@ -8,6 +8,8 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 	: QMainWindow(parent, f)
 {
     setupUi(this);
+    // Добавление версии 0.2.5 организация трея
+    createTrayIcon();
 
     //mainTree = new QTreeWidget( );
 
@@ -43,9 +45,6 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     actionCopyLogin->setEnabled( false );
 
     connect(statusbar, SIGNAL(messageChanged(QString)), this, SLOT(statusMessageChanged(QString)) );
-
-    // Добавление версии 0.2.5 организация трея
-    createTrayIcon();
 
     // Добавлено в версии 0.4.1 смена стиля окон
     initChangeStyles();
@@ -112,6 +111,7 @@ void MainWindow::createTrayIcon()
     trayIconMenu->addAction(quitAction);
 
     trayIcon = new QSystemTrayIcon(this);
+
     trayIcon->setContextMenu(trayIconMenu);
 
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
@@ -387,6 +387,8 @@ void MainWindow::setModif(bool modificator)
         modifFileName = fileName;
     QString id = QString("%1 - %2 (%3) %4").arg(winTitle).arg(model->identifier()).arg(model->lastModifiedStr()).arg(strModif);
     setWindowTitle(id.trimmed());
+    if ( trayIcon )
+        trayIcon->setToolTip(id.trimmed());
     actionSave->setEnabled( modificator );
 }
 void MainWindow::changeCurrentPassword()
