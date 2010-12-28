@@ -11,8 +11,6 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
 
-    //mainTree = new QTreeWidget( );
-
     model = new BasketModel(this);
     tree = new QTreeView( this );
     tree->setModel( model );
@@ -25,7 +23,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
     newDatabase();
 
-    //Пытаемся обнаружить и загрузить файл с паролями по-умолчанию
+    // Пытаемся обнаружить и загрузить файл с паролями по-умолчанию
     // Добавлено 0.2.6
     QSettings set;
     defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
