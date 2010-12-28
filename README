@@ -66,6 +66,12 @@ First, add repository:
  and install package named basketpwd, as example
     zypper in basketpwd
  
+Installation for Windows
+========================
+Go to section Files on github.com/elemc/basketpwd and select one:
+* basketpwd-static-X.X.X.zip - is a statically linked one exe-file for mobility
+* basketpwd-setup-X.X.X.exe  - is a windows installer
+
 Reporting bugs
 ==============
 
