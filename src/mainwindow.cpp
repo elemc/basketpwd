@@ -1,7 +1,7 @@
-#include "mainwindow.h"
-#include "changepassword.h"
-#include "../aboutdialog.h"
-#include "settingsdialog.h"
+#include "src/mainwindow.h"
+#include "src/changepassword.h"
+#include "aboutdialog.h"
+#include "src/settingsdialog.h"
 
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
@@ -46,6 +46,9 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 
     // Добавлено в версии 0.4.1 смена стиля окон
     initChangeStyles();
+    response_server = new SyncThread(this);
+    connect(response_server, SIGNAL(foundBasketHost(QString,QString,quint16,QString,QDateTime)), this, SLOT(foundedBasketHost(QString,QString,quint16,QString,QDateTime)));
+    response_server->start();
 }
 MainWindow::~MainWindow() {
     if ( quitAction )
@@ -325,10 +328,6 @@ void MainWindow::loadDatabase()
     // Если же все-таки файл может быть прочитан
     if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
-        // FIXME: Is not working
-        /*tree->resizeColumnToContents(0);
-        tree->resizeColumnToContents(1);
-        tree->resizeColumnToContents(2);*/
         tree->setColumnWidth(0, 300);
         tree->setColumnWidth(1, 200);
     }
@@ -673,4 +672,8 @@ QString MainWindow::getDefaultDirectory() const
     QSettings set;
     QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
     return defaultPath;
+}
+void MainWindow::foundedBasketHost(QString hostname, QString ip, quint16 port, QString id, QDateTime upd)
+{
+
 }

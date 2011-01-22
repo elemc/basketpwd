@@ -19,8 +19,9 @@
 #include <QStyleFactory>
 
 #include "ui_mainwindow.h"
-#include "../model/basketmodel.h"
-#include "../model/basketbaseitem.h"
+#include "model/basketmodel.h"
+#include "model/basketbaseitem.h"
+#include "src/syncthread.h"
 
 //#define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
 
@@ -72,6 +73,9 @@ private:
 
     // Добавлено 0.4.1
     QString globalStyle;
+
+    // added 0.4.4
+    SyncThread *response_server;
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -111,6 +115,9 @@ private slots:
     void slotChangeStypeApp(QAction *styleAct);
 
     QString getDefaultDirectory() const;
+
+    // added 0.4.4
+    void foundedBasketHost(QString hostname, QString ip, quint16 port, QString id, QDateTime upd);
 };
 #endif
 
