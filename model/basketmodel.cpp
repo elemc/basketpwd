@@ -13,10 +13,16 @@ BasketModel::BasketModel(QObject *parent) :
     folderIcon = QIcon(":/images/foldericon");
     folderCloseIcon = QIcon(":/images/foldercloseicon");
 
+    request_client = 0;
 }
 BasketModel::~BasketModel()
 {
     delete rootItem;
+
+    if ( request_client ) {
+        delete request_client;
+        request_client = 0;
+    }
 }
 
 bool BasketModel::setModelData(QByteArray &data, QString pwd, bool isEncryptedData)
@@ -39,7 +45,20 @@ bool BasketModel::setModelData(QByteArray &data, QString pwd, bool isEncryptedDa
 
     hashPassword = pwd;
     endResetModel();
-    return parseDocument(doc);
+
+    bool parse_res = parseDocument(doc);
+    // added 0.4.4 (sync)
+    if (parse_res) {
+        if ( request_client ) {
+            delete request_client;
+            request_client = 0;
+        }
+        request_client = new SyncRequestThread();
+        request_client->setSyncInfo(databaseIdentifier, lastDBModified);
+        request_client->start();
+    }
+
+    return parse_res;
 }
 QByteArray BasketModel::modelDataToXML(bool encrypted)
 {

@@ -23,7 +23,8 @@ HEADERS = src/mainwindow.h \
     model/basketbaseitem.h \
     model/basketmodel.h \
     src/syncthread.h \
-    src/syncclientthread.h
+    src/syncclientthread.h \
+    src/syncrequestthread.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
     src/basketutils.cpp \
@@ -33,7 +34,8 @@ SOURCES = src/mainwindow.cpp \
     model/basketbaseitem.cpp \
     model/basketmodel.cpp \
     src/syncthread.cpp \
-    src/syncclientthread.cpp
+    src/syncclientthread.cpp \
+    src/syncrequestthread.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 LIBS += -lcrypto -lssl #-lgcrypt -lssl

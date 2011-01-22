@@ -2,6 +2,7 @@
 #include "src/changepassword.h"
 #include "aboutdialog.h"
 #include "src/settingsdialog.h"
+#include <QDebug>
 
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
@@ -46,7 +47,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 
     // Добавлено в версии 0.4.1 смена стиля окон
     initChangeStyles();
-    response_server = new SyncThread(this);
+    response_server = new SyncThread();
     connect(response_server, SIGNAL(foundBasketHost(QString,QString,quint16,QString,QDateTime)), this, SLOT(foundedBasketHost(QString,QString,quint16,QString,QDateTime)));
     response_server->start();
 }
@@ -68,6 +69,12 @@ MainWindow::~MainWindow() {
 
     if ( trayIcon )
         delete trayIcon;
+
+    if ( response_server ) {
+        response_server->exit();
+        delete response_server;
+        response_server = 0;
+    }
 }
 
 // Виртуалы
@@ -675,5 +682,5 @@ QString MainWindow::getDefaultDirectory() const
 }
 void MainWindow::foundedBasketHost(QString hostname, QString ip, quint16 port, QString id, QDateTime upd)
 {
-
+    qDebug() << hostname << ip << port << id << upd;
 }
