@@ -31,11 +31,13 @@ SOURCES = src/mainwindow.cpp \
     model/basketmodel.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
-LIBS += -lcrypto -lssl #-lgcrypt -lssl
-win32 { 
+win32 {
     CONFIG += static
+    INCLUDEPATH += d:/devel/utils/openssl/openssl-shared-64/include
+    LIBS += -ld:/devel/utils/openssl/openssl-shared-64/lib/libeay32
 }
-unix { 
+unix {
+    LIBS += -lcrypto -lssl
     TARGET = basketpwd
     target.path += /usr/bin
     basket_desktop.files += tools/basketpwd.desktop
