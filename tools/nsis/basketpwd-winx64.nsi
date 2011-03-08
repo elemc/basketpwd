@@ -1,5 +1,5 @@
-!include "MUI.nsh"
-!include x64.nsh
+!include "MUI2.nsh"
+!include "x64.nsh"
 
 Name $(TITLE_SecMain)
 OutFile "basketpwd.exe"
@@ -18,6 +18,9 @@ SetCompressor lzma
 !insertmacro MUI_LANGUAGE "Russian"
 !insertmacro MUI_LANGUAGE "English"
 
+!define SourceDir d:\devel\bins\basketpwd\shared64
+!define VCRedistRegKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}"
+
 Function .onInit
 
         ${If} ${RunningX64}
@@ -27,19 +30,22 @@ Function .onInit
         	Abort
         ${EndIf}
         StrCpy '$INSTDIR' '$PROGRAMFILES64\$(TITLE_SecMain)'
+	SetRegView 64
 FunctionEnd
 
 Function CheckVCRedist
-	Push $R0
-	ClearErrors
-	ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
-	
-	; if VS 2005+ redist SP1 not installed, install it
-	IfErrors 0 VSRedistInstalled
-	StrCpy $R0 "-1"
-	VSRedistInstalled:
-		Pop $R0
-		Exch $R0
+
+   Push $R0
+   ClearErrors
+   ReadRegDWORD $R0 HKLM ${VCRedistRegKey} "Version"
+
+   ; if VS 2010 redist not installed, install it
+   IfErrors 0 VSRedistInstalled
+   StrCpy $R0 "-1"
+
+VSRedistInstalled:
+   Exch $R0
+   
 FunctionEnd
 
 LangString TITLE_SecMain ${LANG_RUSSIAN} "Корзинка паролей"
@@ -55,37 +61,43 @@ LangString StartMenuShortCuts ${LANG_ENGLISH} "Start Menu Shortcuts"
 
 Section $(TITLE_SecMain) SecMain
 	SetOutPath "$INSTDIR"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/basketpwd.exe"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/README"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/ChangeLog.txt"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/basketpwd.exe.manifest"
-	; File "/media/share-disk/devel/bins/basketpwd/shared64/vcredist_x64.exe"
+	File "${SourceDir}\basketpwd.exe"
+	File "${SourceDir}\README"
+	File "${SourceDir}\ChangeLog.txt"
+	File "${SourceDir}\basketpwd.exe.manifest"
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKCU "Software\$(CompanyName)\$(TITLE_SecMain)" "" $INSTDIR
-	; ExecWait '"$INSTDIR\${DLLMSVC10}" /q:a /c:"vcredist_x64.exe /q:a /c:""msiexec /i vcredist.msi /qb!"" "'
 SectionEnd
 
 Section $(TITLE_SecQt) SecQt
 	SetOutPath "$INSTDIR"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/QtCore4.dll"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/QtGui4.dll"
-	File "/media/share-disk/devel/bins/basketpwd/shared64/QtXml4.dll"
+	File "${SourceDir}\QtCore4.dll"
+	File "${SourceDir}\QtGui4.dll"
+	File "${SourceDir}\QtXml4.dll"
 SectionEnd
 
-Section "Microsoft Visual C++ 2010 Redist (required)"
-	SectionIn RO
-	SetOutPath $TEMP
-	File "/media/share-disk/devel/bins/basketpwd/shared64/vcredist_x64.exe"
-	Call CheckVCRedist
-	StrCmp $R0 "-1" installRedist
-		DetailPrint "Visual C++ 2010 Redistributable already installed, skipping..."
-		Goto skipRedist
-	installRedist:
-		ExecWait "$TEMP\vcredist_x64.exe"
-	SkipRedist:
+; ----------------------------------------
+; MSVC Redistributable - required if the user des not already have it
+; Note: if your NSIS generates an error here it means you need to download the latest
+; visual studio redist package from microsoft.  Any redist 2008/SP1 or newer will do.
+Section "Microsoft Visual C++ 2008 SP1 Redist (required)"
+
+  SectionIn RO
+  SetOutPath $TEMP
+  File "${SourceDir}\vcredist_x64.exe"
+  Call CheckVCRedist
+  Pop $R0
+  StrCmp $R0 "-1" installRedist
+  DetailPrint "Visual C++ 2010 Redistributable already installed, skipping..."
+  Goto skipRedist
+  
+  installRedist:
+    ExecWait "$TEMP\vcredist_x64.exe"
+SkipRedist:  
 SectionEnd
 
 Section $(StartMenuShortCuts) SecShortcuts
+	SetShellVarContext all
 	CreateDirectory "$SMPROGRAMS\$(TITLE_SecMain)"
 	CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(UninstallShortCut).lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
 	CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(TITLE_SecMain).lnk" "$INSTDIR\basketpwd.exe" "" "$INSTDIR\basketpwd.exe" 0
@@ -103,12 +115,13 @@ LangString DESC_SecShortcuts ${LANG_ENGLISH} "Create Start Menu shortcuts"
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecQt} $(DESC_SecQt)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecShortcuts} $(DESC_SecShortcuts)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
-Section "Uninstall"
+
+Section Uninstall
+	SetShellVarContext all
+	Delete "$SMPROGRAMS\$(TITLE_SecMain)\$(TITLE_SecMain).lnk"
+	Delete "$SMPROGRAMS\$(TITLE_SecMain)\$(UninstallShortCut).lnk"
+	RMDir "$SMPROGRAMS\$(TITLE_SecMain)"
 	Delete "$INSTDIR\*.*"
 	RMDir "$INSTDIR"
 	DeleteRegKey /ifempty HKCU "Software\$(CompanyName)\$(TITLE_SecMain)"
-;	Delete "$SMPROGRAMS\$(TITLE_SecMain)\$(TITLE_SecMain).lnk"
-;	Delete "$SMPROGRAMS\$(TITLE_SecMain)\$(UninstallShortCut).lnk"
-	RMDir "$SMPROGRAMS\$(TITLE_SecMain)"
 SectionEnd
-

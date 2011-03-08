@@ -51,6 +51,7 @@ Section $(TITLE_SecQt) SecQt
 SectionEnd
 
 Section $(StartMenuShortCuts) SecShortcuts
+	SetShellVarContext all
 	CreateDirectory "$SMPROGRAMS\$(TITLE_SecMain)"
 	CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(UninstallShortCut).lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
 	CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(TITLE_SecMain).lnk" "$INSTDIR\basketpwd.exe" "" "$INSTDIR\basketpwd.exe" 0
@@ -69,6 +70,7 @@ LangString DESC_SecShortcuts ${LANG_ENGLISH} "Create Start Menu shortcuts"
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecShortcuts} $(DESC_SecShortcuts)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 Section "Uninstall"
+	SetShellVarContext all
 	Delete "$INSTDIR\*.*"
 	RMDir "$INSTDIR"
 	DeleteRegKey /ifempty HKCU "Software\$(CompanyName)\$(TITLE_SecMain)"
