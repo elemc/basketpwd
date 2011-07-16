@@ -14,7 +14,7 @@ BasketModel::BasketModel(QObject *parent) :
     recordIcon = QIcon(":/images/recordicon");
     folderIcon = QIcon(":/images/foldericon");
     folderCloseIcon = QIcon(":/images/foldercloseicon");
-
+    primarySelectMode = false;
 }
 BasketModel::~BasketModel()
 {
@@ -134,6 +134,20 @@ bool BasketModel::indexIsFolder(QModelIndex idx) const
 
     return false;
 }
+void BasketModel::setPrimarySelect(bool enabled)
+{
+    primarySelectMode = enabled;
+    reset();
+}
+QList<BasketBaseItem *>BasketModel::primaryList() const
+{
+    QList<BasketBaseItem *> pList;
+    if ( !rootItem )
+        return pList;
+
+    pList = rootItem->primaryList();
+    return pList;
+}
 
 // приваты обработки
 bool BasketModel::parseDocument(QDomDocument &doc)
@@ -178,6 +192,7 @@ bool BasketModel::parseElement(BasketBaseItem *parentItem, QDomElement element)
     else if ( element.tagName() == "item" ) {
         QString name = element.attribute( "name", trUtf8("Без имени") );
         QString login, cipherPwd;
+        QString sPrim = element.attribute("primary", trUtf8("false"));
 
         // определяем логин
         QDomNodeList listLogin = element.elementsByTagName("login");
@@ -189,6 +204,7 @@ bool BasketModel::parseElement(BasketBaseItem *parentItem, QDomElement element)
 
         BasketBaseItem *itemPwd = new BasketBaseItem( parentItem, this );
         itemPwd->setPassword(name, login, cipherPwd);
+        itemPwd->setPrimaryItem(QVariant(sPrim).toBool());
 
         // добавляем запись в дерево
         parentItem->addChild(itemPwd);
@@ -231,6 +247,7 @@ bool BasketModel::parseElementForDND(int row, const QModelIndex &parent, QDomEle
 
         QString name = element.attribute( "name", trUtf8("Без имени") );
         QString login, cipherPwd;
+        QString sPrim = element.attribute("primary", trUtf8("false"));
 
         // определяем логин
         QDomNodeList listLogin = element.elementsByTagName("login");
@@ -243,6 +260,7 @@ bool BasketModel::parseElementForDND(int row, const QModelIndex &parent, QDomEle
         item->setName(name);
         item->setLogin(login);
         item->setEncryptedPassword(cipherPwd);
+        item->setPrimaryItem(QVariant(sPrim).toBool());
     }
 
     return true;
@@ -317,6 +335,7 @@ QDomElement BasketModel::convertBasketItemToDomElement(BasketBaseItem *item, QDo
     else {
         itemElem = doc.createElement("item");
         itemElem.setAttribute("name", item->name());
+        itemElem.setAttribute("primary", QVariant(item->isPrimary()).toString());
 
         QDomElement login, pwd;
         login = doc.createElement("login");
@@ -410,6 +429,9 @@ Qt::ItemFlags BasketModel::flags(const QModelIndex &index) const
 
     if ( item->isFolder() )
         defaultFlags |= Qt::ItemIsDropEnabled;
+
+    if ( primarySelectMode && !item->isFolder() )
+        defaultFlags |= Qt::ItemIsUserCheckable;
 
     return defaultFlags;
 }
@@ -517,7 +539,14 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
         if ( !item->isFolder() )
             return blue_brush;
     }
-
+    else if ( role == Qt::CheckStateRole && primarySelectMode ) {
+        if ( !item->isFolder() && index.column() == 0 ) {
+            if ( item->isPrimary() )
+                return Qt::Checked;
+            else
+                return Qt::Unchecked;
+        }
+    }
 
     return QVariant();
 }
@@ -556,8 +585,22 @@ bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int r
     if ( !item )
         return false;
 
-    if ( role != Qt::EditRole )
+    if ( role != Qt::EditRole && role != Qt::CheckStateRole )
         return QAbstractItemModel::setData(index, value, role);
+
+    if ( role == Qt::CheckStateRole ) {
+        int s = value.toInt();
+        if (s == Qt::Checked) {
+            item->setPrimaryItem(true);
+            emit modelDataChanged();
+        }
+        else {
+            item->setPrimaryItem(false);
+            emit modelDataChanged();
+        }
+
+        return true;
+    }
 
     if ( item->isFolder() ) {
         if ( index.column() == 0 ) {

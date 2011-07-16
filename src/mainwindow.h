@@ -80,6 +80,7 @@ private:
 
     // Добавлено 0.4.4
     bool sortingEnabled;
+    QList<QAction *> primaryActions;
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -121,6 +122,8 @@ private slots:
     QString getDefaultDirectory() const;
 
     void changeFoldStatus(const QModelIndex &idx = QModelIndex());
+    void on_actionViewPrimaryChecks_triggered(bool checked);
+    void generateContextPrimaries();
 };
 #endif
 

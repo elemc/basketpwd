@@ -65,6 +65,8 @@
     <addaction name="actionViewUnExpand"/>
     <addaction name="separator"/>
     <addaction name="actionShowPwd"/>
+    <addaction name="separator"/>
+    <addaction name="actionViewPrimaryChecks"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -469,6 +471,14 @@
   <action name="actionCopyLogin">
    <property name="text">
     <string>Скопировать имя в буфер обмена</string>
+   </property>
+  </action>
+  <action name="actionViewPrimaryChecks">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Режим выбора первичных записей</string>
    </property>
   </action>
  </widget>

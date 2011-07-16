@@ -36,6 +36,8 @@ public:
     bool statusShowPasswords() const;
     bool indexIsFolder(QModelIndex idx = QModelIndex()) const;
     BasketBaseItem *itemAtIndex(QModelIndex &index) const;
+    void setPrimarySelect(bool enabled = false);
+    QList<BasketBaseItem *>primaryList() const;
 
     // наследуемые методы
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -86,6 +88,7 @@ private:
     QIcon folderIcon;
     QIcon folderCloseIcon;
     Qt::SortOrder mainSortOrder;
+    bool primarySelectMode;
 
 signals:
     void modelDataChanged();

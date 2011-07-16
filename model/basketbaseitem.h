@@ -35,6 +35,10 @@ public:
 
     void sortChilds(Qt::SortOrder order = Qt::AscendingOrder);
     void setFold(bool foldStatus = true, bool with_childs = false);
+    void setPrimaryItem(bool status = false);
+    bool isPrimary() const;
+
+    QList<BasketBaseItem *>primaryList();
 
 private:
     BasketBaseItem *_parentItem;
@@ -44,8 +48,10 @@ private:
     QString itemPassword;
     bool is_folder;
     bool foldItem;
+    bool primaryItem;
 
     QList<BasketBaseItem *> childItems;
+    void privatePrimaryList(QList<BasketBaseItem *> &list, BasketBaseItem *_parent);
 
     void sortList(QList<BasketBaseItem *> &list, Qt::SortOrder order = Qt::AscendingOrder);
 

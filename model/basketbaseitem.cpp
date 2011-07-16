@@ -9,6 +9,7 @@ BasketBaseItem::BasketBaseItem(BasketBaseItem *parentItem, QObject *parent) :
     _parentItem     = parentItem;
     is_folder       = false;
     foldItem        = false;
+    primaryItem     = false;
 }
 BasketBaseItem::~BasketBaseItem()
 {
@@ -185,4 +186,36 @@ void BasketBaseItem::setFold(bool foldStatus, bool with_childs) {
 }
 bool BasketBaseItem::foldStatus() const {
     return foldItem;
+}
+
+void BasketBaseItem::setPrimaryItem(bool status)
+{
+    primaryItem = status;
+}
+bool BasketBaseItem::isPrimary() const
+{
+    return primaryItem;
+}
+
+QList<BasketBaseItem *>BasketBaseItem::primaryList()
+{
+    QList<BasketBaseItem *> list;
+    foreach(BasketBaseItem *item, childItems) {
+        if ( item->isFolder() )
+            privatePrimaryList(list, item);
+        else if ( item->isPrimary() )
+            list.append(item);
+    }
+
+    return list;
+}
+void BasketBaseItem::privatePrimaryList(QList<BasketBaseItem *> &list, BasketBaseItem *_parent)
+{
+    foreach(BasketBaseItem *item, _parent->childItems) {
+        if (item->isFolder())
+            privatePrimaryList(list, item);
+        else if ( item->isPrimary() )
+            list.append(item);
+
+    }
 }

@@ -323,6 +323,7 @@ void MainWindow::loadDatabase()
         tree->resizeColumnToContents(2);*/
         tree->setColumnWidth(0, 300);
         tree->setColumnWidth(1, 200);
+        generateContextPrimaries();
     }
     else
         QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
@@ -685,4 +686,20 @@ void MainWindow::changeSortMode()
     else {
         tree->setSortingEnabled(false);
     }
+}
+
+void MainWindow::on_actionViewPrimaryChecks_triggered(bool checked)
+{
+    model->setPrimarySelect(checked);
+}
+void MainWindow::generateContextPrimaries()
+{
+    primaryActions.clear();
+    QList<BasketBaseItem *> list = model->primaryList();
+    foreach ( BasketBaseItem* item, list) {
+        QString name = item->name();
+        QString login = item->login();
+        QString pwd  = item->password();
+    }
+    // TODO: Не закончил!
 }
