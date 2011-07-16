@@ -34,7 +34,7 @@ public:
     void removeChildAt(int i);
 
     void sortChilds(Qt::SortOrder order = Qt::AscendingOrder);
-    void setFold(bool foldStatus = true);
+    void setFold(bool foldStatus = true, bool with_childs = false);
 
 private:
     BasketBaseItem *_parentItem;

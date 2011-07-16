@@ -85,6 +85,7 @@ private:
     QIcon recordIcon;
     QIcon folderIcon;
     QIcon folderCloseIcon;
+    Qt::SortOrder mainSortOrder;
 
 signals:
     void modelDataChanged();
@@ -93,6 +94,8 @@ signals:
 public slots:
     void setFoldIndex(QModelIndex idx = QModelIndex());
     void setUnFoldIndex(QModelIndex idx = QModelIndex());
+    void setFoldAll();
+    void setUnFoldAll();
 };
 
 #endif // BASKETMODEL_H

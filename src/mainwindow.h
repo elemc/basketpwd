@@ -24,6 +24,8 @@
 
 //#define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
 
+#define SORTING "SortingEnabled"
+
 //
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -44,6 +46,8 @@ private:
     void createTreeWidget();
     void initChangeStyles();
     void setModif(bool modificator);
+    void changeSortMode();
+
     QByteArray hashPassword( QString pwd );
 
     QTreeView *tree;
@@ -73,6 +77,9 @@ private:
 
     // Добавлено 0.4.1
     QString globalStyle;
+
+    // Добавлено 0.4.4
+    bool sortingEnabled;
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();

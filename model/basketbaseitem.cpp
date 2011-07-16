@@ -173,8 +173,15 @@ void BasketBaseItem::sortChilds(Qt::SortOrder order) {
     foldersList.clear();
     recordsList.clear();
 }
-void BasketBaseItem::setFold(bool foldStatus) {
+void BasketBaseItem::setFold(bool foldStatus, bool with_childs) {
     foldItem = foldStatus;
+
+    if ( with_childs ) {
+        foreach (BasketBaseItem *child, childItems) {
+            if ( child->isFolder() )
+                child->setFold(foldStatus, true);
+        }
+    }
 }
 bool BasketBaseItem::foldStatus() const {
     return foldItem;

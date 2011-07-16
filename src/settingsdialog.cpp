@@ -13,11 +13,13 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     QSettings set;
     QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
-    int csi = set.value(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState()).toInt();
+    int csi             = set.value(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState()).toInt();
+    int csort_raw       = set.value(tr(SORTING), true).toInt();
     Qt::CheckState cs = csi == 0 ? Qt::Unchecked : Qt::Checked;
+    Qt::CheckState csort = csort_raw == 0? Qt::Unchecked : Qt::Checked;
     m_ui->checkBoxDontClose->setCheckState(cs);
     m_ui->lineEditDefaultPath->setText(defaultPath);
-
+    m_ui->checkBoxSort->setCheckState(csort);
 }
 SettingsDialog::~SettingsDialog()
 {
@@ -61,8 +63,6 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
         QSettings set;
         QDir dir(defPath);
         if ( dir.exists() ) {
-
-
             set.setValue(tr("PathToDef"), defPath);
         }
 
@@ -78,6 +78,7 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
         }
 
         set.setValue(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState());
+        set.setValue(tr(SORTING), m_ui->checkBoxSort->checkState());
         accept();
     }
     else if ( m_ui->buttonBox->buttonRole( button ) == QDialogButtonBox::RejectRole )

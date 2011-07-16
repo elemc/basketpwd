@@ -541,10 +541,9 @@ void BasketModel::sort(int column, Qt::SortOrder order) {
     if ( !rootItem )
         return;
 
-    //beginResetModel();
     rootItem->sortChilds(order);
     reset();
-    //endResetModel();
+    mainSortOrder = order;
 }
 
 // наследуемые редактирование
@@ -605,6 +604,7 @@ bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
     parentItem->insertChild(row, newItem);
 
     endInsertRows();
+    parentItem->sortChilds(mainSortOrder);
     emit modelDataChanged();
     return true;
 }
@@ -718,10 +718,26 @@ void BasketModel::endResetModel()
 }
 #endif
 
+void BasketModel::setFoldAll()
+{
+    if ( !rootItem )
+        return;
+    rootItem->setFold(true, true);
+    emit modelDataChanged();
+}
+void BasketModel::setUnFoldAll()
+{
+    if ( !rootItem )
+        return;
+    rootItem->setFold(false, true);
+    emit modelDataChanged();
+}
+
 void BasketModel::setFoldIndex(QModelIndex idx)
 {
-    if ( !idx.isValid() )
+    if ( !idx.isValid() ) {
         return;
+    }
 
     BasketBaseItem *item = itemAtIndex(idx);
     if ( item->foldStatus() )
@@ -731,8 +747,9 @@ void BasketModel::setFoldIndex(QModelIndex idx)
 }
 void BasketModel::setUnFoldIndex(QModelIndex idx)
 {
-    if ( !idx.isValid() )
+    if ( !idx.isValid() ) {
         return;
+    }
 
     BasketBaseItem *item = itemAtIndex(idx);
     if ( !item->foldStatus() )

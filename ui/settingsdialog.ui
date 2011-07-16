@@ -64,6 +64,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxSort">
+        <property name="text">
+         <string>Сортировать пароли в дереве</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

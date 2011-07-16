@@ -5,6 +5,8 @@
 #include <QAbstractButton>
 #include <QDateTime>
 
+#define SORTING "SortingEnabled"
+
 namespace Ui {
     class SettingsDialog;
 }

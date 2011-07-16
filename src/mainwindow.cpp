@@ -17,15 +17,10 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     tree->setDragEnabled(true);
     tree->setAcceptDrops(true);
     tree->setDropIndicatorShown(true);
-    tree->setSortingEnabled(true);
     setCentralWidget(tree);
 
     connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
-
-    connect ( tree, SIGNAL(collapsed(QModelIndex)), model, SLOT(setUnFoldIndex(QModelIndex)) );
-    connect ( tree, SIGNAL(expanded(QModelIndex)), model, SLOT(setFoldIndex(QModelIndex)) );
-
     connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)));
 
     newDatabase();
@@ -36,6 +31,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 
     defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
     dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
+    sortingEnabled = set.value(tr(SORTING), true).toBool();
 
     QFileInfo defaultFile ( defaultPath + QDir::separator() + "default.cxml" );
     if ( defaultFile.exists() ) {
@@ -54,6 +50,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 
     // Добавлено в версии 0.4.1 смена стиля окон
     initChangeStyles();
+    changeSortMode();
 }
 MainWindow::~MainWindow() {
     if ( quitAction )
@@ -145,26 +142,13 @@ void MainWindow::createTreeWidget()
         tree->addAction( actionEditEdit );
         tree->addAction( actionEditDel );
 
+        connect ( this->actionViewExpand, SIGNAL(triggered()), model, SLOT(setFoldAll()) );
+        connect ( this->actionViewUnExpand, SIGNAL(triggered()), model, SLOT(setUnFoldAll()) );
+
         connect ( this->actionViewExpand, SIGNAL(triggered()), tree, SLOT(expandAll()));
         connect ( this->actionViewUnExpand, SIGNAL(triggered()), tree, SLOT(collapseAll()));
-        //connect (tree, SIGNAL())
-        /*connect (mainTree,
-                 SIGNAL (itemActivated(QTreeWidgetItem*,int)),
-                 this,
-                 SLOT (treeItemDoubleClicked (QTreeWidgetItem *)) );
-
-        // Подключаем сигналы сворачивания/разворачивания
-        connect ( mainTree,
-                  SIGNAL (itemExpanded (QTreeWidgetItem *)),
-                          this,
-                          SLOT (treeItemExpanded ( QTreeWidgetItem *)) );
-        connect ( mainTree,
-                  SIGNAL (itemCollapsed (QTreeWidgetItem *)),
-                          this,
-                          SLOT (treeItemCollapsed ( QTreeWidgetItem *)) );*/
-        // TODO: Сделать слоты реакций
-        //mainTree->sortByColumn(0, Qt::AscendingOrder );
-        // TODO: Сделать сортировку
+        connect ( tree, SIGNAL(collapsed(QModelIndex)), model, SLOT(setUnFoldIndex(QModelIndex)) );
+        connect ( tree, SIGNAL(expanded(QModelIndex)), model, SLOT(setFoldIndex(QModelIndex)) );
 }
 void MainWindow::initChangeStyles()
 {
@@ -597,6 +581,8 @@ void MainWindow::on_actionSettings_triggered()
     if ( sd.exec() == QDialog::Accepted ) {
         QSettings set;
         dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
+        sortingEnabled = set.value(tr(SORTING), true).toBool();
+        changeSortMode();
         if ( sd.getIdent() != oldIdent ) {
             model->setIdentifier(sd.getIdent());
             setModif(true);
@@ -689,4 +675,14 @@ void MainWindow::changeFoldStatus(const QModelIndex &idx)
         return;
 
     tree->expand(idx);
+}
+void MainWindow::changeSortMode()
+{
+    if ( sortingEnabled ) {
+        tree->setSortingEnabled(true);
+        tree->sortByColumn(0);
+    }
+    else {
+        tree->setSortingEnabled(false);
+    }
 }
