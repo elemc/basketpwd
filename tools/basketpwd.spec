@@ -1,16 +1,16 @@
 Name:			basketpwd
 Version:		0.4.3
-Release:		1%{?dist}
+Release:		2%{?dist}
 Summary:		Basket of passwords
-Summary(ru):	Корзинка паролей
+Summary(ru):		Корзинка паролей
 Group:			Applications/System
 License:		GPLv2
-Source0:		%{name}-%{version}.tar.bz2
+Source0:		http://cloud.github.com/downloads/elemc/%{name}/%{name}-%{version}.tar.bz2
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:			http://github.com/elemc/basketpwd
 
 Requires:		qt openssl
-BuildRequires:	qt-devel openssl-devel gcc-c++ desktop-file-utils cmake
+BuildRequires:		qt-devel openssl-devel gcc-c++ desktop-file-utils cmake
 
 %description 
 Basket of passwords
@@ -48,6 +48,9 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Mon Mar 21 2011 Alexei Panov <avpanov@atisserv.ru> - 0.4.3-2
+- fix source in spec to url for koji
+- move package to russianfedora repository
 * Thu Dec 23 2010 Alexei Panov <avpanov@atisserv.ru> - 0.4.3-1
 - fix checkbox in settings dialog
 - changed default folder for open/save file dialog
