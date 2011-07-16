@@ -45,6 +45,7 @@ public:
     QModelIndex parent(const QModelIndex &child) const;
     QVariant data(const QModelIndex &index, int role) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 
     // наследуемые методы редактирования
     bool setData(const QModelIndex &index, const QVariant &value, int role);
@@ -77,6 +78,8 @@ private:
     bool changeItemPassword(BasketBaseItem *item, QString newPassword);
     QDomElement convertBasketItemToDomElement(BasketBaseItem *item, QDomDocument &doc) const;
     QByteArray indexesToXML(const QModelIndexList &indexes) const;
+//    void softReset();
+//    void softResetItem(BasketBaseItem *item);
 
     // Декорации
     QIcon recordIcon;
@@ -85,8 +88,11 @@ private:
 
 signals:
     void modelDataChanged();
-public slots:
+    void ThisIndexIsFold(const QModelIndex &index) const;
 
+public slots:
+    void setFoldIndex(QModelIndex idx = QModelIndex());
+    void setUnFoldIndex(QModelIndex idx = QModelIndex());
 };
 
 #endif // BASKETMODEL_H

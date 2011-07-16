@@ -8,6 +8,7 @@ BasketBaseItem::BasketBaseItem(BasketBaseItem *parentItem, QObject *parent) :
     itemLogin       = QString();
     _parentItem     = parentItem;
     is_folder       = false;
+    foldItem        = false;
 }
 BasketBaseItem::~BasketBaseItem()
 {
@@ -116,4 +117,65 @@ void BasketBaseItem::setEncryptedPassword(QString pwd)
 {
     if ( !isFolder() )
         itemPassword = pwd;
+}
+
+void BasketBaseItem::sortList(QList<BasketBaseItem *> &list, Qt::SortOrder order)
+{
+    bool changes = false;
+    do {
+        changes = false;
+        for ( int i = 0; i < list.size(); i++ ) {
+            if ( i < list.size()-1 ) {
+                QString next = list[i+1]->name();
+                QString cur = list[i]->name();
+                if ( order == Qt::AscendingOrder ) {
+                    if ( next > cur ) {
+                        list.swap(i, i+1);
+                        changes = true;
+                    }
+                }
+                else {
+                    if ( next < cur ) {
+                        list.swap(i, i+1);
+                        changes = true;
+                    }
+                }
+            }
+        }
+    } while ( changes );
+
+}
+
+void BasketBaseItem::sortChilds(Qt::SortOrder order) {
+    QList<BasketBaseItem *> foldersList;
+    QList<BasketBaseItem *> recordsList;
+    foreach(BasketBaseItem *item, childItems) {
+        if (item->isFolder()) {
+            foldersList.append(item);
+            item->sortChilds(order);
+        }
+        else
+            recordsList.append(item);
+    }
+
+    childItems.clear();
+
+    // сортируем
+    sortList(foldersList, order);
+    sortList(recordsList, order);
+
+    foreach(BasketBaseItem *f, foldersList)
+        childItems.append(f);
+
+    foreach (BasketBaseItem *r, recordsList)
+        childItems.append(r);
+
+    foldersList.clear();
+    recordsList.clear();
+}
+void BasketBaseItem::setFold(bool foldStatus) {
+    foldItem = foldStatus;
+}
+bool BasketBaseItem::foldStatus() const {
+    return foldItem;
 }

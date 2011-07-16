@@ -17,15 +17,23 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     tree->setDragEnabled(true);
     tree->setAcceptDrops(true);
     tree->setDropIndicatorShown(true);
+    tree->setSortingEnabled(true);
     setCentralWidget(tree);
 
     connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
+
+    connect ( tree, SIGNAL(collapsed(QModelIndex)), model, SLOT(setUnFoldIndex(QModelIndex)) );
+    connect ( tree, SIGNAL(expanded(QModelIndex)), model, SLOT(setFoldIndex(QModelIndex)) );
+
+    connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)));
+
     newDatabase();
 
     // Пытаемся обнаружить и загрузить файл с паролями по-умолчанию
     // Добавлено 0.2.6
     QSettings set;
+
     defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
     dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
 
@@ -673,4 +681,12 @@ QString MainWindow::getDefaultDirectory() const
     QSettings set;
     QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
     return defaultPath;
+}
+
+void MainWindow::changeFoldStatus(const QModelIndex &idx)
+{
+    if ( tree->isExpanded(idx) )
+        return;
+
+    tree->expand(idx);
 }

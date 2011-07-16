@@ -21,6 +21,7 @@ public:
     QString login() const;
     QString password() const;
     bool isFolder() const;
+    bool foldStatus() const;
 
     void setFolder(QString name);
     void setPassword(QString name, QString login, QString pwd);
@@ -32,6 +33,9 @@ public:
     void removeChild(BasketBaseItem *child);
     void removeChildAt(int i);
 
+    void sortChilds(Qt::SortOrder order = Qt::AscendingOrder);
+    void setFold(bool foldStatus = true);
+
 private:
     BasketBaseItem *_parentItem;
 
@@ -39,8 +43,11 @@ private:
     QString itemLogin;
     QString itemPassword;
     bool is_folder;
+    bool foldItem;
 
     QList<BasketBaseItem *> childItems;
+
+    void sortList(QList<BasketBaseItem *> &list, Qt::SortOrder order = Qt::AscendingOrder);
 
 signals:
 

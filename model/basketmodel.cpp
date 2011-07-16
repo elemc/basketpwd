@@ -1,5 +1,7 @@
 #include "basketmodel.h"
 
+#include <QDebug>
+
 BasketModel::BasketModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
@@ -159,6 +161,9 @@ bool BasketModel::parseElement(BasketBaseItem *parentItem, QDomElement element)
         QString folderName = element.attribute( "name", trUtf8("Без имени") );
         BasketBaseItem *fold = new BasketBaseItem( parentItem, this );
         fold->setFolder(folderName);
+        QString foldStatus = element.attribute("fold-status", QString("false"));
+        fold->setFold(QVariant(foldStatus).toBool());
+
 
         // добавляем папочку в дерево
         parentItem->addChild(fold);
@@ -205,6 +210,8 @@ bool BasketModel::parseElementForDND(int row, const QModelIndex &parent, QDomEle
         if ( !item )
             return false;
         item->setName(element.attribute("name", QString()));
+        QString foldStatus = element.attribute("fold-status", QString("false"));
+        item->setFold(QVariant(foldStatus).toBool());
         // парсим подчиненных
         for(QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling()) {
             if ( n.isElement() )
@@ -300,6 +307,7 @@ QDomElement BasketModel::convertBasketItemToDomElement(BasketBaseItem *item, QDo
     if ( item->isFolder() ) {
         itemElem = doc.createElement("folder");
         itemElem.setAttribute("name", item->name());
+        itemElem.setAttribute("fold-status", QVariant(item->foldStatus()).toString());
 
         for ( int i = 0; i < item->childCount(); i++ ) {
             QDomElement childElem = convertBasketItemToDomElement(item->childItemAt(i), doc);
@@ -468,8 +476,13 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     BasketBaseItem *item = static_cast<BasketBaseItem *>(index.internalPointer());
+
     if ( !item )
         return QVariant();
+
+    if ( item->foldStatus() && index.column() == 0 && role == Qt::DisplayRole) {
+        emit ThisIndexIsFold(index);
+    }
 
     if ( role == Qt::DisplayRole || role == Qt::EditRole ) {
         switch(index.column()) {
@@ -520,6 +533,18 @@ int BasketModel::rowCount(const QModelIndex &parent) const
         item = static_cast<BasketBaseItem *>(parent.internalPointer());
 
     return item->childCount();
+}
+void BasketModel::sort(int column, Qt::SortOrder order) {
+    if ( column != 0 )
+        return;
+
+    if ( !rootItem )
+        return;
+
+    //beginResetModel();
+    rootItem->sortChilds(order);
+    reset();
+    //endResetModel();
 }
 
 // наследуемые редактирование
@@ -692,3 +717,27 @@ void BasketModel::endResetModel()
     reset();
 }
 #endif
+
+void BasketModel::setFoldIndex(QModelIndex idx)
+{
+    if ( !idx.isValid() )
+        return;
+
+    BasketBaseItem *item = itemAtIndex(idx);
+    if ( item->foldStatus() )
+        return;
+    item->setFold(true);
+    emit modelDataChanged();
+}
+void BasketModel::setUnFoldIndex(QModelIndex idx)
+{
+    if ( !idx.isValid() )
+        return;
+
+    BasketBaseItem *item = itemAtIndex(idx);
+    if ( !item->foldStatus() )
+        return;
+    item->setFold(false);
+
+    emit modelDataChanged();
+}

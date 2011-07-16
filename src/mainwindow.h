@@ -68,6 +68,7 @@ private:
 
     // Добавлено 0.2.6
     QString defaultPath;
+    QString preDefaultPath;
     bool dontCloseApp;
 
     // Добавлено 0.4.1
@@ -111,6 +112,8 @@ private slots:
     void slotChangeStypeApp(QAction *styleAct);
 
     QString getDefaultDirectory() const;
+
+    void changeFoldStatus(const QModelIndex &idx = QModelIndex());
 };
 #endif
 
