@@ -1,6 +1,6 @@
 Name:			basketpwd
-Version:		0.4.3
-Release:		2%{?dist}
+Version:		0.4.4
+Release:		1%{?dist}
 Summary:		Basket of passwords
 Summary(ru):		Корзинка паролей
 Group:			Applications/System
@@ -48,6 +48,8 @@ make clean
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Sun Jul 17 2011 Alexei Panov <avpanov@atisserv.ru> - 0.4.4-1
+- new release
 * Mon Mar 21 2011 Alexei Panov <avpanov@atisserv.ru> - 0.4.3-2
 - fix source in spec to url for koji
 - move package to russianfedora repository

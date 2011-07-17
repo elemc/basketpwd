@@ -3,7 +3,7 @@
 # Written by Alexei Panov <elemc@atisserv.ru>
 
 PRGNAM=basketpwd
-VERSION=0.4.1
+VERSION=0.4.4
 ARCH=${ARCH:-i486}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_elemc}

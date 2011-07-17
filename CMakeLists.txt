@@ -6,7 +6,7 @@ endif ()
 
 #set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
-set (PROJECT_VERSION 0.4.3)
+set (PROJECT_VERSION 0.4.4)
 set (HEADERS 
 	aboutdialog.h
 	src/basketutils.h
