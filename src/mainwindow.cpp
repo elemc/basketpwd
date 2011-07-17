@@ -10,6 +10,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     setupUi(this);
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
+    primaryActions = new QActionGroup(this);
 
     model = new BasketModel(this);
     tree = new QTreeView( this );
@@ -19,9 +20,11 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     tree->setDropIndicatorShown(true);
     setCentralWidget(tree);
 
-    connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)));
+    connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)) );
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
-    connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)));
+    connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)) );
+    connect ( model, SIGNAL(primaryChanged()), this, SLOT(generateContextPrimaries()) );
+    connect ( primaryActions, SIGNAL(triggered(QAction*)), this, SLOT(primaryActionsTriggered(QAction*)) );
 
     newDatabase();
 
@@ -92,6 +95,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 // Инициализаторы
+void MainWindow::restoreTrayIcon()
+{
+    trayIconMenu->clear();
+    trayIconMenu->addAction(minimizeAction);
+    trayIconMenu->addAction(maximizeAction);
+    trayIconMenu->addAction(restoreAction);
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(quitAction);
+}
+
 void MainWindow::createTrayIcon()
 {
     minimizeAction = new QAction(trUtf8("&Свернуть"), this);
@@ -107,11 +120,7 @@ void MainWindow::createTrayIcon()
     connect(quitAction, SIGNAL(triggered()), this, SLOT(trayIconClose())); //SLOT(quit()));
 
     trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(minimizeAction);
-    trayIconMenu->addAction(maximizeAction);
-    trayIconMenu->addAction(restoreAction);
-    trayIconMenu->addSeparator();
-    trayIconMenu->addAction(quitAction);
+    restoreTrayIcon();
 
     trayIcon = new QSystemTrayIcon(this);
 
@@ -317,10 +326,6 @@ void MainWindow::loadDatabase()
     // Если же все-таки файл может быть прочитан
     if ( fill_result ) {
         mainPassword = hashPassword(tempPassword);
-        // FIXME: Is not working
-        /*tree->resizeColumnToContents(0);
-        tree->resizeColumnToContents(1);
-        tree->resizeColumnToContents(2);*/
         tree->setColumnWidth(0, 300);
         tree->setColumnWidth(1, 200);
         generateContextPrimaries();
@@ -694,12 +699,39 @@ void MainWindow::on_actionViewPrimaryChecks_triggered(bool checked)
 }
 void MainWindow::generateContextPrimaries()
 {
-    primaryActions.clear();
+    foreach ( QAction *act, primaryActions->actions() ) {
+        act->~QAction();
+    }
+
+    restoreTrayIcon();
     QList<BasketBaseItem *> list = model->primaryList();
     foreach ( BasketBaseItem* item, list) {
         QString name = item->name();
         QString login = item->login();
         QString pwd  = item->password();
+
+        QAction *act = new QAction(this);
+        act->setText(name);
+        act->setToolTip(login);
+        act->setData(pwd);
+
+        primaryActions->addAction(act);
     }
-    // TODO: Не закончил!
+
+    if ( primaryActions->actions().size() > 0 ) {
+        trayIconMenu->insertActions(minimizeAction, primaryActions->actions());
+        trayIconMenu->insertSeparator(minimizeAction);
+    }
+}
+void MainWindow::primaryActionsTriggered(QAction *act)
+{
+    if ( !act )
+        return;
+
+    QString pwd = act->data().toString();
+    BasketUtils butil;
+    QString cpwd = butil.decrypt(pwd, BasketUtils::toHex(mainPassword));
+
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(cpwd);
 }

@@ -593,10 +593,12 @@ bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int r
         if (s == Qt::Checked) {
             item->setPrimaryItem(true);
             emit modelDataChanged();
+            emit primaryChanged();
         }
         else {
             item->setPrimaryItem(false);
             emit modelDataChanged();
+            emit primaryChanged();
         }
 
         return true;

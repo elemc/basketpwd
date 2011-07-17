@@ -131,6 +131,8 @@
    <addaction name="separator"/>
    <addaction name="actionShowPwd"/>
    <addaction name="separator"/>
+   <addaction name="actionViewPrimaryChecks"/>
+   <addaction name="separator"/>
    <addaction name="actionHelpAbout"/>
   </widget>
   <action name="actionNew">
@@ -476,6 +478,10 @@
   <action name="actionViewPrimaryChecks">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../icon-images.qrc">
+     <normaloff>:/images/images/stock_task.png</normaloff>:/images/images/stock_task.png</iconset>
    </property>
    <property name="text">
     <string>Режим выбора первичных записей</string>

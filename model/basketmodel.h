@@ -80,8 +80,6 @@ private:
     bool changeItemPassword(BasketBaseItem *item, QString newPassword);
     QDomElement convertBasketItemToDomElement(BasketBaseItem *item, QDomDocument &doc) const;
     QByteArray indexesToXML(const QModelIndexList &indexes) const;
-//    void softReset();
-//    void softResetItem(BasketBaseItem *item);
 
     // Декорации
     QIcon recordIcon;
@@ -93,6 +91,7 @@ private:
 signals:
     void modelDataChanged();
     void ThisIndexIsFold(const QModelIndex &index) const;
+    void primaryChanged();
 
 public slots:
     void setFoldIndex(QModelIndex idx = QModelIndex());

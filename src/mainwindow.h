@@ -47,6 +47,7 @@ private:
     void initChangeStyles();
     void setModif(bool modificator);
     void changeSortMode();
+    void restoreTrayIcon();
 
     QByteArray hashPassword( QString pwd );
 
@@ -80,7 +81,7 @@ private:
 
     // Добавлено 0.4.4
     bool sortingEnabled;
-    QList<QAction *> primaryActions;
+    QActionGroup *primaryActions;
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -124,6 +125,7 @@ private slots:
     void changeFoldStatus(const QModelIndex &idx = QModelIndex());
     void on_actionViewPrimaryChecks_triggered(bool checked);
     void generateContextPrimaries();
+    void primaryActionsTriggered(QAction *act);
 };
 #endif
 
