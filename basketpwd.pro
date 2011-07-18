@@ -1,7 +1,8 @@
 TEMPLATE = app
 QT = gui \
     core \
-    xml
+    xml \
+    network
 CONFIG += qt \
     warn_on \
     debug_and_release \
@@ -20,7 +21,8 @@ HEADERS = src/mainwindow.h \
     aboutdialog.h \
     src/settingsdialog.h \
     model/basketbaseitem.h \
-    model/basketmodel.h
+    model/basketmodel.h \
+    src/firstnetworksender.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
     src/basketutils.cpp \
@@ -28,7 +30,8 @@ SOURCES = src/mainwindow.cpp \
     aboutdialog.cpp \
     src/settingsdialog.cpp \
     model/basketbaseitem.cpp \
-    model/basketmodel.cpp
+    model/basketmodel.cpp \
+    src/firstnetworksender.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 win32 {

@@ -21,8 +21,7 @@
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
 #include "../model/basketbaseitem.h"
-
-//#define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
+#include "firstnetworksender.h"
 
 #define SORTING "SortingEnabled"
 
@@ -49,6 +48,8 @@ private:
     void changeSortMode();
     void restoreTrayIcon();
 
+    void initVariables();
+
     QByteArray hashPassword( QString pwd );
 
     QTreeView *tree;
@@ -56,7 +57,7 @@ private:
 
     QString fileName;
     QByteArray mainPassword;
-    bool isModified;
+    bool    isModified;
     bool    isSimpleXML;
 
     // Добавлено 0.2.5
@@ -82,6 +83,9 @@ private:
     // Добавлено 0.4.4
     bool sortingEnabled;
     QActionGroup *primaryActions;
+
+    // добавлено 0.4.5
+    FirstNetworkSender *firstNetSender;
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -126,6 +130,8 @@ private slots:
     void on_actionViewPrimaryChecks_triggered(bool checked);
     void generateContextPrimaries();
     void primaryActionsTriggered(QAction *act);
+
+    void NetworkError(QString errmsg);
 };
 #endif
 

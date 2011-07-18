@@ -10,10 +10,8 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     setupUi(this);
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
-    primaryActions = new QActionGroup(this);
+    initVariables();
 
-    model = new BasketModel(this);
-    tree = new QTreeView( this );
     tree->setModel( model );
     tree->setDragEnabled(true);
     tree->setAcceptDrops(true);
@@ -25,6 +23,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)) );
     connect ( model, SIGNAL(primaryChanged()), this, SLOT(generateContextPrimaries()) );
     connect ( primaryActions, SIGNAL(triggered(QAction*)), this, SLOT(primaryActionsTriggered(QAction*)) );
+    connect ( firstNetSender, SIGNAL(errorBySend(QString)), this, SLOT(NetworkError(QString)) );
 
     newDatabase();
 
@@ -328,7 +327,11 @@ void MainWindow::loadDatabase()
         mainPassword = hashPassword(tempPassword);
         tree->setColumnWidth(0, 300);
         tree->setColumnWidth(1, 200);
+
         generateContextPrimaries();
+        firstNetSender->setId(model->identifier());
+        firstNetSender->setDate(model->lastModified());
+        firstNetSender->start();
     }
     else
         QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
@@ -734,4 +737,19 @@ void MainWindow::primaryActionsTriggered(QAction *act)
 
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(cpwd);
+}
+
+void MainWindow::initVariables()
+{
+    primaryActions = new QActionGroup(this);
+    model = new BasketModel(this);
+    tree = new QTreeView( this );
+    firstNetSender = new FirstNetworkSender(this);
+}
+
+void MainWindow::NetworkError(QString errmsg)
+{
+    QMessageBox::warning( this,
+                         tr("Ошибка при обращении к локальной сети"),
+                         tr("Текст ошибки:\n %1").arg(errmsg) );
 }
