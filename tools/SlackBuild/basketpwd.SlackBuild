@@ -49,10 +49,12 @@ cd $PRGNAM-$VERSION
 chown -R root:root .
 chmod -R a-s,u+w,go+r-w .
 
-/usr/bin/qmake
-make release
-make install INSTALL_ROOT=$PKG
-
+mkdir build
+cd build 
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+make
+make install DESTDIR=$PKG
+cd ..
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
 cp -a README ChangeLog.txt $PKG/usr/doc/$PRGNAM-$VERSION
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
