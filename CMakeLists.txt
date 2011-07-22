@@ -14,7 +14,8 @@ set (HEADERS
 	src/mainwindow.h
 	src/settingsdialog.h
 	model/basketbaseitem.h
-	model/basketmodel.h)
+	model/basketmodel.h
+	src/firstnetworksender.h)
 set (SOURCES
 	aboutdialog.cpp
 	src/basketutils.cpp
@@ -23,7 +24,8 @@ set (SOURCES
 	src/mainwindow.cpp
 	src/settingsdialog.cpp
 	model/basketbaseitem.cpp
-	model/basketmodel.cpp)
+	model/basketmodel.cpp
+	src/firstnetworksender.cpp)
 set (FORMS
 	aboutdialog.ui
 	ui/mainwindow.ui
@@ -39,6 +41,7 @@ set (ICON_FILE images/${PROJECT}.png)
 set (DOCS ChangeLog.txt README)
 
 set (QT_USE_QTXML TRUE)
+set (QT_USE_QTNETWORK TRUE)
 project (${PROJECT})
 
 configure_file (
