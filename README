@@ -34,15 +34,8 @@ $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr #(if you have install application in /usr
 
 Installation for Fedora Linux
 =============================
-* add repository rpmatis:
- for Fedora 13
-    # yum localinstall http://repo.atisserv.ru/rpmatis/fedora/13/x86_64/rpmatis-release-13-3.noarch.rpm --nogpgcheck
- for Fedora 14
-    # yum localinstall http://repo.atisserv.ru/rpmatis/fedora/14/i386/rpmatis-fedora-release-14-1.fc14.noarch.rpm --nogpgcheck
-* run yum update:
- # yum update
-* install package basketpwd:
- # yum install basketpwd
+for Fedora 13 and later basketpwd packages in RFRemix repository:
+    # http://koji.russianfedora.ru/koji/packageinfo?packageID=101
 
 Installation for Slackware Linux
 ================================
@@ -62,6 +55,7 @@ Installation for OpenSUSE Linux
 First, add repository:
     * for 11.2		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.2
     * for 11.3		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.3
+    * for 11.4		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.4
     * for Facctory	http://download.opensuse.org/repositories/home:/elemc/openSUSE_Factory
  and install package named basketpwd, as example
     zypper in basketpwd
