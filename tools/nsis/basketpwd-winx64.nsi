@@ -65,6 +65,7 @@ Section $(TITLE_SecMain) SecMain
 	File "${SourceDir}\README"
 	File "${SourceDir}\ChangeLog.txt"
 	File "${SourceDir}\basketpwd.exe.manifest"
+	File "${SourceDir}\libeay32.dll"
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKCU "Software\$(CompanyName)\$(TITLE_SecMain)" "" $INSTDIR
 SectionEnd
