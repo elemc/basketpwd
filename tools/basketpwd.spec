@@ -1,6 +1,6 @@
 Name:			basketpwd
 Version:		0.4.4
-Release:		1%{?dist}
+Release:		2%{?dist}
 Summary:		Basket of passwords
 Summary(ru):		Корзинка паролей
 Group:			Applications/System
@@ -24,17 +24,25 @@ The program for storage and information management about passwords.
 %setup -q
 
 %build
-%cmake .
-make VERBOSE=1 %{?_smp_mflags}
+mkdir build-cmake
+pushd build-cmake
+%cmake ..
+make %{?_smp_mflags}
+popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
+
+pushd build-cmake
 make install DESTDIR=$RPM_BUILD_ROOT
+popd
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
-%check
-ctest
+#%check
+#pushd build-cmake
+#ctest
+#popd
 
 %files
 %defattr(-,root,root)
@@ -44,10 +52,15 @@ ctest
 %doc ChangeLog.txt README
 
 %clean
+pushd build-cmake
 make clean
+popd
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Thu Aug 11 2011 Alexei Panov <elemc AT atisserv DOT ru> - 0.4.4-2
+- Change build dir for cmake
+
 * Sun Jul 17 2011 Alexei Panov <avpanov@atisserv.ru> - 0.4.4-1
 - new release
 * Mon Mar 21 2011 Alexei Panov <avpanov@atisserv.ru> - 0.4.3-2
