@@ -1,7 +1,5 @@
 #include "basketmodel.h"
 
-#include <QDebug>
-
 BasketModel::BasketModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
@@ -742,12 +740,6 @@ bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
             parseElementForDND( beginRow, parent, n.toElement() );
     }
 
-    /*if ( action == Qt::CopyAction ) {
-
-    }
-    else if ( action == Qt::MoveAction ) {
-
-    }*/
     emit modelDataChanged();
     return true;
 }

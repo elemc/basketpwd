@@ -228,36 +228,6 @@ void MainWindow::saveAs()
 }
 void MainWindow::saveDatabase()
 {
-    /*QString ext = fileName.right(4);
-
-    QDomDocument    doc;
-    QDomElement	root = doc.createElement( trUtf8("basket-passwords") );
-    root.setAttribute(QString("ident"), databaseIdentifier);
-
-    // Сохраняем текущий параметр даты/времени
-    lastModified = QDateTime::currentDateTime();
-    root.setAttribute(QString("modified"), lastModified.toString(DATE_TIME_FORMAT));
-
-    doc.appendChild( root );
-
-    for ( int i = 0; i < mainTree->topLevelItemCount(); i++ )
-            addTreeItemToDom( &root, mainTree->topLevelItem(i) );
-    // TODO: Сделать сохранение списка
-
-    QByteArray bufferArray;
-    QBuffer outFile ( &bufferArray );
-    bool result = outFile.open( QIODevice::WriteOnly | QIODevice::Text );
-    if ( !result ) {
-        QMessageBox::critical( this, trUtf8("Ошибка доступа к памяти"),
-                               trUtf8("Невозможно выделить память для хранения дерева.").arg( fileName ) );
-        return;
-    }
-    QTextStream out(&outFile);
-    doc.save(out, 4);
-    outFile.close();
-
-    //Пишем в истинный файл
-    BasketUtils butil;*/
     QByteArray buf = model->modelDataToXML();
     if ( buf.isEmpty() ) {
         QMessageBox::critical(this,
