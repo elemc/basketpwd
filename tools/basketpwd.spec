@@ -1,6 +1,6 @@
 Name:			basketpwd
-Version:		0.4.4
-Release:		2%{?dist}
+Version:		0.4.5
+Release:		1%{?dist}
 Summary:		Basket of passwords
 Summary(ru):		Корзинка паролей
 Group:			Applications/System
@@ -39,11 +39,6 @@ popd
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
-#%check
-#pushd build-cmake
-#ctest
-#popd
-
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
@@ -58,6 +53,9 @@ popd
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Thu Sep  8 2011 Alexei Panov <elemc AT atisserv DOT ru> - 0.4.5-1
+- New version 0.4.5 (see ChangeLog.txt)
+
 * Thu Aug 11 2011 Alexei Panov <elemc AT atisserv DOT ru> - 0.4.4-2
 - Change build dir for cmake
 
