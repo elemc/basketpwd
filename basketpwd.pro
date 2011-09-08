@@ -51,7 +51,7 @@ unix {
         basket_desktop \
         basket_icon
 }
-VERSION = 0.4.4
+VERSION = 0.4.5
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 DEFINES += QMAKE_SET=1
