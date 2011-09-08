@@ -72,6 +72,9 @@ MainWindow::~MainWindow() {
 
     if ( trayIcon )
         delete trayIcon;
+
+    if ( primaryActions )
+        delete primaryActions;
 }
 
 // Виртуалы

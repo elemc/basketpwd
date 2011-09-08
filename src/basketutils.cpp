@@ -198,6 +198,8 @@ QByteArray BasketUtils::decrypt(QByteArray buf, QString pwd)
             if (i != 0)
                 cipherBuffer.append(ciph16);
         }
+
+        delete [] cipher;
     }
 
     return cipherBuffer;
