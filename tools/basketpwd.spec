@@ -1,3 +1,18 @@
+# if configure_method is 0 - using qmake or
+#    configure_method is 1 - using cmake
+
+%define configure_method 1
+
+%if 0%{?rhel} == 6
+%define configure_method 0
+%endif
+
+%define qmake /usr/bin/qmake-qt4
+
+%if (0%{?fedora} == 0) && (0%{?rhel} == 0)
+%define qmake %{_libdir}/qt4/bin/qmake -spec linux-g++
+%endif
+
 Name:			basketpwd
 Version:		0.4.5
 Release:		1%{?dist}
@@ -10,7 +25,30 @@ BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:			http://github.com/elemc/basketpwd
 
 Requires:		qt openssl
-BuildRequires:		qt-devel openssl-devel gcc-c++ desktop-file-utils cmake
+
+BuildRequires:		openssl-devel 
+BuildRequires:		gcc-c++ 
+BuildRequires:		desktop-file-utils
+
+%if 0%{?rhel} == 6
+BuildRequires:		qt4-devel
+%endif
+
+%if 0%{?fedora} < 14
+BuildRequires:		qt4-devel
+%endif
+
+%if 0%{?fedora} >= 14
+BuildRequires:		qt-devel
+%endif
+
+%if (0%{?fedora} == 0) && (0%{?rhel} == 0)
+BuildRequires:	     	qt-devel
+%endif
+
+%if 0%{?fedora} > 0
+BuildRequires:		cmake
+%endif
 
 %description 
 Basket of passwords
@@ -26,7 +64,11 @@ The program for storage and information management about passwords.
 %build
 mkdir build-cmake
 pushd build-cmake
+%if 0%{?configure_method} > 0
 %cmake ..
+%else
+%{qmake} %{_builddir}/%{name}-%{version}/basketpwd.pro
+%endif
 make %{?_smp_mflags}
 popd
 
@@ -34,7 +76,11 @@ popd
 rm -rf $RPM_BUILD_ROOT
 
 pushd build-cmake
+%if 0%{?configure_method} > 0
 make install DESTDIR=$RPM_BUILD_ROOT
+%else
+make install INSTALL_ROOT=$RPM_BUILD_ROOT
+%endif
 popd
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
