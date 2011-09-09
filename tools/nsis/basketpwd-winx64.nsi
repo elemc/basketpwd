@@ -75,6 +75,7 @@ Section $(TITLE_SecQt) SecQt
 	File "${SourceDir}\QtCore4.dll"
 	File "${SourceDir}\QtGui4.dll"
 	File "${SourceDir}\QtXml4.dll"
+	File "${SourceDir}\QtNetwork4.dll"
 SectionEnd
 
 ; ----------------------------------------

@@ -3,13 +3,13 @@
 
 %define configure_method 1
 
-%if 0%{?rhel} == 6
+%if 0%{?fedora} == 0
 %define configure_method 0
 %endif
 
 %define qmake /usr/bin/qmake-qt4
 
-%if (0%{?fedora} == 0) && (0%{?rhel} == 0)
+%if (0%{?fedora} == 0) || (0%{?rhel} == 0)
 %define qmake %{_libdir}/qt4/bin/qmake -spec linux-g++
 %endif
 
@@ -18,7 +18,13 @@ Version:		0.4.5
 Release:		1%{?dist}
 Summary:		Basket of passwords
 Summary(ru):		Корзинка паролей
+
+%if (0%{?fedora} >0) && (0%{?rhel} > 0)
 Group:			Applications/System
+%else
+Group:			Productivity/Security
+%endif
+
 License:		GPLv2
 Source0:		http://cloud.github.com/downloads/elemc/%{name}/%{name}-%{version}.tar.bz2
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -34,7 +40,7 @@ BuildRequires:		desktop-file-utils
 BuildRequires:		qt4-devel
 %endif
 
-%if 0%{?fedora} < 14
+%if (0%{?fedora} < 14) && (0%{?fedora} > 0)
 BuildRequires:		qt4-devel
 %endif
 

@@ -48,6 +48,7 @@ Section $(TITLE_SecQt) SecQt
 	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/QtCore4.dll"
 	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/QtGui4.dll"
 	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/QtXml4.dll"
+	File "/usr/i686-pc-mingw32/sys-root/mingw/bin/QtNetwork4.dll"
 SectionEnd
 
 Section $(StartMenuShortCuts) SecShortcuts
