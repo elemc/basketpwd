@@ -35,9 +35,8 @@ SOURCES = src/mainwindow.cpp \
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 win32 {
-    CONFIG += static
-    INCLUDEPATH += d:/devel/utils/openssl/openssl-shared-64/include
-    LIBS += -ld:/devel/utils/openssl/openssl-shared-64/lib/libeay32
+    INCLUDEPATH += $$(OPENSSL_INCLUDE_DIR)
+    LIBS += -l$$(OPENSSL_ROOT_DIR)/lib/libeay32
 }
 unix {
     LIBS += -lcrypto -lssl
