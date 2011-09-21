@@ -1,10 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
 APP_NAME=basketpwd
 APP_VERSION=`cat ../$APP_NAME.pro | grep VERSION | head -n1 | awk '{print $3}'`
 
+echo "Generating source archive ${APP_NAME}-${APP_VERSION}"
+
 cd ../..
 cp -f -r ./$APP_NAME ./$APP_NAME-$APP_VERSION
 rm -rf ./$APP_NAME-$APP_VERSION/.git
+rm -rf ./$APP_NAME-$APP_VERSION/${APP_NAME}.pro.user*
 tar cfj $APP_NAME-$APP_VERSION.tar.bz2 ./$APP_NAME-$APP_VERSION
 rm -rf ./$APP_NAME-$APP_VERSION
