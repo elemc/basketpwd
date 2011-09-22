@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "mainwindow.h"
 #include "changepassword.h"
 #include "../aboutdialog.h"
@@ -11,6 +13,11 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
     initVariables();
+
+    udp_server = new UdpListener ( this );
+    connect(udp_server, SIGNAL(ReceivedNewData(QString,QHostAddress)), this, SLOT(NewDataPresent(QString,QHostAddress)));
+    connect(udp_server, SIGNAL(BindError(int,QString)), this, SLOT(UdpServerBindError(int,QString)));
+    udp_server->start();
 
     tree->setModel( model );
     tree->setDragEnabled(true);
@@ -55,6 +62,11 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     changeSortMode();
 }
 MainWindow::~MainWindow() {
+    if ( udp_server->isRunning() )
+        udp_server->stop();
+    while ( !udp_server->isFinished() );
+    delete udp_server;
+
     if ( quitAction )
         delete quitAction;
 
@@ -208,10 +220,14 @@ void MainWindow::newDatabase( bool isInteracrive )
     mainPassword = QByteArray();
     model->setUpNewModel( mainPassword );
 
-    if ( isInteracrive )
+    if ( isInteracrive ) {
         changeCurrentPassword();
+        notifyAboutSelf();
+    }
     else
         allowActions ( false );
+
+
 }
 void MainWindow::saveAs()
 {
@@ -302,9 +318,7 @@ void MainWindow::loadDatabase()
         tree->setColumnWidth(1, 200);
 
         generateContextPrimaries();
-        firstNetSender->setId(model->identifier());
-        firstNetSender->setDate(model->lastModified());
-        firstNetSender->start();
+        notifyAboutSelf();
     }
     else
         QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
@@ -717,7 +731,7 @@ void MainWindow::initVariables()
     primaryActions = new QActionGroup(this);
     model = new BasketModel(this);
     tree = new QTreeView( this );
-    firstNetSender = new FirstNetworkSender(this);
+    firstNetSender = new FirstNetworkSender( this );
 }
 
 void MainWindow::NetworkError(QString errmsg)
@@ -725,4 +739,22 @@ void MainWindow::NetworkError(QString errmsg)
     QMessageBox::warning( this,
                          tr("Ошибка при обращении к локальной сети"),
                          tr("Текст ошибки:\n %1").arg(errmsg) );
+}
+
+void MainWindow::NewDataPresent(QString data, QHostAddress addr)
+{
+    qDebug() << QString("Data: [%1] from IP %2").arg(data).arg(addr.toString());
+}
+void MainWindow::notifyAboutSelf()
+{
+    syncClients.clear();
+    firstNetSender->setId(model->identifier());
+    firstNetSender->setDate(model->lastModified());
+    firstNetSender->start();
+}
+void MainWindow::UdpServerBindError(int err, QString err_msg)
+{
+    QMessageBox::critical(this,
+                          tr("Сетевая ошибка"),
+                          tr("Сервер UDP не смог запуститься\nКод ошибки:%1\nОшибка:%2").arg(err).arg(err_msg));
 }

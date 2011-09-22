@@ -21,7 +21,9 @@
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
 #include "../model/basketbaseitem.h"
-#include "firstnetworksender.h"
+#include "../netsync/firstnetworksender.h"
+#include "../netsync/syncclient.h"
+#include "../netsync/udplistener.h"
 
 #define SORTING "SortingEnabled"
 
@@ -86,6 +88,12 @@ private:
 
     // добавлено 0.4.5
     FirstNetworkSender *firstNetSender;
+
+    // добавлено 0.4.6
+    QList<SyncClient> syncClients;
+    UdpListener *udp_server;
+    void notifyAboutSelf();
+
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -132,6 +140,9 @@ private slots:
     void primaryActionsTriggered(QAction *act);
 
     void NetworkError(QString errmsg);
+
+    void NewDataPresent(QString data, QHostAddress addr);
+    void UdpServerBindError(int err, QString err_msg);
 };
 #endif
 

@@ -22,7 +22,10 @@ HEADERS = src/mainwindow.h \
     src/settingsdialog.h \
     model/basketbaseitem.h \
     model/basketmodel.h \
-    src/firstnetworksender.h
+    netsync/firstnetworksender.h \
+    netsync/syncclient.h \
+    netsync/udplistener.h \
+    netsync/udpnetworksocket.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
     src/basketutils.cpp \
@@ -31,7 +34,10 @@ SOURCES = src/mainwindow.cpp \
     src/settingsdialog.cpp \
     model/basketbaseitem.cpp \
     model/basketmodel.cpp \
-    src/firstnetworksender.cpp
+    netsync/firstnetworksender.cpp \
+    netsync/syncclient.cpp \
+    netsync/udplistener.cpp \
+    netsync/udpnetworksocket.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 win32 {
@@ -56,3 +62,9 @@ DEFINES += VER=\"$${VERSTR}\"
 DEFINES += QMAKE_SET=1
 OTHER_FILES += ChangeLog.txt
 TRANSLATIONS += basketpwd_en.ts
+
+
+
+
+
+
