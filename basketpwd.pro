@@ -25,7 +25,8 @@ HEADERS = src/mainwindow.h \
     netsync/firstnetworksender.h \
     netsync/syncclient.h \
     netsync/udplistener.h \
-    netsync/udpnetworksocket.h
+    netsync/udpnetworksocket.h \
+    netsync/qsyncclientlist.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
     src/basketutils.cpp \
@@ -37,7 +38,8 @@ SOURCES = src/mainwindow.cpp \
     netsync/firstnetworksender.cpp \
     netsync/syncclient.cpp \
     netsync/udplistener.cpp \
-    netsync/udpnetworksocket.cpp
+    netsync/udpnetworksocket.cpp \
+    netsync/qsyncclientlist.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 win32 {
@@ -62,6 +64,8 @@ DEFINES += VER=\"$${VERSTR}\"
 DEFINES += QMAKE_SET=1
 OTHER_FILES += ChangeLog.txt
 TRANSLATIONS += basketpwd_en.ts
+
+
 
 
 

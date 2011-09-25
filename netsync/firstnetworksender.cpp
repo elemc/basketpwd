@@ -17,7 +17,11 @@ void FirstNetworkSender::setDate(QDateTime _dateTime)
 
 void FirstNetworkSender::run()
 {
-    QString sign = QString("basketpwd-great:%1:%2").arg(id).arg(dateTime.toString(DATETIME_STRING_FORMAT));
+    QString sign = QString("basketpwd-discover-great:%1:%2:udp=%3:tcp=%4").
+            arg(id).
+            arg(dateTime.toString(DATETIME_STRING_FORMAT)).
+            arg(broadcastPort()).
+            arg(broadcastPort());
     QByteArray dgram = sign.toUtf8();
     if ( dgram.size() > 8192 ) {
         dgram.resize(8192);

@@ -45,8 +45,9 @@ void UdpListener::reading()
     QByteArray new_data;
     char *buf = new char[DATAGRAM_BUFFER_SIZE];
     QHostAddress client_addr;
+    quint16 client_port;
     while ( socket()->hasPendingDatagrams() ) {
-        int read_size = socket()->readDatagram(buf, DATAGRAM_BUFFER_SIZE, &client_addr);
+        int read_size = socket()->readDatagram(buf, DATAGRAM_BUFFER_SIZE, &client_addr, &client_port);
         if ( read_size <= 0 )
             break;
         else {

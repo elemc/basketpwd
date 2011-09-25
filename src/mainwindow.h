@@ -21,6 +21,7 @@
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
 #include "../model/basketbaseitem.h"
+#include "../netsync/qsyncclientlist.h"
 #include "../netsync/firstnetworksender.h"
 #include "../netsync/syncclient.h"
 #include "../netsync/udplistener.h"
@@ -90,7 +91,7 @@ private:
     FirstNetworkSender *firstNetSender;
 
     // добавлено 0.4.6
-    QList<SyncClient> syncClients;
+    QSyncClientList syncClients;
     UdpListener *udp_server;
     void notifyAboutSelf();
 

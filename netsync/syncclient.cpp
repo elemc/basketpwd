@@ -67,3 +67,33 @@ QDateTime SyncClient::clientPosition() const
 {
     return _clientPosition;
 }
+
+bool SyncClient::equal(const SyncClient &i) const
+{
+    bool result = true;
+
+    result &= ( i.address() == address() );
+    result &= ( i.port() == port() );
+    result &= ( i.clientID() == clientID() );
+    result &= ( i.clientPosition() == clientPosition() );
+
+    return result;
+}
+
+bool SyncClient::operator ==(const SyncClient &i) const
+{
+    return equal(i);
+}
+
+SyncClient &SyncClient::operator =(const SyncClient &t)
+{
+    if ( equal(t) )
+        return *this;
+
+    setAddress(t.address());
+    setPort(t.port());
+    setClientID(t.clientID());
+    setClientPosition(t.clientPosition());
+
+    return *this;
+}

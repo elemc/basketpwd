@@ -30,6 +30,11 @@ public:
     void setClientPosition(const QDateTime &dt);
     QDateTime clientPosition() const;
 
+    bool equal(const SyncClient &i) const;
+    bool operator ==(const SyncClient &i) const;
+
+    SyncClient &operator =(const SyncClient &t);
+
 private:
     QHostAddress    _addr;
     quint16         _port;
