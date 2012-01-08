@@ -37,7 +37,8 @@ set (LANGUAGES en)
 set (RESOURCES icon-images.qrc)
 set (TRANSLATIONS_BINARY qt_ru.qm)
 set (DESKTOP_FILE tools/${PROJECT}.desktop)
-set (ICON_FILE images/${PROJECT}.png)
+set (ICON_DEST_PATH share/icons/hicolor)
+set (ICON_SIZES 128 192 256 32 36 48 64 72 96)
 set (DOCS ChangeLog.txt README)
 
 set (QT_USE_QTXML TRUE)
@@ -51,7 +52,6 @@ configure_file (
 include_directories (model src ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package (Qt4 REQUIRED)
-#find_package (LibGcrypt REQUIRED)
 find_package (OpenSSL REQUIRED)
 include (${QT_USE_FILE})
 qt4_add_resources (QRC_SOURCES ${RESOURCES})
@@ -85,5 +85,17 @@ add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${
 target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 install (TARGETS ${PROJECT} DESTINATION bin)
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
-install (FILES ${ICON_FILE} DESTINATION share/pixmaps)
 install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${PROJECT_VERSION})
+
+# Icons
+foreach (ICON_SIZE ${ICON_SIZES})
+  install (
+	FILES images/icons/${PROJECT}_${ICON_SIZE}x${ICON_SIZE}.png
+	DESTINATION ${ICON_DEST_PATH}/${ICON_SIZE}x${ICON_SIZE}/apps
+	RENAME ${PROJECT}.png
+	)
+endforeach ()
+install (
+  FILES images/icons/${PROJECT}.svg
+  DESTINATION ${ICON_DEST_PATH}/scalable/apps
+  )
