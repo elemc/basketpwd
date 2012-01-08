@@ -1,3 +1,4 @@
+# Prefered configure method
 # if configure_method is 0 - using qmake or
 #    configure_method is 1 - using cmake
 
@@ -13,24 +14,24 @@
 %define qmake %{_libdir}/qt4/bin/qmake -spec linux-g++
 %endif
 
-Name:			basketpwd
-Version:		0.4.5
-Release:		1%{?dist}
-Summary:		Basket of passwords
+Name:				basketpwd
+Version:			0.4.5
+Release:			2%{?dist}
+Summary:			Basket of passwords
 Summary(ru):		Корзинка паролей
 
 %if (0%{?fedora} >0) && (0%{?rhel} > 0)
-Group:			Applications/System
+Group:			 	Applications/System
 %else
-Group:			Productivity/Security
+Group:			    Productivity/Security
 %endif
 
-License:		GPLv2
-Source0:		http://cloud.github.com/downloads/elemc/%{name}/%{name}-%{version}.tar.bz2
-BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-URL:			http://github.com/elemc/basketpwd
+License:			GPLv2
+Source0:			http://elemc.name/repos/sources/%{name}/%{name}-%{version}.tar.bz2
+BuildRoot:			%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+URL:				http://github.com/elemc/basketpwd
 
-Requires:		qt openssl
+Requires:			qt openssl
 
 BuildRequires:		openssl-devel 
 BuildRequires:		gcc-c++ 
@@ -104,7 +105,15 @@ make clean
 popd
 rm -rf $RPM_BUILD_ROOT
 
+%post
+touch --no-create %{_datadir}/icons/hicolor || :
+[ -x %{_bindir}/gtk-update-icon-cache ] && \
+%{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+
 %changelog
+* Sun Jan  8 2012 Alexei Panov <me AT elemc DOT name> - 0.4.5-2
+- Icon changed. Thanks to perchibald from fedora@c.j.r
+
 * Thu Sep  8 2011 Alexei Panov <elemc AT atisserv DOT ru> - 0.4.5-1
 - New version 0.4.5 (see ChangeLog.txt)
 
