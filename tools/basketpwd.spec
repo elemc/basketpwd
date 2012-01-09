@@ -96,7 +96,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %defattr(-,root,root)
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/pixmaps/%{name}.png
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
 %doc ChangeLog.txt README
 
 %clean

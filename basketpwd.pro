@@ -43,7 +43,7 @@ defineTest(CopyIcons) {
     extra = 
     path = 
     for(icon_size, ICON_SIZES) {
-       ICON_EXTRA += install -D -m 0644 -p images/icons/basketpwd_$${icon_size}x$${icon_size}.png $(INSTALL_ROOT)/usr/share/icons/hicolor/$${icon_size}x$${icon_size}/apps/basketpwd.png;
+       ICON_EXTRA += install -D -m 0644 -p $${_PRO_FILE_PWD_}/images/icons/basketpwd_$${icon_size}x$${icon_size}.png $(INSTALL_ROOT)/usr/share/icons/hicolor/$${icon_size}x$${icon_size}/apps/basketpwd.png;
        ICON_PATH += /usr/share/icons/hicolor/$${icon_size}x$${icon_size}/apps
     }
     export ( ICON_EXTRA )
@@ -69,7 +69,8 @@ unix {
 
     INSTALLS += target \
         basket_desktop \
-        basket_icon
+        basket_icon \
+        basket_svg
 }
 VERSION = 0.4.5
 VERSTR = '\\"$${VERSION}\\"'
