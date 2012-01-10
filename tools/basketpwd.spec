@@ -14,47 +14,47 @@
 %define qmake %{_libdir}/qt4/bin/qmake -spec linux-g++
 %endif
 
-Name:				basketpwd
-Version:			0.4.5
-Release:			2%{?dist}
-Summary:			Basket of passwords
-Summary(ru):		Корзинка паролей
+Name:			basketpwd
+Version:		0.4.5
+Release:		2%{?dist}
+Summary:		Basket of passwords
+Summary(ru):	Корзинка паролей
 
 %if (0%{?fedora} >0) && (0%{?rhel} > 0)
-Group:			 	Applications/System
+Group:			Applications/System
 %else
-Group:			    Productivity/Security
+Group:			Productivity/Security
 %endif
 
-License:			GPLv2
-Source0:			http://elemc.name/repos/sources/%{name}/%{name}-%{version}.tar.bz2
-BuildRoot:			%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-URL:				http://github.com/elemc/basketpwd
+License:		GPLv2
+Source0:		http://elemc.name/repos/sources/%{name}/%{name}-%{version}.tar.bz2
+BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+URL:			http://github.com/elemc/basketpwd
 
-Requires:			qt openssl
+#Requires:		qt openssl
 
-BuildRequires:		openssl-devel 
-BuildRequires:		gcc-c++ 
-BuildRequires:		desktop-file-utils
+BuildRequires:	openssl-devel 
+BuildRequires:	gcc-c++ 
+BuildRequires:	desktop-file-utils
 
 %if 0%{?rhel} == 6
-BuildRequires:		qt4-devel
+BuildRequires:	 qt4-devel
 %endif
 
 %if (0%{?fedora} < 14) && (0%{?fedora} > 0)
-BuildRequires:		qt4-devel
+BuildRequires:	 qt4-devel
 %endif
 
 %if 0%{?fedora} >= 14
-BuildRequires:		qt-devel
+BuildRequires:	 qt-devel
 %endif
 
-%if (0%{?fedora} == 0) && (0%{?rhel} == 0)
-BuildRequires:	     	qt-devel
+%if %{defined suse_version}
+BuildRequires:	 qt-devel
 %endif
 
 %if 0%{?fedora} > 0
-BuildRequires:		cmake
+BuildRequires:	 cmake
 %endif
 
 %description 
@@ -98,6 +98,13 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %doc ChangeLog.txt README
+
+%if %{defined suse_version}
+%{_datadir}/icons/hicolor
+%{_datadir}/icons/hicolor/*
+%{_datadir}/icons/hicolor/*/apps
+%endif
+
 
 %clean
 pushd build-cmake
