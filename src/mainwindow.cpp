@@ -64,7 +64,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 MainWindow::~MainWindow() {
     if ( udp_server->isRunning() )
         udp_server->stop();
-    while ( !udp_server->isFinished() );
+    while ( !udp_server->isFinished() ) {};
     delete udp_server;
 
     if ( quitAction )

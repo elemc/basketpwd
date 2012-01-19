@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>667</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -155,6 +155,9 @@
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
   </action>
   <action name="actionOpen">
    <property name="icon">
@@ -232,6 +235,9 @@
    </property>
    <property name="whatsThis">
     <string>Выход из программы</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
    </property>
   </action>
   <action name="actionEditAddFolder">
@@ -456,6 +462,9 @@
    <property name="statusTip">
     <string>Открывает окно с информацией о разработчиках</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
+   </property>
   </action>
   <action name="actionHelpAboutQt">
    <property name="text">
@@ -464,10 +473,16 @@
    <property name="statusTip">
     <string>Открывает окно с информацией об установленной версии Qt</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutQtRole</enum>
+   </property>
   </action>
   <action name="actionSettings">
    <property name="text">
     <string>&amp;Настройка</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
    </property>
   </action>
   <action name="actionCopyLogin">

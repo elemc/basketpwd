@@ -1,3 +1,6 @@
+mac {
+    CONFIG+=app_bundle
+}
 TEMPLATE = app
 QT = gui \
     core \
@@ -7,7 +10,7 @@ CONFIG += qt \
     warn_on \
     debug_and_release \
     windows
-DESTDIR = bin
+!mac:DESTDIR = bin
 OBJECTS_DIR = build
 MOC_DIR = build
 UI_DIR = build
