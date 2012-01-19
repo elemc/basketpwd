@@ -15,7 +15,11 @@ set (HEADERS
 	src/settingsdialog.h
 	model/basketbaseitem.h
 	model/basketmodel.h
-	src/firstnetworksender.h)
+	netsync/firstnetworksender.h
+    	netsync/qsyncclientlist.h
+    	netsync/syncclient.h
+    	netsync/udplistener.h
+    	netsync/udpnetworksocket.h)
 set (SOURCES
 	aboutdialog.cpp
 	src/basketutils.cpp
@@ -25,7 +29,11 @@ set (SOURCES
 	src/settingsdialog.cpp
 	model/basketbaseitem.cpp
 	model/basketmodel.cpp
-	src/firstnetworksender.cpp)
+	netsync/firstnetworksender.cpp
+    	netsync/qsyncclientlist.cpp
+    	netsync/syncclient.cpp
+    	netsync/udplistener.cpp
+    	netsync/udpnetworksocket.cpp)
 set (FORMS
 	aboutdialog.ui
 	ui/mainwindow.ui
