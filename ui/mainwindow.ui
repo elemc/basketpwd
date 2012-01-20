@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string/>
+   <string>Корзинка паролей</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../icon-images.qrc">

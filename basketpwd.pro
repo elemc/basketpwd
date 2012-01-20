@@ -1,6 +1,3 @@
-mac {
-    CONFIG+=app_bundle
-}
 TEMPLATE = app
 QT = gui \
     core \
@@ -45,6 +42,10 @@ SOURCES = src/mainwindow.cpp \
     netsync/udpnetworksocket.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
+mac:RC_FILE = images/basketpwd.icns
+
+QMAKE_INFO_PLIST = tools/Info.plist
+
 ICON_SIZES = 128 192 256 32 36 48 64 72 96
 ICON_PATH = 
 ICON_EXTRA = 
@@ -82,6 +83,9 @@ unix {
         basket_desktop \
         basket_icon \
         basket_svg
+}
+mac {
+    TARGET = "Basket of passwords"
 }
 VERSION = 0.4.5
 VERSTR = '\\"$${VERSION}\\"'

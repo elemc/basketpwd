@@ -461,10 +461,12 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 void MainWindow::triggeredTrayIcon()
 {
+#ifndef Q_WS_MAC
     if ( this->isHidden() )
         show();
     else
         hide();
+#endif
 }
 void MainWindow::addItemToModel(bool isFolder)
 {
