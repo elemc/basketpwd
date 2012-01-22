@@ -19,7 +19,6 @@
         <file>images/saveas.png</file>
         <file>images/showpasswords.png</file>
         <file>images/temp.png</file>
-        <file>images/atis.png</file>
         <file>images/stock_task.png</file>
     </qresource>
     <qresource prefix="/lang">

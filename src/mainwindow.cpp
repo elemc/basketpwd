@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "mainwindow.h"
 #include "changepassword.h"
 #include "../aboutdialog.h"
@@ -14,10 +12,11 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     createTrayIcon();
     initVariables();
 
-    udp_server = new UdpListener ( this );
-    connect(udp_server, SIGNAL(ReceivedNewData(QString,QHostAddress)), this, SLOT(NewDataPresent(QString,QHostAddress)));
-    connect(udp_server, SIGNAL(BindError(int,QString)), this, SLOT(UdpServerBindError(int,QString)));
-    udp_server->start();
+    // перенос в плагины
+//    udp_server = new UdpListener ( this );
+//    connect(udp_server, SIGNAL(ReceivedNewData(QString,QHostAddress)), this, SLOT(NewDataPresent(QString,QHostAddress)));
+//    connect(udp_server, SIGNAL(BindError(int,QString)), this, SLOT(UdpServerBindError(int,QString)));
+//    udp_server->start();
 
     tree->setModel( model );
     tree->setDragEnabled(true);
@@ -30,7 +29,9 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)) );
     connect ( model, SIGNAL(primaryChanged()), this, SLOT(generateContextPrimaries()) );
     connect ( primaryActions, SIGNAL(triggered(QAction*)), this, SLOT(primaryActionsTriggered(QAction*)) );
-    connect ( firstNetSender, SIGNAL(errorBySend(QString)), this, SLOT(NetworkError(QString)) );
+
+    // перенос в плагины
+    //connect ( firstNetSender, SIGNAL(errorBySend(QString)), this, SLOT(NetworkError(QString)) );
 
     newDatabase();
 
@@ -62,10 +63,11 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     changeSortMode();
 }
 MainWindow::~MainWindow() {
-    if ( udp_server->isRunning() )
-        udp_server->stop();
-    while ( !udp_server->isFinished() ) {};
-    delete udp_server;
+    // перенос в плагины
+//    if ( udp_server->isRunning() )
+//        udp_server->stop();
+//    while ( !udp_server->isFinished() ) {};
+//    delete udp_server;
 
     if ( quitAction )
         delete quitAction;
@@ -87,6 +89,9 @@ MainWindow::~MainWindow() {
 
     if ( primaryActions )
         delete primaryActions;
+
+    if ( menuHelp )
+        delete menuHelp;
 }
 
 // Виртуалы
@@ -222,7 +227,8 @@ void MainWindow::newDatabase( bool isInteracrive )
 
     if ( isInteracrive ) {
         changeCurrentPassword();
-        notifyAboutSelf();
+        //notifyAboutSelf();
+        // перенос в плагины
     }
     else
         allowActions ( false );
@@ -318,7 +324,8 @@ void MainWindow::loadDatabase()
         tree->setColumnWidth(1, 200);
 
         generateContextPrimaries();
-        notifyAboutSelf();
+        // перенос в плагины
+        //notifyAboutSelf();
     }
     else
         QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
@@ -733,7 +740,12 @@ void MainWindow::initVariables()
     primaryActions = new QActionGroup(this);
     model = new BasketModel(this);
     tree = new QTreeView( this );
-    firstNetSender = new FirstNetworkSender( this );
+    // перенос в плагины
+    //firstNetSender = new FirstNetworkSender( this );
+
+    menuHelp = menubar->addMenu(trUtf8("&Помощь"));
+    menuHelp->addAction(actionHelpAbout);
+    menuHelp->addAction(actionHelpAboutQt);
 }
 
 void MainWindow::NetworkError(QString errmsg)
@@ -743,20 +755,21 @@ void MainWindow::NetworkError(QString errmsg)
                          tr("Текст ошибки:\n %1").arg(errmsg) );
 }
 
-void MainWindow::NewDataPresent(QString data, QHostAddress addr)
-{
-    qDebug() << QString("Data: [%1] from IP %2").arg(data).arg(addr.toString());
-}
-void MainWindow::notifyAboutSelf()
-{
-    syncClients.clear();
-    firstNetSender->setId(model->identifier());
-    firstNetSender->setDate(model->lastModified());
-    firstNetSender->start();
-}
-void MainWindow::UdpServerBindError(int err, QString err_msg)
-{
-    QMessageBox::critical(this,
-                          tr("Сетевая ошибка"),
-                          tr("Сервер UDP не смог запуститься\nКод ошибки:%1\nОшибка:%2").arg(err).arg(err_msg));
-}
+// перенос в плагины
+//void MainWindow::NewDataPresent(QString data, QHostAddress addr)
+//{
+//    qDebug() << QString("Data: [%1] from IP %2").arg(data).arg(addr.toString());
+//}
+//void MainWindow::notifyAboutSelf()
+//{
+//    syncClients.clear();
+//    firstNetSender->setId(model->identifier());
+//    firstNetSender->setDate(model->lastModified());
+//    firstNetSender->start();
+//}
+//void MainWindow::UdpServerBindError(int err, QString err_msg)
+//{
+//    QMessageBox::critical(this,
+//                          tr("Сетевая ошибка"),
+//                          tr("Сервер UDP не смог запуститься\nКод ошибки:%1\nОшибка:%2").arg(err).arg(err_msg));
+//}

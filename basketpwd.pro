@@ -1,8 +1,8 @@
 TEMPLATE = app
 QT = gui \
     core \
-    xml \
-    network
+    xml
+#    network # перенос в плагины
 CONFIG += qt \
     warn_on \
     debug_and_release \
@@ -22,11 +22,12 @@ HEADERS = src/mainwindow.h \
     src/settingsdialog.h \
     model/basketbaseitem.h \
     model/basketmodel.h \
-    netsync/firstnetworksender.h \
-    netsync/qsyncclientlist.h \
-    netsync/syncclient.h \
-    netsync/udplistener.h \
-    netsync/udpnetworksocket.h
+    src/coreplugin.h
+#    netsync/firstnetworksender.h \
+#    netsync/qsyncclientlist.h \
+#    netsync/syncclient.h \
+#    netsync/udplistener.h \
+#    netsync/udpnetworksocket.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
     src/basketutils.cpp \
@@ -35,11 +36,12 @@ SOURCES = src/mainwindow.cpp \
     src/settingsdialog.cpp \
     model/basketbaseitem.cpp \
     model/basketmodel.cpp \
-    netsync/firstnetworksender.cpp \
-    netsync/qsyncclientlist.cpp \
-    netsync/syncclient.cpp \
-    netsync/udplistener.cpp \
-    netsync/udpnetworksocket.cpp
+    src/coreplugin.cpp
+ #   netsync/firstnetworksender.cpp \
+ #   netsync/qsyncclientlist.cpp \
+ #   netsync/syncclient.cpp \
+ #   netsync/udplistener.cpp \
+ #   netsync/udpnetworksocket.cpp
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 mac:RC_FILE = images/basketpwd.icns

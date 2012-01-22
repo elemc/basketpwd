@@ -4,7 +4,7 @@
 //#include <QThread>
 //#include <QUdpSocket>
 //#include <QDateTime>
-#include "udpnetworksocket.h"
+//#include "udpnetworksocket.h"
 
 class FirstNetworkSender : public UdpNetworkSocket
 {

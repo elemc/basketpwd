@@ -21,10 +21,10 @@
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
 #include "../model/basketbaseitem.h"
-#include "../netsync/qsyncclientlist.h"
-#include "../netsync/firstnetworksender.h"
-#include "../netsync/syncclient.h"
-#include "../netsync/udplistener.h"
+//#include "../netsync/qsyncclientlist.h"
+//#include "../netsync/firstnetworksender.h"
+//#include "../netsync/syncclient.h"
+//#include "../netsync/udplistener.h"
 
 #define SORTING "SortingEnabled"
 
@@ -88,12 +88,16 @@ private:
     QActionGroup *primaryActions;
 
     // добавлено 0.4.5
-    FirstNetworkSender *firstNetSender;
+    // перенос в плагины
+//    FirstNetworkSender *firstNetSender;
+
+//    // добавлено 0.4.6
+//    QSyncClientList syncClients;
+//    UdpListener *udp_server;
+//    void notifyAboutSelf();
 
     // добавлено 0.4.6
-    QSyncClientList syncClients;
-    UdpListener *udp_server;
-    void notifyAboutSelf();
+    QMenu *menuHelp;
 
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
@@ -142,8 +146,9 @@ private slots:
 
     void NetworkError(QString errmsg);
 
-    void NewDataPresent(QString data, QHostAddress addr);
-    void UdpServerBindError(int err, QString err_msg);
+//    перенос в плагины
+//    void NewDataPresent(QString data, QHostAddress addr);
+//    void UdpServerBindError(int err, QString err_msg);
 };
 #endif
 
