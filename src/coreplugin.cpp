@@ -10,17 +10,21 @@ CorePlugin::CorePlugin(QObject *parent) :
 CorePlugin::~CorePlugin()
 {
 }
-void CorePlugin::plugin_load()
+bool CorePlugin::plugin_load()
 {
+    return true;
 }
-void CorePlugin::plugin_unload()
+bool CorePlugin::plugin_unload()
 {
+    return true;
 }
-void CorePlugin::plugin_start()
+bool CorePlugin::plugin_start()
 {
+    return true;
 }
-void CorePlugin::plugin_stop()
+bool CorePlugin::plugin_stop()
 {
+    return true;
 }
 
 bool CorePlugin::menuEntryPresent() const

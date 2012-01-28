@@ -22,7 +22,8 @@ HEADERS = src/mainwindow.h \
     src/settingsdialog.h \
     model/basketbaseitem.h \
     model/basketmodel.h \
-    src/coreplugin.h
+    src/coreplugin.h \
+    src/pluginsloader.h
 #    netsync/firstnetworksender.h \
 #    netsync/qsyncclientlist.h \
 #    netsync/syncclient.h \
@@ -36,7 +37,8 @@ SOURCES = src/mainwindow.cpp \
     src/settingsdialog.cpp \
     model/basketbaseitem.cpp \
     model/basketmodel.cpp \
-    src/coreplugin.cpp
+    src/coreplugin.cpp \
+    src/pluginsloader.cpp
  #   netsync/firstnetworksender.cpp \
  #   netsync/qsyncclientlist.cpp \
  #   netsync/syncclient.cpp \

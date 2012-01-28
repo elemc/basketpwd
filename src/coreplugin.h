@@ -3,7 +3,6 @@
 
 #include <QObject>
 
-
 class CorePlugin : public QObject
 {
     Q_OBJECT
@@ -16,10 +15,10 @@ public:
     
     virtual ~CorePlugin();
 
-    virtual void plugin_load();
-    virtual void plugin_start();
-    virtual void plugin_stop();
-    virtual void plugin_unload();
+    virtual bool plugin_load();
+    virtual bool plugin_start();
+    virtual bool plugin_stop();
+    virtual bool plugin_unload();
 
     bool menuEntryPresent() const;
     virtual PluginMenuEntry menuEntry() const;
