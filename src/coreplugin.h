@@ -3,20 +3,49 @@
 
 #include <QObject>
 
+
 class CorePlugin : public QObject
 {
     Q_OBJECT
 public:
+    enum PluginMenuEntry {
+        MenuEntryNone, MenuEntryFile, MenuEntryEdit, MenuEntryView, MenuEntryHelp
+    };
+
     explicit CorePlugin(QObject *parent = 0);
     
-    virtual ~CorePlugin() {} ;
+    virtual ~CorePlugin();
 
-    virtual void plugin_load() {} ;
-    virtual void plugin_start() {} ;
-    virtual void plugin_unload() {} ;
+    virtual void plugin_load();
+    virtual void plugin_start();
+    virtual void plugin_stop();
+    virtual void plugin_unload();
+
+    bool menuEntryPresent() const;
+    virtual PluginMenuEntry menuEntry() const;
+
+    virtual QString pluginName() const;
+    virtual QString pluginDescription() const;
+    virtual quint8 pluginVersionMajor() const;
+    virtual quint8 pluginVersionMinor() const;
+    virtual QString pluginVersion() const;
+
+    QWidget *settingsWidget() const;
+
+protected:
+    void setVersion(quint8 vMajor, quint8 vMinor);
+
+private:
+    quint8 versionMajor;
+    quint8 versionMinor;
 
 signals:
     void pluginStateChanged();
+    void pluginLoaded();
+    void pluginUnloaded();
+    void pluginStarted();
+    void pluginStoped();
+
 public slots:
     
 };
