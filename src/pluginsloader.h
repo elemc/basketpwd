@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QList>
 #include <QPluginLoader>
+#include <QMenu>
+#include "plugin_share.h"
 
 // Plugin interfaces
 #include "coreplugin.h"
@@ -22,10 +24,20 @@ public:
 
     void loadPlugins();
     void startCorePlugins();
+    void stopCorePlugins();
+    void unloadPlugins();
+
+    void setMenu( QMenu *menu, PluginMenuEntry target );
 
 private:
     QDir pluginDir;
     QList<CorePlugin *> corePluginList;
+    QMenu *FileMenu;
+    QMenu *EditMenu;
+    QMenu *ViewMenu;
+    QMenu *HelpMenu;
+
+    QMenu *getMenu(PluginMenuEntry target) const;
 
 signals:
     void LoadPluginsFailed(QString msg);
@@ -34,6 +46,9 @@ signals:
     void PluginLoadFailed( QString name, QString version );
     void PluginStarted(QString name, QString version);
     void PluginStartFailed(QString name, QString version);
+    void PluginStoped(QString name, QString version);
+    void PluginStopFailed(QString name, QString version);
+
 public slots:
     
 };

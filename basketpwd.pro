@@ -23,7 +23,8 @@ HEADERS = src/mainwindow.h \
     model/basketbaseitem.h \
     model/basketmodel.h \
     src/coreplugin.h \
-    src/pluginsloader.h
+    src/pluginsloader.h \
+    src/plugin_share.h
 #    netsync/firstnetworksender.h \
 #    netsync/qsyncclientlist.h \
 #    netsync/syncclient.h \

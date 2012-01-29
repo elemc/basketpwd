@@ -2,15 +2,12 @@
 #define COREPLUGIN_H
 
 #include <QObject>
+#include "plugin_share.h"
 
 class CorePlugin : public QObject
 {
     Q_OBJECT
 public:
-    enum PluginMenuEntry {
-        MenuEntryNone, MenuEntryFile, MenuEntryEdit, MenuEntryView, MenuEntryHelp
-    };
-
     explicit CorePlugin(QObject *parent = 0);
     
     virtual ~CorePlugin();
@@ -20,7 +17,7 @@ public:
     virtual bool plugin_stop();
     virtual bool plugin_unload();
 
-    bool menuEntryPresent() const;
+    bool hasMenuEntry() const;
     virtual PluginMenuEntry menuEntry() const;
 
     virtual QString pluginName() const;
@@ -46,7 +43,7 @@ signals:
     void pluginStoped();
 
 public slots:
-    
+    virtual void mainApplicationActionActivated();
 };
 
 Q_DECLARE_INTERFACE(CorePlugin, "name.elemc.basketpwd.CorePlugin/1.0")

@@ -27,14 +27,14 @@ bool CorePlugin::plugin_stop()
     return true;
 }
 
-bool CorePlugin::menuEntryPresent() const
+bool CorePlugin::hasMenuEntry() const
 {
     if (menuEntry() == MenuEntryNone)
         return false;
 
     return true;
 }
-CorePlugin::PluginMenuEntry CorePlugin::menuEntry() const
+PluginMenuEntry CorePlugin::menuEntry() const
 {
     return MenuEntryNone;
 }
@@ -69,4 +69,8 @@ void CorePlugin::setVersion(quint8 vMajor, quint8 vMinor)
 QWidget *CorePlugin::settingsWidget() const
 {
     return NULL;
+}
+
+void CorePlugin::mainApplicationActionActivated()
+{
 }
