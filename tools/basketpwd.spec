@@ -16,7 +16,7 @@
 
 Name:			basketpwd
 Version:		0.4.5
-Release:		2%{?dist}
+Release:		3%{?dist}
 Summary:		Basket of passwords
 Summary(ru):	Корзинка паролей
 
@@ -28,6 +28,11 @@ Group:			Productivity/Security
 
 License:		GPLv2
 Source0:		http://elemc.name/repos/sources/%{name}/%{name}-%{version}.tar.bz2
+
+%if (0%{?fedora} > 0)
+Source100:		README.RFRemix
+%endif
+
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:			http://github.com/elemc/basketpwd
 
@@ -69,6 +74,12 @@ The program for storage and information management about passwords.
 %setup -q
 
 %build
+
+#README.RFRemix
+%if (0%{?fedora} > 0)
+cp %{SOURCE100} .
+%endif
+
 mkdir build-cmake
 pushd build-cmake
 %if 0%{?configure_method} > 0
@@ -96,13 +107,11 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %defattr(-,root,root)
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_datadir}/icons/hicolor
 %doc ChangeLog.txt README
 
-%if %{defined suse_version}
-%{_datadir}/icons/hicolor
-%{_datadir}/icons/hicolor/*
-%{_datadir}/icons/hicolor/*/apps
+%if (0%{?fedora} > 0)
+%doc README.RFRemix
 %endif
 
 
@@ -118,8 +127,11 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
 %changelog
+* Wed Mar 21 2012 Alexei Panov <me AT elemc DOT name> 0.4.5-3
+- Little changes, remove network source code temporaly...
+
 * Sun Jan  8 2012 Alexei Panov <me AT elemc DOT name> - 0.4.5-2
-- Icon changed. Thanks to perchibald from fedora@c.j.r
+- Icon changed. Thanks perchibald from fedora@c.j.r
 
 * Thu Sep  8 2011 Alexei Panov <elemc AT atisserv DOT ru> - 0.4.5-1
 - New version 0.4.5 (see ChangeLog.txt)
