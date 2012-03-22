@@ -32,6 +32,14 @@ Run bellow commands in source folder
 $ mkdir build; cd build
 $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr #(if you have install application in /usr or simple 'cmake ..' if you have install into /usr/local)
 
+On Mac OS X
+$ mkdir build; cd buld
+$ cmake .. 
+$ make
+$ make mac-bundle # for create only bundle
+or
+$ make mac-dmg    # for create bundle and dmg file
+
 Installation for Fedora Linux
 =============================
 for Fedora 13 and later basketpwd packages in RFRemix repository:

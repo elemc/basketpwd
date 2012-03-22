@@ -53,7 +53,8 @@ set (MACOSX_NAME "Basket of passwords")
 set (MACOSX_BUNDLE_NAME ${MACOSX_NAME}.app)
 
 set (QT_USE_QTXML TRUE)
-set (QT_USE_QTNETWORK TRUE)
+set (QT_USE_QTNETWORK FALSE)
+
 project (${PROJECT})
 
 configure_file (
@@ -91,7 +92,7 @@ add_custom_target (
 )
 
 add_custom_target (
-  mac-bundle
+  mac-pre-bundle
   DEPENDS ${PROJECT} clean-mac-bundle
   # make a dirs
   COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/
@@ -106,15 +107,17 @@ add_custom_target (
   # resources
   COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/images/basketpwd.icns ${MACOSX_BUNDLE_NAME}/Contents/Resources/basketpwd.icns
   COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/tools/mac_resource/* ${MACOSX_BUNDLE_NAME}/Contents/Resources/
-
-  #COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -no-plugins
+)
+add_custom_target (
+  mac-bundle
+  DEPENDS mac-pre-bundle
+  COMMAND macdeployqt ${MACOSX_BUNDLE_NAME}
 )
 add_custom_target (
   mac-dmg
-  DEPENDS mac-bundle
-  COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -no-plugins -dmg
+  DEPENDS mac-pre-bundle
+  COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
 )
-
 
 source_group ("Header Files" FILES ${HEADERS})
 source_group ("Source Files" FILES ${SOURCES})
