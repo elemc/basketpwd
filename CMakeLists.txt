@@ -86,13 +86,13 @@ add_custom_command (
 	COMMAND ${QT_LRELEASE_EXECUTABLE} ${TRANSLATIONS})
 
 add_custom_target (
-  clean_bundle
+  clean-mac-bundle
   rm -rf ${MACOSX_BUNDLE_NAME}
 )
 
 add_custom_target (
-  bundle
-  DEPENDS ${PROJECT} clean_bundle
+  mac-bundle
+  DEPENDS ${PROJECT} clean-mac-bundle
   # make a dirs
   COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/
   COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/MacOS
@@ -107,24 +107,14 @@ add_custom_target (
   COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/images/basketpwd.icns ${MACOSX_BUNDLE_NAME}/Contents/Resources/basketpwd.icns
   COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/tools/mac_resource/* ${MACOSX_BUNDLE_NAME}/Contents/Resources/
 
-  # Frameworks
-  COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/Frameworks
-  # copy frameworks
-  COMMAND cp -R ${QT_LIBRARY_DIR}/QtCore.framework ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/
-  COMMAND cp -R ${QT_LIBRARY_DIR}/QtGui.framework ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/
-  COMMAND cp -R ${QT_LIBRARY_DIR}/QtXml.framework ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/
-
-  # install_name_tool
-  COMMAND install_name_tool -id @executable_path/../Frameworks/QtCore.framework/Versions/4.0/QtCore ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/QtCore.framework/Versions/4.0/QtCore
-  COMMAND install_name_tool -id @executable_path/../Frameworks/QtGui.framework/Versions/4.0/QtGui ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/QtGui.framework/Versions/4.0/QtGui
-  COMMAND install_name_tool -id @executable_path/../Frameworks/QtXml.framework/Versions/4.0/QtXml ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/QtXml.framework/Versions/4.0/QtXml
-
-  COMMAND install_name_tool -change ${QT_LIBRARY_DIR}/QtCore.framework/Versions/4.0/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4.0/QtCore ${MACOSX_BUNDLE_NAME}/Contents/MacOS/${MACOSX_NAME}
-  COMMAND install_name_tool -change ${QT_LIBRARY_DIR}/QtGui.framework/Versions/4.0/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4.0/QtGui ${MACOSX_BUNDLE_NAME}/Contents/MacOS/${MACOSX_NAME}
-  COMMAND install_name_tool -change ${QT_LIBRARY_DIR}/QtXml.framework/Versions/4.0/QtXml @executable_path/../Frameworks/QtXml.framework/Versions/4.0/QtXml ${MACOSX_BUNDLE_NAME}/Contents/MacOS/${MACOSX_NAME}
-  COMMAND install_name_tool -change ${QT_LIBRARY_DIR}/QtCore.framework/Versions/4.0/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4.0/QtCore ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/QtGui.framework/Versions/4.0/QtGui
-  COMMAND install_name_tool -change ${QT_LIBRARY_DIR}/QtCore.framework/Versions/4.0/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4.0/QtCore ${MACOSX_BUNDLE_NAME}/Contents/Frameworks/QtXml.framework/Versions/4.0/QtXml
+  #COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -no-plugins
 )
+add_custom_target (
+  mac-dmg
+  DEPENDS mac-bundle
+  COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -no-plugins -dmg
+)
+
 
 source_group ("Header Files" FILES ${HEADERS})
 source_group ("Source Files" FILES ${SOURCES})
