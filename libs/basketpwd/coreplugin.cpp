@@ -5,24 +5,29 @@ CorePlugin::CorePlugin(QObject *parent) :
 {
     versionMajor = 0;
     versionMinor = 0;
+
+    root_item = NULL;
+    _workplace = NULL;
+
+    init_plugin_information();
 }
 
 CorePlugin::~CorePlugin()
 {
 }
+
+void CorePlugin::init_plugin_information()
+{
+    plugin_name = QString("");
+    plugin_description = QString("");
+    setVersion(0,1);
+}
+
 bool CorePlugin::plugin_load()
 {
     return true;
 }
 bool CorePlugin::plugin_unload()
-{
-    return true;
-}
-bool CorePlugin::plugin_start()
-{
-    return true;
-}
-bool CorePlugin::plugin_stop()
 {
     return true;
 }
@@ -41,11 +46,11 @@ PluginMenuEntry CorePlugin::menuEntry() const
 
 QString CorePlugin::pluginName() const
 {
-    return QString();
+    return plugin_name;
 }
 QString CorePlugin::pluginDescription() const
 {
-    return QString();
+    return plugin_description;
 }
 QString CorePlugin::pluginVersion() const
 {
@@ -73,4 +78,18 @@ QWidget *CorePlugin::settingsWidget() const
 
 void CorePlugin::mainApplicationActionActivated()
 {
+}
+
+BasketBaseItem *CorePlugin::rootItem() const {
+    return root_item;
+}
+void CorePlugin::setRootItem(BasketBaseItem *item) {
+    root_item = item;
+}
+void CorePlugin::setWorkPlace(QMainWindow *mw)
+{
+    _workplace = mw;
+}
+QMainWindow *CorePlugin::workplace() const {
+    return _workplace;
 }

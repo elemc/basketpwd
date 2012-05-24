@@ -6,8 +6,8 @@
 #include <QDateTime>
 #include <QIcon>
 #include <QBrush>
-#include "basketbaseitem.h"
-#include "../src/basketutils.h"
+#include <basketpwd/basketbaseitem.h>
+#include <basketpwd/basketutils.h>
 
 #define DATE_TIME_FORMAT QString("yyyy-MM-dd/hh:mm")
 #define DRAG_AND_DROP_MIME QString("application/basketpwd.records")

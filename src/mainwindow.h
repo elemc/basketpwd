@@ -20,7 +20,7 @@
 
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
-#include "../model/basketbaseitem.h"
+#include <basketpwd/basketbaseitem.h>
 //#include "../netsync/qsyncclientlist.h"
 //#include "../netsync/firstnetworksender.h"
 //#include "../netsync/syncclient.h"

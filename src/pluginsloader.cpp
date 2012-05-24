@@ -27,6 +27,8 @@ void PluginsLoader::loadPlugins()
 
         // CorePlugin
         if ( CorePlugin *core_plugin = qobject_cast<CorePlugin *>( loader.instance() ) ) {
+            core_plugin->setWorkPlace(workplace);
+            core_plugin->setRootItem(rootItem);
             if ( core_plugin->hasMenuEntry() ) {
                 QMenu *menuForPlugin = getMenu(core_plugin->menuEntry());
                 // TODO: add QAction into menu
@@ -44,30 +46,30 @@ void PluginsLoader::loadPlugins()
         }
     }
 }
-void PluginsLoader::startCorePlugins()
-{
-    foreach ( CorePlugin *core_plugin, corePluginList ) {
-        if ( !core_plugin )
-            continue;
-        bool result = core_plugin->plugin_start();
-        if ( result )
-            emit PluginStarted(core_plugin->pluginName(), core_plugin->pluginVersion());
-        else
-            emit PluginStartFailed(core_plugin->pluginName(), core_plugin->pluginVersion());
-    }
-}
-void PluginsLoader::stopCorePlugins()
-{
-    foreach( CorePlugin *core_plugin, corePluginList ) {
-        if ( !core_plugin )
-            continue;
-        bool result = core_plugin->plugin_stop();
-        if ( result )
-            emit PluginStoped(core_plugin->pluginName(), core_plugin->pluginVersion());
-        else
-            emit PluginStopFailed(core_plugin->pluginName(), core_plugin->pluginVersion());
-    }
-}
+//void PluginsLoader::startCorePlugins()
+//{
+//    foreach ( CorePlugin *core_plugin, corePluginList ) {
+//        if ( !core_plugin )
+//            continue;
+//        bool result = core_plugin->plugin_start();
+//        if ( result )
+//            emit PluginStarted(core_plugin->pluginName(), core_plugin->pluginVersion());
+//        else
+//            emit PluginStartFailed(core_plugin->pluginName(), core_plugin->pluginVersion());
+//    }
+//}
+//void PluginsLoader::stopCorePlugins()
+//{
+//    foreach( CorePlugin *core_plugin, corePluginList ) {
+//        if ( !core_plugin )
+//            continue;
+//        bool result = core_plugin->plugin_stop();
+//        if ( result )
+//            emit PluginStoped(core_plugin->pluginName(), core_plugin->pluginVersion());
+//        else
+//            emit PluginStopFailed(core_plugin->pluginName(), core_plugin->pluginVersion());
+//    }
+//}
 void PluginsLoader::unloadPlugins()
 {
     foreach( CorePlugin *core_plugin, corePluginList ) {

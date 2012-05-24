@@ -7,7 +7,9 @@
 #include <openssl/md5.h>
 #endif
 //
-class BasketUtils : public QObject
+#include "basketpwd-libs_global.h"
+
+class BASKETPWDLIBSSHARED_EXPORT BasketUtils : public QObject
 {
 Q_OBJECT
 public:

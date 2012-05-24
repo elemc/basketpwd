@@ -6,39 +6,36 @@ endif ()
 
 #set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
+set (LIB_PROJECT basketlib)
 set (PROJECT_VERSION 0.4.5)
 set (HEADERS 
 	aboutdialog.h
-	src/basketutils.h
 	src/changepassword.h
 	src/mainwindow.h
 	src/settingsdialog.h
-	model/basketbaseitem.h
 	model/basketmodel.h) 
-#	netsync/firstnetworksender.h
-#    	netsync/qsyncclientlist.h
-#    	netsync/syncclient.h
-#    	netsync/udplistener.h
-#    	netsync/udpnetworksocket.h)
 set (SOURCES
 	aboutdialog.cpp
-	src/basketutils.cpp
 	src/changepassword.cpp
 	src/main.cpp
 	src/mainwindow.cpp
 	src/settingsdialog.cpp
-	model/basketbaseitem.cpp
 	model/basketmodel.cpp)
-#	netsync/firstnetworksender.cpp
-#    	netsync/qsyncclientlist.cpp
-#    	netsync/syncclient.cpp
-#    	netsync/udplistener.cpp
-#    	netsync/udpnetworksocket.cpp)
 set (FORMS
 	aboutdialog.ui
 	ui/mainwindow.ui
 	ui/changepassword.ui
 	ui/settingsdialog.ui)
+set (LIB_HEADERS
+  libs/basketpwd/basketbaseitem.h
+  libs/basketpwd/basketpwd-libs_global.h
+  libs/basketpwd/basketutils.h
+  libs/basketpwd/coreplugin.h
+  libs/basketpwd/plugin_share.h)
+set (LIB_SOURCES
+  libs/basketpwd/basketbaseitem.cpp
+  libs/basketpwd/basketutils.cpp
+  libs/basketpwd/coreplugin.cpp)
 
 set (LANG_PATH l10n)
 set (LANGUAGES en)
@@ -68,6 +65,7 @@ find_package (OpenSSL REQUIRED)
 include (${QT_USE_FILE})
 qt4_add_resources (QRC_SOURCES ${RESOURCES})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
+qt4_wrap_cpp (MOC_LIB_SOURCES ${LIB_HEADERS})
 qt4_wrap_ui (UI_SOURCES ${FORMS})
 foreach (LANGUAGE ${LANGUAGE})
 	set (TS ${LANG_PATH}/${LANGUAGE}.ts)
@@ -107,6 +105,10 @@ add_custom_target (
   # resources
   COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/images/basketpwd.icns ${MACOSX_BUNDLE_NAME}/Contents/Resources/basketpwd.icns
   COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/tools/mac_resource/* ${MACOSX_BUNDLE_NAME}/Contents/Resources/
+
+  # out lib
+  COMMAND mkdir ../lib
+  COMMAND cp lib${LIB_PROJECT}.dylib ../lib/
 )
 add_custom_target (
   mac-bundle
@@ -119,16 +121,21 @@ add_custom_target (
   COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
 )
 
-source_group ("Header Files" FILES ${HEADERS})
-source_group ("Source Files" FILES ${SOURCES})
+include_directories(libs)
+
+source_group ("Header Files" FILES ${HEADERS} ${LIB_HEADERS})
+source_group ("Source Files" FILES ${SOURCES} ${LIB_SOURCES})
 source_group ("Forms Files" FILES ${UI_SOURCES})
-source_group ("Generated Files" FILES ${MOC_SOURCES})
+source_group ("Generated Files" FILES ${MOC_SOURCES} ${MOC_LIB_SOURCES})
 source_group ("Resource Files" FILES ${QRC_SOURCES})
 
+add_library (${LIB_PROJECT} SHARED ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
 add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS})
 
-target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
+target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT})
+target_link_libraries (${LIB_PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 install (TARGETS ${PROJECT} DESTINATION bin)
+install (TARGETS ${LIB_PROJECT} DESTINATION lib)
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
 install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${PROJECT_VERSION})
 

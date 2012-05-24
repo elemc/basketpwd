@@ -7,10 +7,12 @@
 #include <QList>
 #include <QPluginLoader>
 #include <QMenu>
-#include "plugin_share.h"
+#include <QMainWindow>
+#include <basketpwd/plugin_share.h>
+#include <basketpwd/basketbaseitem.h>
 
 // Plugin interfaces
-#include "coreplugin.h"
+#include <basketpwd/coreplugin.h>
 
 
 #define PLUGINS_DIR "plugins"
@@ -23,11 +25,12 @@ public:
     ~PluginsLoader();
 
     void loadPlugins();
-    void startCorePlugins();
-    void stopCorePlugins();
     void unloadPlugins();
 
     void setMenu( QMenu *menu, PluginMenuEntry target );
+
+    void setWorkPlace(QMainWindow *mw);
+    void setRootItem(BasketBaseItem *rootItem);
 
 private:
     QDir pluginDir;
@@ -38,6 +41,9 @@ private:
     QMenu *HelpMenu;
 
     QMenu *getMenu(PluginMenuEntry target) const;
+
+    QMainWindow *workplace;
+    BasketBaseItem *rootItem;
 
 signals:
     void LoadPluginsFailed(QString msg);

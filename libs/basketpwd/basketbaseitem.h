@@ -2,8 +2,9 @@
 #define BASKETBASEITEM_H
 
 #include <QObject>
+#include "basketpwd-libs_global.h"
 
-class BasketBaseItem : public QObject
+class BASKETPWDLIBSSHARED_EXPORT BasketBaseItem : public QObject
 {
 Q_OBJECT
 public:

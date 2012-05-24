@@ -2,9 +2,12 @@
 #define COREPLUGIN_H
 
 #include <QObject>
+#include <QMainWindow>
 #include "plugin_share.h"
+#include "basketbaseitem.h"
+#include "basketpwd-libs_global.h"
 
-class CorePlugin : public QObject
+class BASKETPWDLIBSSHARED_EXPORT CorePlugin : public QObject
 {
     Q_OBJECT
 public:
@@ -13,34 +16,41 @@ public:
     virtual ~CorePlugin();
 
     virtual bool plugin_load();
-    virtual bool plugin_start();
-    virtual bool plugin_stop();
     virtual bool plugin_unload();
 
     bool hasMenuEntry() const;
     virtual PluginMenuEntry menuEntry() const;
 
-    virtual QString pluginName() const;
-    virtual QString pluginDescription() const;
-    virtual quint8 pluginVersionMajor() const;
-    virtual quint8 pluginVersionMinor() const;
-    virtual QString pluginVersion() const;
+    QString pluginName() const;
+    QString pluginDescription() const;
+    quint8 pluginVersionMajor() const;
+    quint8 pluginVersionMinor() const;
+    QString pluginVersion() const;
 
     QWidget *settingsWidget() const;
 
+    void setRootItem(BasketBaseItem *item);
+    void setWorkPlace(QMainWindow *mw);
+
 protected:
+    virtual void init_plugin_information();
     void setVersion(quint8 vMajor, quint8 vMinor);
+    BasketBaseItem *rootItem() const;
+    QMainWindow *workplace() const;
+
+    QString plugin_name;
+    QString plugin_description;
 
 private:
     quint8 versionMajor;
     quint8 versionMinor;
+    BasketBaseItem *root_item;
+    QMainWindow *_workplace;
 
 signals:
     void pluginStateChanged();
     void pluginLoaded();
     void pluginUnloaded();
-    void pluginStarted();
-    void pluginStoped();
 
 public slots:
     virtual void mainApplicationActionActivated();

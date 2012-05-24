@@ -16,15 +16,15 @@ FORMS = ui/mainwindow.ui \
     aboutdialog.ui \
     ui/settingsdialog.ui
 HEADERS = src/mainwindow.h \
-    src/basketutils.h \
+#    src/basketutils.h \
     src/changepassword.h \
     aboutdialog.h \
     src/settingsdialog.h \
-    model/basketbaseitem.h \
+#    model/basketbaseitem.h \
     model/basketmodel.h \
-    src/coreplugin.h \
-    src/pluginsloader.h \
-    src/plugin_share.h
+#    src/coreplugin.h \
+    src/pluginsloader.h
+#    src/plugin_share.h
 #    netsync/firstnetworksender.h \
 #    netsync/qsyncclientlist.h \
 #    netsync/syncclient.h \
@@ -32,13 +32,13 @@ HEADERS = src/mainwindow.h \
 #    netsync/udpnetworksocket.h
 SOURCES = src/mainwindow.cpp \
     src/main.cpp \
-    src/basketutils.cpp \
+#   src/basketutils.cpp \
     src/changepassword.cpp \
     aboutdialog.cpp \
     src/settingsdialog.cpp \
-    model/basketbaseitem.cpp \
+#    model/basketbaseitem.cpp \
     model/basketmodel.cpp \
-    src/coreplugin.cpp \
+#    src/coreplugin.cpp \
     src/pluginsloader.cpp
  #   netsync/firstnetworksender.cpp \
  #   netsync/qsyncclientlist.cpp \
@@ -48,6 +48,7 @@ SOURCES = src/mainwindow.cpp \
 RESOURCES += icon-images.qrc
 RC_FILE = basketpwd.rc
 mac:RC_FILE = images/basketpwd.icns
+INCLUDEPATH += libs
 
 QMAKE_INFO_PLIST = tools/Info.plist
 
@@ -73,7 +74,7 @@ win32 {
     LIBS += -ld:/devel/utils/openssl/openssl-shared-64/lib/libeay32
 }
 unix {
-    LIBS += -lcrypto -lssl
+    LIBS += -lcrypto -lssl -lbasketpwd -L/Users/alex/workspace/code/basketpwd/build
     TARGET = basketpwd
     target.path += /usr/bin
     basket_desktop.files += tools/basketpwd.desktop
