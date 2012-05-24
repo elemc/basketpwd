@@ -2,21 +2,21 @@
 # if configure_method is 0 - using qmake or
 #    configure_method is 1 - using cmake
 
-%define configure_method 1
+%define configure_method 0
 
 %if 0%{?fedora} == 0
-%define configure_method 0
+%define configure_method 1
 %endif
 
-%define qmake /usr/bin/qmake-qt4
+%define qmake %{_bindir}/qmake-qt4
 
 %if (0%{?fedora} == 0) || (0%{?rhel} == 0)
 %define qmake %{_libdir}/qt4/bin/qmake -spec linux-g++
 %endif
 
 Name:			basketpwd
-Version:		0.4.5
-Release:		3%{?dist}
+Version:		0.4.6
+Release:		1%{?dist}
 Summary:		Basket of passwords
 Summary(ru):	Корзинка паролей
 
@@ -35,8 +35,6 @@ Source100:		README.RFRemix
 
 BuildRoot:		%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 URL:			http://github.com/elemc/basketpwd
-
-#Requires:		qt openssl
 
 BuildRequires:	openssl-devel 
 BuildRequires:	gcc-c++ 
@@ -70,6 +68,15 @@ The program for storage and information management about passwords.
 Корзинка паролей
 Программа для хранения и управления информацией о паролях.
 
+%package devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description devel
+The %{name}-devel package contain header files for 
+developing plugins that use Basket of passwords
+
 %prep
 %setup -q
 
@@ -97,7 +104,7 @@ pushd build-cmake
 %if 0%{?configure_method} > 0
 make install DESTDIR=$RPM_BUILD_ROOT
 %else
-make install INSTALL_ROOT=$RPM_BUILD_ROOT
+make install INSTALL_ROOT=$RPM_BUILD_ROOT/usr
 %endif
 popd
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
@@ -106,14 +113,23 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
+%if 0%{?configure_method} > 0
+%{_libdir}/libbasketlib.so
+%else
+%{_libdir}/libbasketpwd.so*
+%endif
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor
+
 %doc ChangeLog.txt README
 
 %if (0%{?fedora} > 0)
 %doc README.RFRemix
 %endif
 
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/*
 
 %clean
 pushd build-cmake
@@ -127,6 +143,10 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
 %changelog
+* Fri May 25 2012 Alexei Panov <me AT elemc DOT name> 0.4.6-1
+- New release
+- Split package to main and devel packages
+
 * Wed Mar 21 2012 Alexei Panov <me AT elemc DOT name> 0.4.5-3
 - Little changes, remove network source code temporaly...
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 APP_NAME=basketpwd
-APP_VERSION=`cat ../$APP_NAME.pro | grep VERSION | head -n1 | awk '{print $3}'`
+APP_VERSION=`cat ../$APP_NAME-gui.pro | grep VERSION | head -n1 | awk '{print $3}'`
 
 echo "Generating source archive ${APP_NAME}-${APP_VERSION}"
 

@@ -13,31 +13,71 @@ or alternatively you can use GIT to get latest development version:
 Dependencies
 ============
 * Qt libraries version 4.2.1 or later
-* libgcrypt version 1.4.0 or later
+* libgcrypt version 1.4.0 or later (WARNING!!! It is required only for basketpwd version < 0.4.2)
+* openssl version 0.9.7a or later (This required for basketpwd version >= 0.4.2)
+* cmake (optional)
 
 Installation
 ============
 
-On GNU/Linux or FreeBSD
+On GNU/Linux or FreeBSD (without cmake)
 $ qmake (or qmake-qt4 in many linux distributives as Fedora Linux for example)
 $ make release
 # make install INSTALL_ROOT=/usr (for installing in /usr prefix)
  or
 $ sudo make install INSTALL_ROOT=/usr (if sudo configured)
 
-Installation for Fedora Linux 13 (Goddard)
-==========================================
-* add repository rpmatis:
- # rpm -ivh http://repo.atisserv.ru/rpmatis/fedora/13/x86_64/rpmatis-release-13-3.noarch.rpm
-* run yum update:
- # yum update
-* install package basketpwd:
- # yum install basketpwd
+With cmake
+Run bellow commands in source folder
+$ mkdir build; cd build
+$ cmake .. -DCMAKE_INSTALL_PREFIX=/usr #(if you have install application in /usr or simple 'cmake ..' if you have install into /usr/local)
+
+On Mac OS X
+$ mkdir build; cd buld
+$ cmake .. 
+$ make
+$ make mac-bundle # for create only bundle
+or
+$ make mac-dmg    # for create bundle and dmg file
+
+Installation for Fedora Linux
+=============================
+for Fedora 13 and later basketpwd packages in RFRemix repository:
+    # http://koji.russianfedora.ru/koji/packageinfo?packageID=101
+
+Installation for Slackware Linux
+================================
+$ git clone git://github.com/elemc/basketpwd.git		# clone repository from git
+$ cd basketpwd							# enter to application directory
+$ tools/make-source-archive					# make a tarboll for building
+$ cp ../basketpwd*.tar.bz2 tools/SlackBuild/			# copy tarboll to SlackBuild directory
+$ cd tools/SlackBuild
+if version of tarboll not equal version in basketpwd.SlackBuild, then edit to equal.
+$ su -								# enter in root account
+# ./basketpwd.SlackBuild					# build a package
+SlackBuild script tell where him create a package file, type
+# installpkg /path/to/package/basketpwd*.tgz
+
+Installation for OpenSUSE Linux
+===============================
+First, add repository:
+    * for 11.2		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.2
+    * for 11.3		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.3
+    * for 11.4		http://download.opensuse.org/repositories/home:/elemc/openSUSE_11.4
+    * for Facctory	http://download.opensuse.org/repositories/home:/elemc/openSUSE_Factory
+ and install package named basketpwd, as example
+    zypper in basketpwd
+ 
+Installation for Windows
+========================
+Go to section Files on github.com/elemc/basketpwd and select one:
+* basketpwd-static-X.X.X.zip - is a statically linked one exe-file for mobility
+* basketpwd-setup-X.X.X.exe  - is a windows installer
 
 Reporting bugs
 ==============
 
-Please send bug reports to the <elemc@atisserv.ru>
+Please send bug reports to the <elemc AT atisserv DOT ru>
 or post to issue in http://github.com/elemc/basketpwd/issues
 
-This all
+Thanks

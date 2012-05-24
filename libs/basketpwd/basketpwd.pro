@@ -11,6 +11,8 @@ TEMPLATE = lib
 
 DEFINES += BASKETPWD_LIBRARY
 
+DESTDIR = ../../bin/
+
 SOURCES += basketpwdlibs.cpp \
     coreplugin.cpp \
     basketutils.cpp \
@@ -25,28 +27,21 @@ HEADERS += basketpwdlibs.h\
 
 unix {
     LIBS += -lcrypto -lssl
+    eval($$QMAKE_HOST.arch = x86) {
+       target.path = /lib
+    }
+    eval($$QMAKE_HOST.arch = x86_64) {
+       target.path = /lib64
+    }
+
+    # Headers for include
+    include_headers.files += $${HEADERS}
+    include_headers.path = /include/basketpwd
+
+    INSTALLS += target include_headers
 }
 win32 {
     CONFIG += static
     INCLUDEPATH += d:/devel/utils/openssl/openssl-shared-64/include
     LIBS += -ld:/devel/utils/openssl/openssl-shared-64/lib/libeay32
-}
-
-symbian {
-    MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE426FAEC
-    TARGET.CAPABILITY = 
-    TARGET.EPOCALLOWDLLDATA = 1
-    addFiles.sources = basketpwd.dll
-    addFiles.path = !:/sys/bin
-    DEPLOYMENT += addFiles
-}
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
 }

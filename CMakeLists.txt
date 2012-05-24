@@ -135,7 +135,7 @@ add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${
 target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT})
 target_link_libraries (${LIB_PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 install (TARGETS ${PROJECT} DESTINATION bin)
-install (TARGETS ${LIB_PROJECT} DESTINATION lib)
+install (TARGETS ${LIB_PROJECT} DESTINATION lib${LIB_SUFFIX})
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
 install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${PROJECT_VERSION})
 
@@ -151,3 +151,9 @@ install (
   FILES images/icons/${PROJECT}.svg
   DESTINATION ${ICON_DEST_PATH}/scalable/apps
   )
+foreach (LIB_HEADER ${LIB_HEADERS})
+  install (
+    FILES ${LIB_HEADER}
+    DESTINATION include/basketpwd
+    )
+endforeach()

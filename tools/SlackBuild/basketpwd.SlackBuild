@@ -3,7 +3,7 @@
 # Written by Alexei Panov <elemc@atisserv.ru>
 
 PRGNAM=basketpwd
-VERSION=0.4.4
+VERSION=0.4.6
 ARCH=${ARCH:-i486}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_elemc}
@@ -51,7 +51,7 @@ chmod -R a-s,u+w,go+r-w .
 
 mkdir build
 cd build 
-cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DLIB_SUFFIX=$LIBDIRSUFFIX
 make
 make install DESTDIR=$PKG
 cd ..
