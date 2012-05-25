@@ -17,6 +17,7 @@
 #include <QSettings>
 #include <QTreeView>
 #include <QStyleFactory>
+#include <QKeyEvent>
 
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
@@ -26,14 +27,16 @@
 //#include "../netsync/syncclient.h"
 //#include "../netsync/udplistener.h"
 
+#ifdef Q_WS_MAC
+    #include <Carbon/Carbon.h>
+#endif
+
 #define SORTING "SortingEnabled"
 
 //
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
-public slots:
-
 private:
     void addItemToModel(bool isFolder);
     void closeEvent(QCloseEvent *event);
@@ -87,21 +90,18 @@ private:
     bool sortingEnabled;
     QActionGroup *primaryActions;
 
-    // добавлено 0.4.5
-    // перенос в плагины
-//    FirstNetworkSender *firstNetSender;
-
-//    // добавлено 0.4.6
-//    QSyncClientList syncClients;
-//    UdpListener *udp_server;
-//    void notifyAboutSelf();
-
     // добавлено 0.4.6
     QMenu *menuHelp;
 
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
+
+#ifdef Q_WS_MAC
+public slots:
+    void hide();
+    void show();
+#endif
 
 private slots:
     // Файл
@@ -145,10 +145,6 @@ private slots:
     void primaryActionsTriggered(QAction *act);
 
     void NetworkError(QString errmsg);
-
-//    перенос в плагины
-//    void NewDataPresent(QString data, QHostAddress addr);
-//    void UdpServerBindError(int err, QString err_msg);
 };
 #endif
 

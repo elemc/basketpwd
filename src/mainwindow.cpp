@@ -3,20 +3,17 @@
 #include "../aboutdialog.h"
 #include "settingsdialog.h"
 
+#include <QDebug>
+
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
 	: QMainWindow(parent, f)
 {
     setupUi(this);
+
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
     initVariables();
-
-    // перенос в плагины
-//    udp_server = new UdpListener ( this );
-//    connect(udp_server, SIGNAL(ReceivedNewData(QString,QHostAddress)), this, SLOT(NewDataPresent(QString,QHostAddress)));
-//    connect(udp_server, SIGNAL(BindError(int,QString)), this, SLOT(UdpServerBindError(int,QString)));
-//    udp_server->start();
 
     tree->setModel( model );
     tree->setDragEnabled(true);
@@ -61,13 +58,15 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     // Добавлено в версии 0.4.1 смена стиля окон
     initChangeStyles();
     changeSortMode();
+
+#ifdef Q_WS_MAC
+    // Добавлено в версии 0.4.6 для Мака
+    if ( testAttribute(Qt::WA_QuitOnClose) ) {
+        setAttribute(Qt::WA_QuitOnClose, false);
+    }
+#endif
 }
 MainWindow::~MainWindow() {
-    // перенос в плагины
-//    if ( udp_server->isRunning() )
-//        udp_server->stop();
-//    while ( !udp_server->isFinished() ) {};
-//    delete udp_server;
 
     if ( quitAction )
         delete quitAction;
@@ -97,8 +96,14 @@ MainWindow::~MainWindow() {
 // Виртуалы
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+
     if ( dontCloseApp ) {
+#ifndef Q_WS_MAC
         triggeredTrayIcon();
+#else
+        //lower();
+        hide();
+#endif
         event->ignore();
         return;
     }
@@ -121,6 +126,7 @@ void MainWindow::restoreTrayIcon()
     trayIconMenu->addAction(maximizeAction);
     trayIconMenu->addAction(restoreAction);
     trayIconMenu->addSeparator();
+
     trayIconMenu->addAction(quitAction);
 }
 
@@ -492,7 +498,13 @@ void MainWindow::addItemToModel(bool isFolder)
 // File actions
 void MainWindow::on_actionExit_triggered()
 {
-    close();
+    if ( querySave() ) {
+        QSettings set;
+        if ( !globalStyle.isEmpty() )
+            set.setValue(tr("Style"), globalStyle);
+        //QCoreApplication::quit();
+        qApp->quit();
+    }
 }
 void MainWindow::on_actionNew_triggered()
 {
@@ -652,8 +664,7 @@ void MainWindow::on_actionHelpAboutQt_triggered()
 }
 void MainWindow::trayIconClose()
 {
-    dontCloseApp = false;
-    close();
+    on_actionExit_triggered();
 }
 
 void MainWindow::onModelDataChanged()
@@ -746,6 +757,14 @@ void MainWindow::initVariables()
     menuHelp = menubar->addMenu(trUtf8("&Помощь"));
     menuHelp->addAction(actionHelpAbout);
     menuHelp->addAction(actionHelpAboutQt);
+
+    // Shortcuts
+    actionCopyToClipboard->setShortcut(QKeySequence(tr("Ctrl+C")));
+    actionCopyLogin->setShortcut(QKeySequence(tr("Ctrl+Shift+C")));
+    actionEditDel->setShortcut(QKeySequence(Qt::Key_Delete));
+    actionSaveAs->setShortcut(QKeySequence(tr("Ctrl+Shift+S")));
+    actionEditAddFolder->setShortcut(QKeySequence(tr("Alt+F")));
+    actionEditAddPwd->setShortcut(QKeySequence(tr("Alt+N")));
 }
 
 void MainWindow::NetworkError(QString errmsg)
@@ -755,21 +774,19 @@ void MainWindow::NetworkError(QString errmsg)
                          tr("Текст ошибки:\n %1").arg(errmsg) );
 }
 
-// перенос в плагины
-//void MainWindow::NewDataPresent(QString data, QHostAddress addr)
-//{
-//    qDebug() << QString("Data: [%1] from IP %2").arg(data).arg(addr.toString());
-//}
-//void MainWindow::notifyAboutSelf()
-//{
-//    syncClients.clear();
-//    firstNetSender->setId(model->identifier());
-//    firstNetSender->setDate(model->lastModified());
-//    firstNetSender->start();
-//}
-//void MainWindow::UdpServerBindError(int err, QString err_msg)
-//{
-//    QMessageBox::critical(this,
-//                          tr("Сетевая ошибка"),
-//                          tr("Сервер UDP не смог запуститься\nКод ошибки:%1\nОшибка:%2").arg(err).arg(err_msg));
-//}
+#ifdef Q_WS_MAC
+void MainWindow::hide()
+{
+    ProcessSerialNumber pn;
+    GetFrontProcess (&pn);
+    ShowHideProcess(&pn,false);
+}
+void MainWindow::show()
+{
+    ProcessSerialNumber pn;
+    GetFrontProcess (&pn);
+    ShowHideProcess(&pn, true);
+    raise();
+    QMainWindow::show();
+}
+#endif

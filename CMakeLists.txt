@@ -7,7 +7,7 @@ endif ()
 #set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
 set (LIB_PROJECT basketlib)
-set (PROJECT_VERSION 0.4.5)
+set (PROJECT_VERSION 0.4.6)
 set (HEADERS 
 	aboutdialog.h
 	src/changepassword.h
@@ -67,6 +67,14 @@ qt4_add_resources (QRC_SOURCES ${RESOURCES})
 qt4_wrap_cpp (MOC_SOURCES ${HEADERS})
 qt4_wrap_cpp (MOC_LIB_SOURCES ${LIB_HEADERS})
 qt4_wrap_ui (UI_SOURCES ${FORMS})
+
+IF(APPLE)
+  INCLUDE_DIRECTORIES ( /Developer/Headers/FlatCarbon )
+  FIND_LIBRARY(CARBON_LIBRARY Carbon)
+  MARK_AS_ADVANCED (CARBON_LIBRARY)
+  SET(EXTRA_LIBS ${CARBON_LIBRARY})
+ENDIF(APPLE)
+
 foreach (LANGUAGE ${LANGUAGE})
 	set (TS ${LANG_PATH}/${LANGUAGE}.ts)
 	set (QM ${LANG_PATH}/${LANGUAGE}.qm)
@@ -107,7 +115,7 @@ add_custom_target (
   COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/tools/mac_resource/* ${MACOSX_BUNDLE_NAME}/Contents/Resources/
 
   # out lib
-  COMMAND mkdir ../lib
+  COMMAND mkdir -p ../lib
   COMMAND cp lib${LIB_PROJECT}.dylib ../lib/
 )
 add_custom_target (
@@ -132,7 +140,7 @@ source_group ("Resource Files" FILES ${QRC_SOURCES})
 add_library (${LIB_PROJECT} SHARED ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
 add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS})
 
-target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT})
+target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT} ${EXTRA_LIBS})
 target_link_libraries (${LIB_PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 install (TARGETS ${PROJECT} DESTINATION bin)
 install (TARGETS ${LIB_PROJECT} DESTINATION lib${LIB_SUFFIX})
