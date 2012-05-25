@@ -3,8 +3,6 @@
 #include "../aboutdialog.h"
 #include "settingsdialog.h"
 
-#include <QDebug>
-
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
 	: QMainWindow(parent, f)
