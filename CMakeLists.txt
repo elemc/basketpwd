@@ -114,9 +114,6 @@ add_custom_target (
   COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/images/basketpwd.icns ${MACOSX_BUNDLE_NAME}/Contents/Resources/basketpwd.icns
   COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/tools/mac_resource/* ${MACOSX_BUNDLE_NAME}/Contents/Resources/
 
-  # out lib
-  COMMAND mkdir -p ../lib
-  COMMAND cp lib${LIB_PROJECT}.dylib ../lib/
 )
 add_custom_target (
   mac-bundle
@@ -137,7 +134,7 @@ source_group ("Forms Files" FILES ${UI_SOURCES})
 source_group ("Generated Files" FILES ${MOC_SOURCES} ${MOC_LIB_SOURCES})
 source_group ("Resource Files" FILES ${QRC_SOURCES})
 
-add_library (${LIB_PROJECT} SHARED ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
 add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS})
 
 target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT} ${EXTRA_LIBS})
