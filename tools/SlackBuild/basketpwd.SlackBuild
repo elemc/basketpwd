@@ -4,7 +4,6 @@
 
 PRGNAM=basketpwd
 VERSION=0.4.6
-ARCH=${ARCH:-i486}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_elemc}
 
