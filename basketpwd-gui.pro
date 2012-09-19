@@ -79,7 +79,7 @@ unix {
 mac {
     TARGET = "Basket of passwords"
 }
-VERSION = 0.4.6
+VERSION = 0.4.7
 VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 DEFINES += QMAKE_SET=1

@@ -5,14 +5,24 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
+#include <QDebug>
+
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::SettingsDialog)
 {
     m_ui->setupUi(this);
 
+#ifdef Q_WS_WIN
+    QString settingDirName = "Basket of Password";
+#else
+    QString settingDirName = ".basketpwd";
+#endif
+    
+    QString defPath = QString(QDir::homePath()  + QDir::separator() + settingDirName);
+
     QSettings set;
-    QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
+    QString defaultPath = set.value(tr("PathToDef"), QString(defPath)).toString();
     int csi             = set.value(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState()).toInt();
     int csort_raw       = set.value(tr(SORTING), true).toInt();
     Qt::CheckState cs = csi == 0 ? Qt::Unchecked : Qt::Checked;
@@ -20,6 +30,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     m_ui->checkBoxDontClose->setCheckState(cs);
     m_ui->lineEditDefaultPath->setText(defaultPath);
     m_ui->checkBoxSort->setCheckState(csort);
+
+    /* Colors */
+    selectedColor       = set.value(tr("ItemColor"), QColor(Qt::darkBlue)).value<QColor>();
+    setColorToItLabel(selectedColor);
 }
 SettingsDialog::~SettingsDialog()
 {
@@ -46,7 +60,7 @@ QString SettingsDialog::getIdent() const
     return m_ui->lineEditIdent->text();
 }
 
-void SettingsDialog::on_pushButton_clicked()
+void SettingsDialog::on_pushButtonSelectDir_clicked()
 {
     QString oldPath = m_ui->lineEditDefaultPath->text();
     QString dir = QFileDialog::getExistingDirectory(this, trUtf8("Выберите папку"),
@@ -79,6 +93,7 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
 
         set.setValue(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState());
         set.setValue(tr(SORTING), m_ui->checkBoxSort->checkState());
+        set.setValue(tr("ItemColor"), selectedColor);
         accept();
     }
     else if ( m_ui->buttonBox->buttonRole( button ) == QDialogButtonBox::RejectRole )
@@ -86,3 +101,22 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
 
 }
 
+void SettingsDialog::on_pushButtonSelectColor_clicked() 
+{
+  // FIXME: maybe QT bug here O_o
+  QString tempDir = m_ui->lineEditDefaultPath->text();
+  QColor sd_color = QColorDialog::getColor( selectedColor, this ); //, tr("Выберите цвет"));
+  if ( sd_color.isValid() ) {
+    selectedColor = sd_color;
+    setColorToItLabel(selectedColor);
+  }
+
+  // FIXME: maybe QT bug here O_o
+  if ( tempDir != m_ui->lineEditDefaultPath->text() )
+    m_ui->lineEditDefaultPath->setText(tempDir);
+}
+void SettingsDialog::setColorToItLabel( QColor &clr )
+{
+  QString ls = tr("<html><head/><body><p><span style=\"color:%1;\">Цвет записей:</span></p></body></html>").arg(clr.name());
+  m_ui->labelColorItems->setText(ls);
+}

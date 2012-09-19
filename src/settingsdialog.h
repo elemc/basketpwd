@@ -4,6 +4,7 @@
 #include <QtGui/QDialog>
 #include <QAbstractButton>
 #include <QDateTime>
+#include <QColorDialog>
 
 #define SORTING "SortingEnabled"
 
@@ -25,10 +26,14 @@ protected:
 
 private:
     Ui::SettingsDialog *m_ui;
+    QColor selectedColor;
+
+    void setColorToItLabel(QColor &clr);
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton* button);
-    void on_pushButton_clicked();
+    void on_pushButtonSelectDir_clicked();
+    void on_pushButtonSelectColor_clicked();
 };
 
 #endif // SETTINGSDIALOG_H

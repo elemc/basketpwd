@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>282</height>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,12 +32,12 @@
         <item>
          <widget class="QLineEdit" name="lineEditDefaultPath">
           <property name="text">
-           <string>./</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="pushButtonSelectDir">
           <property name="minimumSize">
            <size>
             <width>30</width>
@@ -110,6 +110,48 @@
           </property>
           <property name="displayFormat">
            <string>dd.MM.yyyy HH:mm</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxVisual">
+     <property name="title">
+      <string>Визуальные настройки</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="labelColorItems">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Цвет записей:</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::RichText</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonSelectColor">
+          <property name="text">
+           <string>&amp;Изменить</string>
           </property>
          </widget>
         </item>

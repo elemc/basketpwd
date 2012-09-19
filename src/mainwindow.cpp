@@ -34,7 +34,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     // Добавлено 0.2.6
     QSettings set;
 
-    defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
+    defaultPath = getDefaultDirectory(); //set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
     dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
     sortingEnabled = set.value(tr(SORTING), true).toBool();
 
@@ -602,6 +602,7 @@ void MainWindow::on_actionSettings_triggered()
             model->setIdentifier(sd.getIdent());
             setModif(true);
         }
+        model->reloadSettings();
     }
 }
 void MainWindow::on_actionChangeCurrentPassword_triggered()
@@ -679,7 +680,15 @@ void MainWindow::slotChangeStypeApp(QAction *styleAct)
 QString MainWindow::getDefaultDirectory() const
 {
     QSettings set;
-    QString defaultPath = set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
+
+#ifdef Q_WS_WIN
+    QString settingDirName = "Basket of Password";
+#else
+    QString settingDirName = ".basketpwd";
+#endif
+    
+    QString defPath = QString(QDir::homePath()  + QDir::separator() + settingDirName);
+    QString defaultPath = set.value(tr("PathToDef"), QString(defPath)).toString();
     return defaultPath;
 }
 

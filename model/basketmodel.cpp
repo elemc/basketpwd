@@ -13,6 +13,8 @@ BasketModel::BasketModel(QObject *parent) :
     folderIcon = QIcon(":/images/foldericon");
     folderCloseIcon = QIcon(":/images/foldercloseicon");
     primarySelectMode = false;
+
+    reloadSettings();
 }
 BasketModel::~BasketModel()
 {
@@ -533,7 +535,7 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
     }
     else if ( role == Qt::TextColorRole ) {
         QBrush blue_brush;
-        blue_brush.setColor(Qt::darkBlue);
+        blue_brush.setColor(itemsColor);
         if ( !item->isFolder() )
             return blue_brush;
     }
@@ -794,4 +796,9 @@ void BasketModel::setUnFoldIndex(QModelIndex idx)
     item->setFold(false);
 
     emit modelDataChanged();
+}
+void BasketModel::reloadSettings() 
+{
+    QSettings set;
+    itemsColor = set.value(tr("ItemColor"), QColor(Qt::darkBlue)).value<QColor>();
 }

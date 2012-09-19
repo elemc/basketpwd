@@ -7,7 +7,7 @@ endif ()
 #set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
 set (LIB_PROJECT basketlib)
-set (PROJECT_VERSION 0.4.6)
+set (PROJECT_VERSION 0.4.7)
 set (HEADERS 
 	aboutdialog.h
 	src/changepassword.h

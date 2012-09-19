@@ -60,6 +60,8 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent = QModelIndex());
 
+    void reloadSettings();
+
 protected:
 #if QT_VERSION < 0x040600
     void beginResetModel();
@@ -87,6 +89,8 @@ private:
     QIcon folderCloseIcon;
     Qt::SortOrder mainSortOrder;
     bool primarySelectMode;
+
+    QColor itemsColor;
 
 signals:
     void modelDataChanged();
