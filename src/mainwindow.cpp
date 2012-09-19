@@ -174,6 +174,9 @@ void MainWindow::createTreeWidget()
         tree->addAction( actionEditEdit );
         tree->addAction( actionEditDel );
 
+        /* hide a root item */
+        tree->setRootIsDecorated( false );
+
         connect ( this->actionViewExpand, SIGNAL(triggered()), model, SLOT(setFoldAll()) );
         connect ( this->actionViewUnExpand, SIGNAL(triggered()), model, SLOT(setUnFoldAll()) );
 
@@ -397,7 +400,7 @@ void MainWindow::changeCurrentPassword()
         if ((( cpDlg.getCurrentPassword().isEmpty() ) && ( mainPassword.isNull() )) || ( hashPassword(cpDlg.getCurrentPassword()) == mainPassword ) ) {
             QByteArray tempPassword = hashPassword(cpDlg.getNewPassword());
             if ( model->changePassword( BasketUtils::toHex(tempPassword) ) )
-                mainPassword = tempPassword;
+              mainPassword = tempPassword;
             setModif( true );
             allowActions( true );
         }
@@ -772,13 +775,6 @@ void MainWindow::initVariables()
     actionSaveAs->setShortcut(QKeySequence(tr("Ctrl+Shift+S")));
     actionEditAddFolder->setShortcut(QKeySequence(tr("Alt+F")));
     actionEditAddPwd->setShortcut(QKeySequence(tr("Alt+N")));
-}
-
-void MainWindow::NetworkError(QString errmsg)
-{
-    QMessageBox::warning( this,
-                         tr("Ошибка при обращении к локальной сети"),
-                         tr("Текст ошибки:\n %1").arg(errmsg) );
 }
 
 #ifdef Q_WS_MAC

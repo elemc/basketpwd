@@ -3,8 +3,8 @@
 BasketModel::BasketModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
-    rootItem        = new BasketBaseItem(0, this);
-    rootItem->setFolder(tr("корень"));
+    initRoot();
+  
     showPasswords   = false;
     hashPassword    = QString();
 
@@ -18,7 +18,7 @@ BasketModel::BasketModel(QObject *parent) :
 }
 BasketModel::~BasketModel()
 {
-    delete rootItem;
+    delete _rootTopItem;
 }
 
 bool BasketModel::setModelData(QByteArray &data, QString pwd, bool isEncryptedData)
@@ -48,7 +48,8 @@ QByteArray BasketModel::modelDataToXML(bool encrypted)
     QDomDocument doc;
     QDomElement	root = doc.createElement( "basket-passwords" );
     root.setAttribute(QString("ident"), identifier());
-    lastDBModified = QDateTime::currentDateTime();
+    setTimeModified(QDateTime::currentDateTime());
+    //lastDBModified = QDateTime::currentDateTime();
     root.setAttribute(QString("modified"), lastDBModified.toString(DATE_TIME_FORMAT));
 
     doc.appendChild( root );
@@ -78,14 +79,14 @@ QByteArray BasketModel::modelDataToXML(bool encrypted)
 void BasketModel::setUpNewModel(QString pwd)
 {
     beginResetModel();
-    delete rootItem;
-    rootItem = new BasketBaseItem(0, this);
-    rootItem->setFolder(tr("корень"));
-
-    hashPassword = pwd;
+    delete _rootTopItem;
 
     lastDBModified = QDateTime::currentDateTime();
-    databaseIdentifier = "generic";
+    databaseIdentifier = tr("generic");
+
+    initRoot();
+
+    hashPassword = pwd;
     endResetModel();
 }
 bool BasketModel::changePassword(QString newPassword)
@@ -93,6 +94,7 @@ bool BasketModel::changePassword(QString newPassword)
     beginResetModel();
     if ( hash().isEmpty() ) {
         hashPassword = newPassword;
+        endResetModel();
         return true;
     }
     changeItemPassword(rootItem, newPassword);
@@ -156,8 +158,11 @@ bool BasketModel::parseDocument(QDomDocument &doc)
     if ( rootElement.tagName() != "basket-passwords" )
         return false;
 
-    databaseIdentifier  = rootElement.attribute(QString("ident"), QString("default"));
-    lastDBModified        = QDateTime::fromString(rootElement.attribute(QString("modified"), QDateTime::currentDateTime().toString(DATE_TIME_FORMAT)), DATE_TIME_FORMAT);
+    QString ident       = rootElement.attribute(QString("ident"), QString("default"));
+    setDatabaseIdentifier(ident);
+    
+    QDateTime time      = QDateTime::fromString(rootElement.attribute(QString("modified"), QDateTime::currentDateTime().toString(DATE_TIME_FORMAT)), DATE_TIME_FORMAT);
+    setTimeModified( time );
 
     for(QDomNode n = rootElement.firstChild(); !n.isNull(); n = n.nextSibling())
     {
@@ -268,7 +273,7 @@ bool BasketModel::parseElementForDND(int row, const QModelIndex &parent, QDomEle
 
 void BasketModel::setIdentifier(QString newIdent)
 {
-    databaseIdentifier = newIdent;
+    setDatabaseIdentifier(newIdent);
 }
 QString BasketModel::identifier() const
 {
@@ -470,7 +475,7 @@ QModelIndex BasketModel::index(int row, int column, const QModelIndex &parent) c
 
     BasketBaseItem *parentItem;
     if (!parent.isValid())
-        parentItem = rootItem;
+        parentItem = _rootTopItem;
     else
         parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
     BasketBaseItem *childItem = parentItem->childItemAt(row);
@@ -487,7 +492,7 @@ QModelIndex BasketModel::parent(const QModelIndex &child) const
     BasketBaseItem *childItem = static_cast<BasketBaseItem *>(child.internalPointer());
     BasketBaseItem *parentItem  = childItem->parentItem();
 
-    if ( !parentItem || parentItem == rootItem )
+    if ( !parentItem || parentItem == _rootTopItem )
         return QModelIndex();
 
     return createIndex(parentItem->row(), 0, parentItem);
@@ -512,8 +517,11 @@ QVariant BasketModel::data(const QModelIndex &index, int role) const
             return item->name();
             break;
         case 1:
+          if ( item == rootItem )
+            return lastDBModified.toString(DATE_TIME_FORMAT);
+          else
             return item->login();
-            break;
+          break;
         case 2:
             if ( showPasswords ) {
                 BasketUtils butil;
@@ -557,7 +565,7 @@ int BasketModel::rowCount(const QModelIndex &parent) const
 
     BasketBaseItem *item;
     if ( !parent.isValid() )
-        item = rootItem;
+        item = _rootTopItem;
     else
         item = static_cast<BasketBaseItem *>(parent.internalPointer());
 
@@ -568,7 +576,7 @@ void BasketModel::sort(int column, Qt::SortOrder order) {
         return;
 
     if ( !rootItem )
-        return;
+       return;
 
     rootItem->sortChilds(order);
     reset();
@@ -607,6 +615,9 @@ bool BasketModel::setData(const QModelIndex &index, const QVariant &value, int r
     if ( item->isFolder() ) {
         if ( index.column() == 0 ) {
             item->setName( value.toString() );
+            if ( item == rootItem )
+              databaseIdentifier = value.toString();
+
             emit modelDataChanged();
         }
         else
@@ -636,9 +647,9 @@ bool BasketModel::insertRow(int row, const QModelIndex &parent, bool isFolder)
     if ( parent.isValid() )
         parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
     else
-        parentItem = rootItem;
+        parentItem = _rootTopItem;
     if ( !parentItem )
-        parentItem = rootItem;
+        parentItem = _rootTopItem;
 
     BasketBaseItem *newItem = new BasketBaseItem(parentItem, this);
     if ( !isFolder )
@@ -659,12 +670,12 @@ bool BasketModel::removeRow(int row, const QModelIndex &parent)
     BasketBaseItem *pitem;
 
     if ( !parent.isValid() )
-        pitem = rootItem;
+        pitem = _rootTopItem;
     else
         pitem = static_cast<BasketBaseItem *>(parent.internalPointer());
 
     if ( !pitem )
-        pitem = rootItem;
+        pitem = _rootTopItem;
 
     pitem->removeChildAt(row);
     endRemoveRows();
@@ -719,11 +730,11 @@ bool BasketModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
         beginRow = rowCount();
 
     if ( !parent.isValid() )
-        parentItem = rootItem;
+        parentItem = _rootTopItem;
     else {
         parentItem = static_cast<BasketBaseItem *>(parent.internalPointer());
         if ( !parentItem )
-            parentItem = rootItem;
+            parentItem = _rootTopItem;
     }
 
     QByteArray buf = data->data(DRAG_AND_DROP_MIME);
@@ -801,4 +812,27 @@ void BasketModel::reloadSettings()
 {
     QSettings set;
     itemsColor = set.value(tr("ItemColor"), QColor(Qt::darkBlue)).value<QColor>();
+}
+void BasketModel::initRoot()
+{
+    _rootTopItem        = new BasketBaseItem(0, this);
+    _rootTopItem->setFolder(tr("root"));
+
+    rootItem            = new BasketBaseItem(_rootTopItem, this);
+    rootItem->setFolder(databaseIdentifier);
+    _rootTopItem->addChild(rootItem);
+    rootItem->setFold(true, true);
+}
+void BasketModel::setDatabaseIdentifier(const QString &ident)
+{
+  databaseIdentifier = ident;
+  beginResetModel();
+  rootItem->setName(ident);
+  endResetModel();
+}
+void BasketModel::setTimeModified(const QDateTime &time)
+{
+  beginResetModel();
+  lastDBModified = time;
+  endResetModel();
 }

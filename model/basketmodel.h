@@ -69,6 +69,7 @@ protected:
 #endif
 
 private:
+    BasketBaseItem *_rootTopItem;
     BasketBaseItem *rootItem;
     bool showPasswords;
 
@@ -82,6 +83,10 @@ private:
     bool changeItemPassword(BasketBaseItem *item, QString newPassword);
     QDomElement convertBasketItemToDomElement(BasketBaseItem *item, QDomDocument &doc) const;
     QByteArray indexesToXML(const QModelIndexList &indexes) const;
+
+    void initRoot();
+    void setDatabaseIdentifier(const QString &ident);
+    void setTimeModified(const QDateTime &time);
 
     // Декорации
     QIcon recordIcon;

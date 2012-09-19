@@ -143,8 +143,6 @@ private slots:
     void on_actionViewPrimaryChecks_triggered(bool checked);
     void generateContextPrimaries();
     void primaryActionsTriggered(QAction *act);
-
-    void NetworkError(QString errmsg);
 };
 #endif
 
