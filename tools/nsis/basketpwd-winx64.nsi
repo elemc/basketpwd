@@ -22,7 +22,6 @@ SetCompressor lzma
 !define VCRedistRegKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}"
 
 Function .onInit
-
         ${If} ${RunningX64}
         	${EnableX64FSRedirection}
         ${else}

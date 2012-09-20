@@ -4,9 +4,22 @@ if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX /usr/local)
 endif ()
 
-if (NOT PROJECT_PORTABLE)
+IF (WIN32)
+  IF ( PROJECT_PORTABLE STREQUAL 1 )
+    set (EXE_ADD_PORTABLE -portable)
+  ENDIF ()
+  if (NOT PROJECT_PORTABLE)
     set (PROJECT_PORTABLE 0)
-endif ()
+  endif ()
+
+  if (NOT VCREDIST_DIR)
+    set (VCREDIST_DIR "C:/Program Files/Microsoft SDKs/Windows/v7.1/Redist/VC" )
+  endif ()
+
+  if (NOT NSIS_DIR)
+    set (NSIS_DIR "c:/Program Files (x86)/NSIS")
+  endif (NOT NSIS_DIR)
+ENDIF (WIN32)
 
 #set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
@@ -61,9 +74,10 @@ set (QT_USE_QTNETWORK FALSE)
 project (${PROJECT})
 
 configure_file (
-	"config.h.in"
-	"config.h"
-	)
+	"${PROJECT_SOURCE_DIR}/config.h.in"
+	"${PROJECT_BINARY_DIR}/config.h"
+)
+
 include_directories (model src ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package (Qt4 REQUIRED)
@@ -92,14 +106,16 @@ foreach (LANGUAGE ${LANGUAGE})
 		MAIN_DEPENDENCY ${TS})
 endforeach ()
 
-IF(APPLE)
+
 add_custom_target (
 	translations
 	COMMAND ${QT_LUPDATE_EXECUTABLE} ${HEADERS} ${SOURCES} -ts ${TRANSLATIONS})
+
 add_custom_command (
 	TARGET translations
 	COMMAND ${QT_LRELEASE_EXECUTABLE} ${TRANSLATIONS})
 
+IF(APPLE)
 add_custom_target (
   clean-mac-bundle
   rm -rf ${MACOSX_BUNDLE_NAME}
@@ -134,6 +150,55 @@ add_custom_target (
   COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
 )
 ENDIF (APPLE)
+
+# Make a windows installer
+IF ( WIN32 )
+  file(MAKE_DIRECTORY vcredist)
+  IF ( CMAKE_SIZEOF_VOID_P STREQUAL 4 )
+    set (PROJECT_ARCH 86)
+    set (PROJECT_ARCH_BIT 32)
+  ELSEIF ( CMAKE_SIZEOF_VOID_P STREQUAL 8 )
+    set (PROJECT_ARCH 64)
+    set (PROJECT_ARCH_BIT 64)
+  ELSE ()
+    message( FATAL_ERROR "Architecture may not be checked!")
+  ENDIF ()
+
+  IF ( EXISTS "${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe" )
+    message(STATUS "Microsoft Visual C++ Redistributable Package (${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe) found.")
+    IF ( EXISTS "${NSIS_DIR}/makensis.exe" )
+      message(STATUS "Nullsoft Scriptable Install System (${NSIS_DIR}/makensis.exe) found.")
+      configure_file (
+        "${PROJECT_SOURCE_DIR}/tools/nsis/basketpwd.nsi.in"
+        "${PROJECT_BINARY_DIR}/basketpwd.nsi"
+        @ONLY
+        NEWLINE_STYLE WIN32
+        )
+      add_custom_target (
+        nsis
+        DEPENDS ${PROJECT} ${LIB_PROJECT} qt-libs
+        
+        COMMAND "${NSIS_DIR}/makensis.exe" "${PROJECT_BINARY_DIR}/basketpwd.nsi"
+        )
+    ELSE ( EXISTS "${NSIS_DIR}/makensis.exe" )
+      message(STATUS "Nullsoft Scriptable Install System (makensis.exe) not found.")
+    ENDIF ( EXISTS "${NSIS_DIR}/makensis.exe" )
+
+    add_custom_target (
+      qt-libs
+      COMMAND ${CMAKE_COMMAND} -E copy ${QT_BINARY_DIR}/QtCore4.dll ${PROJECT_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E copy ${QT_BINARY_DIR}/QtGui4.dll ${PROJECT_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E copy ${QT_BINARY_DIR}/QtXml4.dll ${PROJECT_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E copy ${OPENSSL_ROOT_DIR}/bin/libeay32.dll ${PROJECT_BINARY_DIR}
+      
+      COMMAND ${CMAKE_COMMAND} -E copy ${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe ${PROJECT_BINARY_DIR}
+      )
+
+  ELSE ( EXISTS "${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe" )
+    message(STATUS "Microsoft Visual C++ Redistributable Package (vcredist_x${PROJECT_ARCH}.exe) not found.")
+  ENDIF ( EXISTS "${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe" )
+
+ENDIF ( WIN32 )  
 
 include_directories(libs ${OPENSSL_INCLUDE_DIR})
 
