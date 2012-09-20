@@ -693,12 +693,12 @@ QString MainWindow::getDefaultDirectory() const
     QSettings set;
 
 #ifdef Q_WS_WIN
-    QString settingDirName = "Basket of Password";
+    QString settingDirName = tr("Корзинка паролей");
 #else
     QString settingDirName = ".basketpwd";
 #endif
     
-    QString defPath = QString(QDir::homePath()  + QDir::separator() + settingDirName);
+    QString defPath = QString(QDir::toNativeSeparators(QDir::homePath())  + QDir::separator() + settingDirName);
     QString defaultPath = set.value(tr("PathToDef"), QString(defPath)).toString();
     return defaultPath;
 }
