@@ -91,6 +91,8 @@ foreach (LANGUAGE ${LANGUAGE})
 		COMMAND ${QT_LRELEASE_EXECUTABLE} ${TS}
 		MAIN_DEPENDENCY ${TS})
 endforeach ()
+
+IF(APPLE)
 add_custom_target (
 	translations
 	COMMAND ${QT_LUPDATE_EXECUTABLE} ${HEADERS} ${SOURCES} -ts ${TRANSLATIONS})
@@ -131,6 +133,7 @@ add_custom_target (
   DEPENDS mac-pre-bundle
   COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
 )
+ENDIF (APPLE)
 
 include_directories(libs ${OPENSSL_INCLUDE_DIR})
 
