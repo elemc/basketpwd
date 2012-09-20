@@ -2,6 +2,7 @@
 #include "changepassword.h"
 #include "../aboutdialog.h"
 #include "settingsdialog.h"
+#include "basketcommon.h"
 
 #ifdef Q_WS_MAC
 void qt_mac_set_dock_menu(QMenu *menu);
@@ -691,14 +692,8 @@ void MainWindow::slotChangeStypeApp(QAction *styleAct)
 QString MainWindow::getDefaultDirectory() const
 {
     QSettings set;
-
-#ifdef Q_WS_WIN
-    QString settingDirName = tr("Корзинка паролей");
-#else
-    QString settingDirName = ".basketpwd";
-#endif
     
-    QString defPath = QString(QDir::toNativeSeparators(QDir::homePath())  + QDir::separator() + settingDirName);
+    QString defPath = BasketCommon::getDefaultDirectory();
     QString defaultPath = set.value(tr("PathToDef"), QString(defPath)).toString();
     return defaultPath;
 }

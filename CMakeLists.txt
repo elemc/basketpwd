@@ -4,6 +4,10 @@ if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX /usr/local)
 endif ()
 
+if (NOT PROJECT_PORTABLE)
+    set (PROJECT_PORTABLE 0)
+endif ()
+
 #set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
 set (LIB_PROJECT basketlib)
@@ -13,14 +17,16 @@ set (HEADERS
 	src/changepassword.h
 	src/mainwindow.h
 	src/settingsdialog.h
-	model/basketmodel.h) 
+	model/basketmodel.h
+    src/basketcommon.h) 
 set (SOURCES
 	aboutdialog.cpp
 	src/changepassword.cpp
 	src/main.cpp
 	src/mainwindow.cpp
 	src/settingsdialog.cpp
-	model/basketmodel.cpp)
+	model/basketmodel.cpp
+    src/basketcommon.cpp)
 set (FORMS
 	aboutdialog.ui
 	ui/mainwindow.ui
