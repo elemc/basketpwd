@@ -3,6 +3,11 @@
 #include "../aboutdialog.h"
 #include "settingsdialog.h"
 
+#ifdef Q_WS_MAC
+void qt_mac_set_dock_menu(QMenu *menu);
+#endif
+
+
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
 	: QMainWindow(parent, f)
@@ -86,6 +91,11 @@ MainWindow::~MainWindow() {
 
     if ( menuHelp )
         delete menuHelp;
+
+#ifdef Q_WS_MAC
+    if ( macDockMenu )
+        delete macDockMenu;
+#endif
 }
 
 // Виртуалы
@@ -721,6 +731,11 @@ void MainWindow::generateContextPrimaries()
         act->~QAction();
     }
 
+#ifdef Q_WS_MAC
+    delete macDockMenu;
+    macDockMenu = new QMenu(this);
+#endif
+
     restoreTrayIcon();
     QList<BasketBaseItem *> list = model->primaryList();
     foreach ( BasketBaseItem* item, list) {
@@ -737,8 +752,15 @@ void MainWindow::generateContextPrimaries()
     }
 
     if ( primaryActions->actions().size() > 0 ) {
+#ifdef Q_WS_MAC
+        foreach ( QAction *act, primaryActions->actions() ) {
+            macDockMenu->addAction(act);
+        }
+        qt_mac_set_dock_menu(macDockMenu);
+#else
         trayIconMenu->insertActions(minimizeAction, primaryActions->actions());
         trayIconMenu->insertSeparator(minimizeAction);
+#endif
     }
 }
 void MainWindow::primaryActionsTriggered(QAction *act)
@@ -765,6 +787,10 @@ void MainWindow::initVariables()
     menuHelp = menubar->addMenu(trUtf8("&Помощь"));
     menuHelp->addAction(actionHelpAbout);
     menuHelp->addAction(actionHelpAboutQt);
+
+#ifdef Q_WS_MAC
+    macDockMenu = new QMenu(this);
+#endif
 
     // Shortcuts
     actionCopyToClipboard->setShortcut(QKeySequence(tr("Ctrl+C")));

@@ -89,6 +89,11 @@ private:
     // добавлено 0.4.6
     QMenu *menuHelp;
 
+    // Добавлено 0.4.7
+#ifdef Q_WS_MAC
+    QMenu *macDockMenu;
+#endif
+
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
