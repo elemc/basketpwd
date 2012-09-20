@@ -25,9 +25,6 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     connect ( model, SIGNAL(primaryChanged()), this, SLOT(generateContextPrimaries()) );
     connect ( primaryActions, SIGNAL(triggered(QAction*)), this, SLOT(primaryActionsTriggered(QAction*)) );
 
-    // перенос в плагины
-    //connect ( firstNetSender, SIGNAL(errorBySend(QString)), this, SLOT(NetworkError(QString)) );
-
     newDatabase();
 
     // Пытаемся обнаружить и загрузить файл с паролями по-умолчанию
@@ -94,8 +91,9 @@ MainWindow::~MainWindow() {
 // Виртуалы
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    bool reallyQuit = !event->spontaneous();
 
-    if ( dontCloseApp ) {
+    if ( dontCloseApp && !reallyQuit ) {
 #ifndef Q_WS_MAC
         triggeredTrayIcon();
 #else
@@ -156,34 +154,34 @@ void MainWindow::createTrayIcon()
 }
 void MainWindow::createTreeWidget()
 {
-        //Определяем первичный размер колонок
-        int widthTree = tree->width();
-        tree->setColumnWidth(0, widthTree / 100 * 50);
-        tree->setColumnWidth(1, widthTree / 100 * 25);
-        tree->setColumnWidth(2, widthTree / 100 * 25);
+    //Определяем первичный размер колонок
+    int widthTree = tree->width();
+    tree->setColumnWidth(0, widthTree / 100 * 50);
+    tree->setColumnWidth(1, widthTree / 100 * 25);
+    tree->setColumnWidth(2, widthTree / 100 * 25);
 
-        // Переопределяем контекстное меню дерева
-        QAction *edit_sep = new QAction( this );
-        edit_sep->setSeparator( true );
-        tree->setContextMenuPolicy( Qt::ActionsContextMenu );
-        tree->addAction( actionCopyLogin );
-        tree->addAction( actionCopyToClipboard );
-        tree->addAction( edit_sep );
-        tree->addAction( actionEditAddFolder );
-        tree->addAction( actionEditAddPwd );
-        tree->addAction( actionEditEdit );
-        tree->addAction( actionEditDel );
+    // Переопределяем контекстное меню дерева
+    QAction *edit_sep = new QAction( this );
+    edit_sep->setSeparator( true );
+    tree->setContextMenuPolicy( Qt::ActionsContextMenu );
+    tree->addAction( actionCopyLogin );
+    tree->addAction( actionCopyToClipboard );
+    tree->addAction( edit_sep );
+    tree->addAction( actionEditAddFolder );
+    tree->addAction( actionEditAddPwd );
+    tree->addAction( actionEditEdit );
+    tree->addAction( actionEditDel );
 
-        /* hide a root item */
-        tree->setRootIsDecorated( false );
+    /* hide a root item */
+    tree->setRootIsDecorated( false );
 
-        connect ( this->actionViewExpand, SIGNAL(triggered()), model, SLOT(setFoldAll()) );
-        connect ( this->actionViewUnExpand, SIGNAL(triggered()), model, SLOT(setUnFoldAll()) );
+    connect ( this->actionViewExpand, SIGNAL(triggered()), model, SLOT(setFoldAll()) );
+    connect ( this->actionViewUnExpand, SIGNAL(triggered()), model, SLOT(setUnFoldAll()) );
 
-        connect ( this->actionViewExpand, SIGNAL(triggered()), tree, SLOT(expandAll()));
-        connect ( this->actionViewUnExpand, SIGNAL(triggered()), tree, SLOT(collapseAll()));
-        connect ( tree, SIGNAL(collapsed(QModelIndex)), model, SLOT(setUnFoldIndex(QModelIndex)) );
-        connect ( tree, SIGNAL(expanded(QModelIndex)), model, SLOT(setFoldIndex(QModelIndex)) );
+    connect ( this->actionViewExpand, SIGNAL(triggered()), tree, SLOT(expandAll()));
+    connect ( this->actionViewUnExpand, SIGNAL(triggered()), tree, SLOT(collapseAll()));
+    connect ( tree, SIGNAL(collapsed(QModelIndex)), model, SLOT(setUnFoldIndex(QModelIndex)) );
+    connect ( tree, SIGNAL(expanded(QModelIndex)), model, SLOT(setFoldIndex(QModelIndex)) );
 }
 void MainWindow::initChangeStyles()
 {
@@ -298,8 +296,8 @@ void MainWindow::loadDatabase()
     if (!isSimpleXML) {
         bool acceptDlg = false;
         tempPassword = QInputDialog::getText( this, trUtf8("Запрос пароля"),
-                            trUtf8("Введите пароль для доступа к файлу %1:").arg( fileName ),
-                            QLineEdit::Password, QString(), &acceptDlg );
+                                              trUtf8("Введите пароль для доступа к файлу %1:").arg( fileName ),
+                                              QLineEdit::Password, QString(), &acceptDlg );
         if ( (!acceptDlg) || tempPassword.isEmpty() ) {
             newDatabase ( true );
             return;
@@ -347,13 +345,13 @@ bool MainWindow::querySave()
     else
     {
         int result = QMessageBox::question(this, trUtf8("Сохранение базы данных"),
-                                                trUtf8("Вы не сохранили изменения сделанные в базе данных."),
-                                                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
-                                                QMessageBox::Save);
+                                           trUtf8("Вы не сохранили изменения сделанные в базе данных."),
+                                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+                                           QMessageBox::Save);
         if ( result == QMessageBox::Cancel )
-                return false;
+            return false;
         else if ( result == QMessageBox::Save )
-                on_actionSave_triggered();
+            on_actionSave_triggered();
     }
 
     return true;
@@ -366,7 +364,7 @@ void MainWindow::treeItemDoubleClicked (QModelIndex index)
         return;
 
     /*if ( item->data( 0, Qt::UserRole ).toInt() == 0 )
-        editPwd ( item );*/
+      editPwd ( item );*/
     // TODO: Сделать активацию, открытие диалога редактирования
 
 }
@@ -400,7 +398,7 @@ void MainWindow::changeCurrentPassword()
         if ((( cpDlg.getCurrentPassword().isEmpty() ) && ( mainPassword.isNull() )) || ( hashPassword(cpDlg.getCurrentPassword()) == mainPassword ) ) {
             QByteArray tempPassword = hashPassword(cpDlg.getNewPassword());
             if ( model->changePassword( BasketUtils::toHex(tempPassword) ) )
-              mainPassword = tempPassword;
+                mainPassword = tempPassword;
             setModif( true );
             allowActions( true );
         }
@@ -411,11 +409,11 @@ void MainWindow::changeCurrentPassword()
 void MainWindow::currentItemChanged ( QModelIndex current_index, QModelIndex previus_index )
 {
     Q_UNUSED(previus_index)
-    if ( !current_index.isValid() ) {
-        actionCopyToClipboard->setEnabled( false );
-        actionCopyLogin->setEnabled( false );
-        return;
-    }
+        if ( !current_index.isValid() ) {
+            actionCopyToClipboard->setEnabled( false );
+            actionCopyLogin->setEnabled( false );
+            return;
+        }
     bool isAct = true;
     if (model->indexIsFolder(current_index))
         isAct = false;
@@ -437,7 +435,7 @@ void MainWindow::allowActions( bool yes )
     // Устанавливаем текст в статусной строке
     if (!yes)
         statusbar->showMessage(
-                trUtf8("Вы не задали пароль на новый список данных. Сделать это можно в меню \"Файл\"->\"Сменить текущий пароль\"."));
+            trUtf8("Вы не задали пароль на новый список данных. Сделать это можно в меню \"Файл\"->\"Сменить текущий пароль\"."));
     else
         statusbar->showMessage(trUtf8("Готово."));
 }
@@ -452,26 +450,26 @@ void MainWindow::statusMessageChanged( QString message )
     else {
         if ( !actionEditAddPwd->isEnabled() && !actionEditAddFolder->isEnabled() )
             statusbar->showMessage(
-                    trUtf8("Вы не задали пароль на новый список данных. Сделать это можно в меню \"Файл\"->\"Сменить текущий пароль\"."));
+                trUtf8("Вы не задали пароль на новый список данных. Сделать это можно в меню \"Файл\"->\"Сменить текущий пароль\"."));
         else
             statusbar->showMessage(trUtf8("Готово."));
     }
 }
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-     switch (reason) {
-     case QSystemTrayIcon::Trigger:
-         triggeredTrayIcon();
-         break;
-     case QSystemTrayIcon::DoubleClick:
-         triggeredTrayIcon();
-         break;
-     case QSystemTrayIcon::MiddleClick:
-         triggeredTrayIcon();
-         break;
-     default:
-         ;
-     }
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+        triggeredTrayIcon();
+        break;
+    case QSystemTrayIcon::DoubleClick:
+        triggeredTrayIcon();
+        break;
+    case QSystemTrayIcon::MiddleClick:
+        triggeredTrayIcon();
+        break;
+    default:
+        ;
+    }
 }
 void MainWindow::triggeredTrayIcon()
 {
@@ -637,8 +635,8 @@ void MainWindow::on_actionShowPwd_triggered(bool checked)
 
     if ( checked )
         tempPassword = QInputDialog::getText( this, trUtf8("Запрос пароля"),
-                trUtf8("<b><p>Внимание! Потенциально опасно отображать пароли!</p>\n<p>Если Вы находитесь перед компьютером не один, нажмите кнопку \"Отмена\"</p></b>\nПодтвердите свой пароль:"),
-                QLineEdit::Password, QString(), &acceptDlg );
+                                              trUtf8("<b><p>Внимание! Потенциально опасно отображать пароли!</p>\n<p>Если Вы находитесь перед компьютером не один, нажмите кнопку \"Отмена\"</p></b>\nПодтвердите свой пароль:"),
+                                              QLineEdit::Password, QString(), &acceptDlg );
     else {
         acceptDlg = true;
     }
