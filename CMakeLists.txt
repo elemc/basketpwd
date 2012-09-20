@@ -134,11 +134,18 @@ source_group ("Forms Files" FILES ${UI_SOURCES})
 source_group ("Generated Files" FILES ${MOC_SOURCES} ${MOC_LIB_SOURCES})
 source_group ("Resource Files" FILES ${QRC_SOURCES})
 
+if (WIN32)
+add_library (${LIB_PROJECT} SHARED ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+else ()
 add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+endif (WIN32)
 add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS})
 
-target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT} ${EXTRA_LIBS})
+set_target_properties(${LIB_PROJECT} PROPERTIES DEFINE_SYMBOL BASKETPWD_LIBRARY)
+
 target_link_libraries (${LIB_PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
+target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT} ${EXTRA_LIBS})
+
 install (TARGETS ${PROJECT} DESTINATION bin)
 install (TARGETS ${LIB_PROJECT} DESTINATION lib${LIB_SUFFIX})
 install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
