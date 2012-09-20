@@ -6,7 +6,6 @@ BasketCommon::BasketCommon(QObject *parent) :
 }
 BasketCommon::~BasketCommon()
 {
-    this->~QObject();
 }
 
 QString BasketCommon::getDefaultDirectory()
