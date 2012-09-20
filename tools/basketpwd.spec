@@ -2,10 +2,10 @@
 # if configure_method is 0 - using qmake or
 #    configure_method is 1 - using cmake
 
-%define configure_method 0
-
-%if 0%{?fedora} == 0
 %define configure_method 1
+
+%if (0%{?fedora} == 0)
+%define configure_method 0
 %endif
 
 %define qmake %{_bindir}/qmake-qt4
@@ -15,7 +15,7 @@
 %endif
 
 Name:			basketpwd
-Version:		0.4.6
+Version:		0.4.7
 Release:		1%{?dist}
 Summary:		Basket of passwords
 Summary(ru):	Корзинка паролей
@@ -143,6 +143,9 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
 %changelog
+* Thu Sep 20 2012 Alexei Panov <me AT elemc DOT name> 0.4.7
+- New release 0.4.7
+
 * Fri May 25 2012 Alexei Panov <me AT elemc DOT name> 0.4.6-1
 - New release
 - Split package to main and devel packages

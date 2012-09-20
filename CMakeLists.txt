@@ -126,7 +126,7 @@ add_custom_target (
   COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
 )
 
-include_directories(libs)
+include_directories(libs ${OPENSSL_INCLUDE_DIR})
 
 source_group ("Header Files" FILES ${HEADERS} ${LIB_HEADERS})
 source_group ("Source Files" FILES ${SOURCES} ${LIB_SOURCES})
