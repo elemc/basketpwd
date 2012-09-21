@@ -1,4 +1,5 @@
 !include "MUI2.nsh"
+!include LogicLib.nsh
 !include "x64.nsh"
 
 Name $(TITLE_SecMain)
@@ -18,20 +19,25 @@ SetCompressor lzma
 !insertmacro MUI_LANGUAGE "Russian"
 !insertmacro MUI_LANGUAGE "English"
 
+!define BasketArch "@PROJECT_ARCH@"
 !define BinaryDir @PROJECT_BINARY_DIR@
 !define SourceDir @PROJECT_SOURCE_DIR@
-!define VCRedistRegKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}"
+!define VCRedistRegKey86 "Software\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}"
+!define VCRedistRegKey64 "Software\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}"
 
 Function .onInit
-    ${If} ${RunningX64}
-          ${EnableX64FSRedirection}
-    ${else}
-          MessageBox MB_OK "Sorry this application runs only on x64 machines"
-          Abort
-    ${EndIf}
-    StrCmp @PROJECT_ARCH@ "64" 0 +1
+    ${If} "${BasketArch}" == "64"
+          ${If} ${RunningX64}
+                ${EnableX64FSRedirection}
+          ${else}
+                MessageBox MB_OK "Sorry this application runs only on x64 machines"
+                Abort
+          ${EndIf}
           StrCpy '$INSTDIR' '$PROGRAMFILES64\$(TITLE_SecMain)'
+    ${Else}
           StrCpy '$INSTDIR' '$PROGRAMFILES\$(TITLE_SecMain)'
+    ${EndIf}
+    
 	SetRegView @PROJECT_ARCH_BIT@
 FunctionEnd
 
@@ -39,7 +45,7 @@ Function CheckVCRedist
 
    Push $R0
    ClearErrors
-   ReadRegDWORD $R0 HKLM ${VCRedistRegKey} "Version"
+   ReadRegDWORD $R0 HKLM ${VCRedistRegKey@PROJECT_ARCH@} "Version"
 
    ; if VS 2010 redist not installed, install it
    IfErrors 0 VSRedistInstalled
@@ -103,8 +109,17 @@ SectionEnd
 Section $(StartMenuShortCuts) SecShortcuts
 	SetShellVarContext all
 	CreateDirectory "$SMPROGRAMS\$(TITLE_SecMain)"
+    CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(TITLE_SecMain).lnk" "$INSTDIR\basketpwd.exe" "" "$INSTDIR\basketpwd.exe" 0 SW_SHOWNORMAL "" ""
 	CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(UninstallShortCut).lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
-	CreateShortCut "$SMPROGRAMS\$(TITLE_SecMain)\$(TITLE_SecMain).lnk" "$INSTDIR\basketpwd.exe" "" "$INSTDIR\basketpwd.exe" 0
+
+    ;; Uninstall section
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "DisplayName" "$(TITLE_SecMain)"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "DisplayVersion" "@PROJECT_VERSION@"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "DisplayIcon" "$\"$INSTDIR\basketpwd.exe$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "Publisher" "$(CompanyName)"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "HelpLink" "http://elemc.name/wordpress/?page_id=22"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
 SectionEnd
 
 LangString DESC_SecMain ${LANG_RUSSIAN} "Основная программа"
@@ -128,4 +143,5 @@ Section Uninstall
 	Delete "$INSTDIR\*.*"
 	RMDir "$INSTDIR"
 	DeleteRegKey /ifempty HKCU "Software\$(CompanyName)\$(TITLE_SecMain)"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\$(TITLE_SecMain)"
 SectionEnd

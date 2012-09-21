@@ -80,7 +80,11 @@ configure_file (
 
 include_directories (model src ${CMAKE_CURRENT_BINARY_DIR})
 
-find_package (Qt4 REQUIRED)
+if (WIN32)
+    find_package (Qt4 COMPONENTS QtMain QtCore QtGui QtXml REQUIRED)
+else (WIN32)
+    find_package (Qt4 COMPONENTS QtCore QtGui QtXml REQUIRED)
+endif (WIN32)
 find_package (OpenSSL REQUIRED)
 include (${QT_USE_FILE})
 qt4_add_resources (QRC_SOURCES ${RESOURCES})
@@ -209,11 +213,21 @@ source_group ("Generated Files" FILES ${MOC_SOURCES} ${MOC_LIB_SOURCES})
 source_group ("Resource Files" FILES ${QRC_SOURCES})
 
 if (WIN32)
-add_library (${LIB_PROJECT} SHARED ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+  add_library (${LIB_PROJECT} SHARED ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+  set (GUI_TYPE WIN32)
+  set (RC_FILE ${PROJECT_SOURCE_DIR}/basketpwd.rc)
+  ADD_CUSTOM_COMMAND( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}.o
+    COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT}.rc 
+    -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}.o )
+  set (RC_FILE ${PROJECT_SOURCE_DIR}/basketpwd.rc)
+elseif (APPLE)
+  add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+  set(GUI_TYPE MACOSX_BUNDLE)
 else ()
-add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
+  add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
 endif (WIN32)
-add_executable (${PROJECT} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS})
+
+add_executable (${PROJECT} ${GUI_TYPE} ${HEADERS} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES} ${QRC_SOURCES} ${TRANSLATIONS} ${RC_FILE})
 
 set_target_properties(${LIB_PROJECT} PROPERTIES DEFINE_SYMBOL BASKETPWD_LIBRARY)
 
