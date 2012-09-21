@@ -4,13 +4,14 @@ if (NOT CMAKE_INSTALL_PREFIX)
 	set (CMAKE_INSTALL_PREFIX /usr/local)
 endif ()
 
+if (NOT PROJECT_PORTABLE)
+  set (PROJECT_PORTABLE 0)
+endif ()
+
 IF (WIN32)
   IF ( PROJECT_PORTABLE STREQUAL 1 )
     set (EXE_ADD_PORTABLE -portable)
   ENDIF ()
-  if (NOT PROJECT_PORTABLE)
-    set (PROJECT_PORTABLE 0)
-  endif ()
 
   if (NOT VCREDIST_DIR)
     set (VCREDIST_DIR "C:/Program Files/Microsoft SDKs/Windows/v7.1/Redist/VC" )

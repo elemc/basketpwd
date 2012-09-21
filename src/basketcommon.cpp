@@ -16,7 +16,7 @@ QString BasketCommon::getDefaultDirectory()
     QString settingDirName = ".basketpwd";
 #endif
 
-#ifdef BASKETPWD_PORTABLE
+#if BASKETPWD_PORTABLE==1
     QString defPath = QDir::toNativeSeparators(QDir::currentPath());
 #else
     QString defPath = QString(QDir::toNativeSeparators(QDir::homePath())  + QDir::separator() + settingDirName);
