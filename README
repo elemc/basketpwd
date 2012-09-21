@@ -15,25 +15,20 @@ Dependencies
 * Qt libraries version 4.2.1 or later
 * libgcrypt version 1.4.0 or later (WARNING!!! It is required only for basketpwd version < 0.4.2)
 * openssl version 0.9.7a or later (This required for basketpwd version >= 0.4.2)
-* cmake (optional)
+* cmake
 
 Installation
 ============
 
-On GNU/Linux or FreeBSD (without cmake)
-$ qmake (or qmake-qt4 in many linux distributives as Fedora Linux for example)
-$ make release
-# make install INSTALL_ROOT=/usr (for installing in /usr prefix)
- or
-$ sudo make install INSTALL_ROOT=/usr (if sudo configured)
-
-With cmake
+On GNU/Linux or FreeBSD
 Run bellow commands in source folder
-$ mkdir build; cd build
+$ mkdir build
+$ cd build
 $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr #(if you have install application in /usr or simple 'cmake ..' if you have install into /usr/local)
 
 On Mac OS X
-$ mkdir build; cd buld
+$ mkdir build
+# cd buld
 $ cmake .. 
 $ make
 $ make mac-bundle # for create only bundle
