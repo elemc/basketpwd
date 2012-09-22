@@ -3,7 +3,7 @@
 # Written by Alexei Panov <elemc@atisserv.ru>
 
 PRGNAM=basketpwd
-VERSION=0.4.6
+VERSION=0.4.7
 BUILD=${BUILD:-1}
 TAG=${TAG:-_elemc}
 
@@ -63,5 +63,5 @@ cat $CWD/slack-desc > $PKG/install/slack-desc
 cat $CWD/doinst.sh > $PKG/install/doinst.sh
 
 cd $PKG
-/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-txz}
 
