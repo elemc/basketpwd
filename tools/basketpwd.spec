@@ -1,6 +1,6 @@
 %define configure_method 1
 
-%if (0%{?fedora} == 0) || (0%{?rhel} == 0)
+%if %{defined suse_version}
 %define cmake /usr/bin/cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} -DINCLUDE_INSTALL_DIR:PATH=%{_includedir} -DLIB_INSTALL_DIR:PATH=%{_libdir} -DSYSCONF_INSTALL_DIR:PATH=%{_sysconfdir} -DSHARE_INSTALL_PREFIX:PATH=%{_datadir} -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_SKIP_RPATH=ON
 %endif
 
@@ -46,9 +46,7 @@ BuildRequires:	 qt-devel
 BuildRequires:	 qt-devel
 %endif
 
-%if 0%{?fedora} > 0
 BuildRequires:	 cmake
-%endif
 
 %description 
 Basket of passwords
