@@ -59,11 +59,14 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     // Добавлено в версии 0.4.1 смена стиля окон
     initChangeStyles();
     changeSortMode();
+    changeQuitOnClose();
+}
 
+void MainWindow::changeQuitOnClose () {
 #ifdef Q_WS_MAC
-    // Добавлено в версии 0.4.6 для Мака
-    if ( testAttribute(Qt::WA_QuitOnClose) ) {
-        setAttribute(Qt::WA_QuitOnClose, false);
+    // Добавлено в версии 0.4.6 для Мака, исправлено в 0.4.8
+    if ( testAttribute(Qt::WA_QuitOnClose) == dontCloseApp ) {
+        setAttribute(Qt::WA_QuitOnClose, !dontCloseApp);
     }
 #endif
 }
@@ -108,7 +111,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 #ifndef Q_WS_MAC
         triggeredTrayIcon();
 #else
-        //lower();
         hide();
 #endif
         event->ignore();
@@ -608,6 +610,8 @@ void MainWindow::on_actionSettings_triggered()
     if ( sd.exec() == QDialog::Accepted ) {
         QSettings set;
         dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
+        changeQuitOnClose();
+
         sortingEnabled = set.value(tr(SORTING), true).toBool();
         changeSortMode();
         if ( sd.getIdent() != oldIdent ) {
