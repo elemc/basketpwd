@@ -22,7 +22,7 @@ IF (WIN32)
   endif (NOT NSIS_DIR)
 ENDIF (WIN32)
 
-set (PROJECT_NAME basketpwd)
+set (PROJECT_NAME "basketpwd")
 
 set (PROJECT ${PROJECT_NAME})
 set (LIB_PROJECT basketlib)
@@ -61,7 +61,7 @@ set (LIB_SOURCES
 set (LANG_PATH l10n)
 set (LANGUAGES en)
 #set (RESOURCES icon-images.qrc)
-set (RESOURCES basketpwd.qrc)
+set (RESOURCES basketpwd.qrc icon-images.qrc)
 set (TRANSLATIONS_BINARY qt_ru.qm)
 set (DESKTOP_FILE tools/${PROJECT}.desktop)
 set (ICON_DEST_PATH share/icons/hicolor)
@@ -121,6 +121,7 @@ foreach (LANGUAGE ${LANGUAGE})
 		MAIN_DEPENDENCY ${TS})
 endforeach ()
 
+
 add_custom_target (
 	translations
 	COMMAND ${QT_LUPDATE_EXECUTABLE} ${HEADERS} ${SOURCES} -ts ${TRANSLATIONS})
@@ -128,6 +129,54 @@ add_custom_target (
 add_custom_command (
 	TARGET translations
 	COMMAND ${QT_LRELEASE_EXECUTABLE} ${TRANSLATIONS})
+
+IF(APPLE)
+add_custom_target (
+  clean-mac-bundle
+  rm -rf ${MACOSX_BUNDLE_NAME}
+)
+
+add_custom_target (
+  mac-pre-bundle
+  DEPENDS ${PROJECT} clean-mac-bundle
+  # make a dirs
+  COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/
+  COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/MacOS
+  COMMAND mkdir -p ${MACOSX_BUNDLE_NAME}/Contents/Resources
+
+  # copy binary and plist-files
+  COMMAND install -m 0755 -p ${PROJECT} ${MACOSX_BUNDLE_NAME}/Contents/MacOS/${MACOSX_NAME}
+  # contents
+  COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/tools/Info.plist ${MACOSX_BUNDLE_NAME}/Contents/Info.plist
+  COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/tools/PkgInfo ${MACOSX_BUNDLE_NAME}/Contents/PkgInfo
+  # resources
+  COMMAND install -m 0644 -p ${CMAKE_CURRENT_SOURCE_DIR}/icons/basketpwd.icns ${MACOSX_BUNDLE_NAME}/Contents/Resources/basketpwd.icns
+  COMMAND cp -R ${CMAKE_CURRENT_SOURCE_DIR}/tools/mac_resource/* ${MACOSX_BUNDLE_NAME}/Contents/Resources/
+
+)
+add_custom_target (
+  mac-bundle
+  DEPENDS mac-pre-bundle
+  COMMAND macdeployqt ${MACOSX_BUNDLE_NAME}
+)
+
+set(DMG_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-build-dmg")
+set(BUNDLE_DIR "${CMAKE_BINARY_DIR}/Basket of passwords.app")
+add_custom_target (
+  mac-dmg
+  DEPENDS mac-bundle
+ 
+  COMMAND mkdir -p ${DMG_DIR}
+  COMMAND cp -R ${BUNDLE_DIR} ${DMG_DIR}/
+  COMMAND ln -sf /Applications ${DMG_DIR}
+  COMMAND cp ${CMAKE_SOURCE_DIR}/icons/${PROJECT_NAME}.icns .VolumeIcon.icns
+  COMMAND hdiutil create ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg -srcfolder ${DMG_DIR}
+  DEPENDS ${PROJECT_NAME}
+  COMMENT "Create DMG image"
+   
+  #COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
+)
+ENDIF (APPLE)
 
 # Make a windows installer
 IF ( WIN32 )
@@ -196,7 +245,7 @@ if (WIN32)
   set (RC_FILE ${PROJECT_SOURCE_DIR}/basketpwd.rc)
 elseif (APPLE)
   add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
-  set(GUI_TYPE MACOSX_BUNDLE)
+#  set(GUI_TYPE MACOSX_BUNDLE)
 else ()
   add_library (${LIB_PROJECT} ${LIB_HEADERS} ${LIB_SOURCES} ${MOC_LIB_SOURCES})
 endif (WIN32)
@@ -238,47 +287,3 @@ if (UNIX AND NOT APPLE)
     endforeach()
 endif (UNIX AND NOT APPLE)
 
-
-if ( APPLE )
-    # MACOSX sets
-    execute_process( COMMAND ${QT_QMAKE_EXECUTABLE} -query QT_INSTALL_BINS OUTPUT_VARIABLE _qt_bin_dir OUTPUT_STRIP_TRAILING_WHITESPACE )
-    set(MACDEPLOYQT ${_qt_bin_dir}/macdeployqt)
-
-    set (MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}")
-    set (MACOSX_BUNDLE_INFO_STRING "The program for storage and information management about passwords")
-    set (MACOSX_BUNDLE_GUI_IDENTIFIER "name.elemc.${PROJECT_NAME}")
-    set (MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}")
-    set (MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}")
-    set (MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}")
-    set (MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}")
-
-    set (BUNDLE_DIR ${MACOSX_BUNDLE_BUNDLE_NAME}.app)
-    set (CMAKE_INSTALL_PREFIX ${BUNDLE_DIR}/Contents)
-
-    add_custom_command (TARGET ${PROJECT_NAME}
-        COMMAND mkdir -p ${CMAKE_INSTALL_PREFIX}/Resources/translations
-        COMMAND install -m 644 ${CMAKE_SOURCE_DIR}/icons/${PROJECT_NAME}.icns ${CMAKE_INSTALL_PREFIX}/Resources/
-        #COMMAND install -m 644 ${QM} ${CMAKE_INSTALL_PREFIX}/Resources/translations/
-        #COMMAND install -m 644 ${QT_TRANS_FILES} ${CMAKE_INSTALL_PREFIX}/Resources/translations/
-        COMMAND ${MACDEPLOYQT} ${BUNDLE_DIR})
-
-    set (DMG_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
-    add_custom_target(dmg
-        COMMAND mkdir -p ${DMG_DIR}
-        COMMAND cp -R ${BUNDLE_DIR} ${DMG_DIR}/
-        COMMAND ln -sf /Applications ${DMG_DIR}
-        COMMAND cp ${CMAKE_SOURCE_DIR}/icons/${PROJECT_NAME}.icns .VolumeIcon.icns
-        COMMAND hdiutil create ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg -srcfolder ${DMG_DIR}
-        DEPENDS ${PROJECT_NAME}
-        COMMENT "Create DMG image"
-    )
-endif ( APPLE )
-if ( WIN32 )
-    message ( STATUS ${QT_BINARY_DIR} )
-    set ( CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
-    set ( DLLS ${QT_BINARY_DIR}/QtCore4.dll ${QT_BINARY_DIR}/QtGui4.dll ${QT_BINARY_DIR}/QtXml4.dll )
-    install (TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
-    install (FILES ${QM} DESTINATION translations)
-    install (FILES ${QT_TRANS_FILES} DESTINATION translations)
-    install (FILES ${DLLS} DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif ( WIN32 )

@@ -9,9 +9,9 @@ BasketModel::BasketModel(QObject *parent) :
     hashPassword    = QString();
 
     // иконки
-    recordIcon = QIcon(":/images/recordicon");
-    folderIcon = QIcon(":/images/foldericon");
-    folderCloseIcon = QIcon(":/images/foldercloseicon");
+    recordIcon = QIcon::fromTheme("format-justify-fill");
+    folderIcon = QIcon::fromTheme("document-open");
+    folderCloseIcon = QIcon::fromTheme("document-open");
     primarySelectMode = false;
 
     reloadSettings();

@@ -15,6 +15,15 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 {
     setupUi(this);
 
+#if defined(Q_WS_MAC) || defined(Q_WS_WIN)
+    QString fallback_icon_theme = "oxygen-internal";
+    QIcon::setThemeName( fallback_icon_theme );
+#endif
+ 
+#ifdef Q_WS_MAC
+    setUnifiedTitleAndToolBarOnMac ( true );
+#endif
+
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
     initVariables();
@@ -162,7 +171,7 @@ void MainWindow::createTrayIcon()
 
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
             SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
-    trayIcon->setIcon(QIcon(":/images/ProgramIcon"));
+    trayIcon->setIcon(QIcon::fromTheme("basketpwd"));
     trayIcon->show();
 }
 void MainWindow::createTreeWidget()
@@ -778,10 +787,6 @@ void MainWindow::primaryActionsTriggered(QAction *act)
 
 void MainWindow::initialActions ()
 {
-#if defined(Q_WS_MAC) || defined(Q_WS_WIN)
-    QString fallback_icon_theme = "tango-internal";
-    QIcon::setThemeName( fallback_icon_theme );
-#endif
     // Icons
     // File
     actionNew->setIcon(                     QIcon::fromTheme( "document-new" )          );
