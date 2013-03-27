@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>667</width>
-    <height>465</height>
+    <width>734</width>
+    <height>539</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,8 +23,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>667</width>
-     <height>22</height>
+     <width>734</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -123,14 +123,8 @@
    <addaction name="actionShowPwd"/>
    <addaction name="separator"/>
    <addaction name="actionViewPrimaryChecks"/>
-   <addaction name="separator"/>
-   <addaction name="actionHelpAbout"/>
   </widget>
   <action name="actionNew">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/newfile.png</normaloff>:/images/images/newfile.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Создать...</string>
    </property>
@@ -143,18 +137,11 @@
    <property name="whatsThis">
     <string>Создает новый файл без имени. При создании - запрашивает новый пароль для шифрования нового файла.</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="actionOpen">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/openfile.png</normaloff>:/images/images/openfile.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Открыть...</string>
    </property>
@@ -167,15 +154,8 @@
    <property name="whatsThis">
     <string>Открывает существующий файл с паролями. При загрузке файла, программа запросит пароль для доступа к нему.</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
   </action>
   <action name="actionSave">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/save.png</normaloff>:/images/images/save.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Сохранить</string>
    </property>
@@ -188,15 +168,8 @@
    <property name="whatsThis">
     <string>Сохраняет текущий список паролей в файл, если файл уже определен, то сохраняет в него же, если файл еще неизвестен, то открывает окно выбора файла для сохранения.</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
-   </property>
   </action>
   <action name="actionSaveAs">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/saveas.png</normaloff>:/images/images/saveas.png</iconset>
-   </property>
    <property name="text">
     <string>Сохранить к&amp;ак...</string>
    </property>
@@ -211,10 +184,6 @@
    </property>
   </action>
   <action name="actionExit">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/exit.png</normaloff>:/images/images/exit.png</iconset>
-   </property>
    <property name="text">
     <string>Вы&amp;ход</string>
    </property>
@@ -232,10 +201,6 @@
    </property>
   </action>
   <action name="actionEditAddFolder">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/addfolder.png</normaloff>:/images/images/addfolder.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Добавить папку...</string>
    </property>
@@ -254,15 +219,8 @@
 папка, то новая создается, как ветвь выделенной, 
 иначе новая папка создается в корне дерева.</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+Ins</string>
-   </property>
   </action>
   <action name="actionEditAddPwd">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/addrecord.png</normaloff>:/images/images/addrecord.png</iconset>
-   </property>
    <property name="text">
     <string>Добавить паро&amp;ль...</string>
    </property>
@@ -281,15 +239,8 @@
 папка, то новая запись создается, как ветвь выделенной 
 папки, иначе новая запись создается в корне дерева.</string>
    </property>
-   <property name="shortcut">
-    <string>Ins</string>
-   </property>
   </action>
   <action name="actionEditEdit">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/editrecord.png</normaloff>:/images/images/editrecord.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Изменить пароль...</string>
    </property>
@@ -302,15 +253,8 @@
    <property name="whatsThis">
     <string>Изменяет пароль для выделенной записи в дереве.</string>
    </property>
-   <property name="shortcut">
-    <string>Shift+Return</string>
-   </property>
   </action>
   <action name="actionEditDel">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/delete.png</normaloff>:/images/images/delete.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Удалить</string>
    </property>
@@ -327,17 +271,10 @@
 При удалении папки, также удаляется вся вложенная
 в данную папку ветвь.</string>
    </property>
-   <property name="shortcut">
-    <string>Del</string>
-   </property>
   </action>
   <action name="actionShowPwd">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/showpasswords.png</normaloff>:/images/images/showpasswords.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Показать пароли</string>
@@ -358,10 +295,6 @@
    </property>
   </action>
   <action name="actionChangeCurrentPassword">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/changepassword.png</normaloff>:/images/images/changepassword.png</iconset>
-   </property>
    <property name="text">
     <string>С&amp;менить текущий пароль...</string>
    </property>
@@ -376,10 +309,6 @@
    </property>
   </action>
   <action name="actionCopyToClipboard">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/copy.png</normaloff>:/images/images/copy.png</iconset>
-   </property>
    <property name="text">
     <string>Скопировать пароль в буфер обмена</string>
    </property>
@@ -398,10 +327,6 @@
    </property>
   </action>
   <action name="actionViewUnExpand">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/collapse.png</normaloff>:/images/images/collapse.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Свернуть все</string>
    </property>
@@ -414,15 +339,8 @@
    <property name="whatsThis">
     <string>Cворачивает все дерево записей</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+/</string>
-   </property>
   </action>
   <action name="actionViewExpand">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/expand.png</normaloff>:/images/images/expand.png</iconset>
-   </property>
    <property name="text">
     <string>&amp;Развернуть все</string>
    </property>
@@ -438,15 +356,8 @@
    <property name="whatsThis">
     <string>Разворачивает все дерево записей</string>
    </property>
-   <property name="shortcut">
-    <string>/</string>
-   </property>
   </action>
   <action name="actionHelpAbout">
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/ProgramIcon</normaloff>:/images/ProgramIcon</iconset>
-   </property>
    <property name="text">
     <string>Сведения &amp;о программе</string>
    </property>
@@ -484,10 +395,6 @@
   <action name="actionViewPrimaryChecks">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../icon-images.qrc">
-     <normaloff>:/images/images/stock_task.png</normaloff>:/images/images/stock_task.png</iconset>
    </property>
    <property name="text">
     <string>Режим выбора первичных записей</string>

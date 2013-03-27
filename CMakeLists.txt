@@ -1,9 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
 
-if (NOT CMAKE_INSTALL_PREFIX)
-	set (CMAKE_INSTALL_PREFIX /usr/local)
-endif ()
-
 if (NOT PROJECT_PORTABLE)
   set (PROJECT_PORTABLE 0)
 endif ()
@@ -26,10 +22,9 @@ IF (WIN32)
   endif (NOT NSIS_DIR)
 ENDIF (WIN32)
 
-#set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/tools/cmake/modules ${CMAKE_MODULE_PATH})
 set (PROJECT basketpwd)
 set (LIB_PROJECT basketlib)
-set (PROJECT_VERSION 0.4.7)
+set (PROJECT_VERSION 0.4.8)
 set (HEADERS 
 	aboutdialog.h
 	src/changepassword.h
@@ -63,11 +58,20 @@ set (LIB_SOURCES
 
 set (LANG_PATH l10n)
 set (LANGUAGES en)
-set (RESOURCES icon-images.qrc)
+#set (RESOURCES icon-images.qrc)
+set (RESOURCES basketpwd.qrc)
 set (TRANSLATIONS_BINARY qt_ru.qm)
 set (DESKTOP_FILE tools/${PROJECT}.desktop)
 set (ICON_DEST_PATH share/icons/hicolor)
-set (ICON_SIZES 128 192 256 32 36 48 64 72 96)
+set (ICON_SIZES
+  16x16
+  22x22
+  32x32
+  48x48
+  64x64
+  128x128
+  256x256)
+
 set (DOCS ChangeLog.txt README)
 
 set (MACOSX_NAME "Basket of passwords")
@@ -239,31 +243,33 @@ set_target_properties(${LIB_PROJECT} PROPERTIES DEFINE_SYMBOL BASKETPWD_LIBRARY)
 target_link_libraries (${LIB_PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES})
 target_link_libraries (${PROJECT} ${QT_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIB_PROJECT} ${EXTRA_LIBS})
 
-install (TARGETS ${PROJECT} DESTINATION bin)
-install (TARGETS ${LIB_PROJECT} DESTINATION lib${LIB_SUFFIX})
-install (FILES ${DESKTOP_FILE} DESTINATION share/applications)
 
-IF ( NOT_INSTALL_PROJECT_DOCS )
-  message(STATUS "Don't install project documentation")
-ELSE ( NOT_INSTALL_PROJECT_DOCS )
-  install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${PROJECT_VERSION})
-ENDIF ( NOT_INSTALL_PROJECT_DOCS )
+if (UNIX AND NOT APPLE)
+    install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+    install (TARGETS ${LIB_PROJECT} DESTINATION lib${LIB_SUFFIX})
+    install(FILES ${DESKTOP_FILE} DESTINATION share/applications)
 
-# Icons
-foreach (ICON_SIZE ${ICON_SIZES})
-  install (
-	FILES images/icons/${PROJECT}_${ICON_SIZE}x${ICON_SIZE}.png
-	DESTINATION ${ICON_DEST_PATH}/${ICON_SIZE}x${ICON_SIZE}/apps
-	RENAME ${PROJECT}.png
-	)
-endforeach ()
-install (
-  FILES images/icons/${PROJECT}.svg
-  DESTINATION ${ICON_DEST_PATH}/scalable/apps
-  )
-foreach (LIB_HEADER ${LIB_HEADERS})
-  install (
-    FILES ${LIB_HEADER}
-    DESTINATION include/basketpwd
+    IF ( NOT_INSTALL_PROJECT_DOCS )
+        message(STATUS "Don't install project documentation")
+    ELSE ( NOT_INSTALL_PROJECT_DOCS )
+        install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${PROJECT_VERSION})
+    ENDIF ( NOT_INSTALL_PROJECT_DOCS )
+
+    foreach (ICON_SIZE ${ICON_SIZES})
+        install (
+            FILES icons/${ICON_SIZE}/${PROJECT_NAME}.png 
+            DESTINATION share/icons/hicolor/${ICON_SIZE}/apps)
+    endforeach ()
+
+    install (
+        FILES images/icons/${PROJECT}.svg
+        DESTINATION ${ICON_DEST_PATH}/scalable/apps
     )
-endforeach()
+    foreach (LIB_HEADER ${LIB_HEADERS})
+        install (
+            FILES ${LIB_HEADER}
+            DESTINATION include/basketpwd
+        )
+    endforeach()
+endif (UNIX AND NOT APPLE)
+

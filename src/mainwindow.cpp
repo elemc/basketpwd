@@ -771,6 +771,42 @@ void MainWindow::primaryActionsTriggered(QAction *act)
     clipboard->setText(cpwd);
 }
 
+
+void MainWindow::initialActions ()
+{
+#if defined(Q_WS_MAC) || defined(Q_WS_WIN)
+    QString fallback_icon_theme = "tango-internal";
+    QIcon::setThemeName( fallback_icon_theme );
+#endif
+    // Icons
+    // File
+    actionNew->setIcon(                     QIcon::fromTheme( "document-new" )          );
+    actionOpen->setIcon(                    QIcon::fromTheme( "document-open" )         );
+    actionSave->setIcon(                    QIcon::fromTheme( "document-save" )         );
+    actionSaveAs->setIcon(                  QIcon::fromTheme( "document-save-as" )      );
+    actionExit->setIcon(                    QIcon::fromTheme( "system-log-out" )        );
+    actionChangeCurrentPassword->setIcon(   QIcon::fromTheme( "media-record" )          );
+    // Edit
+    actionEditAddFolder->setIcon(           QIcon::fromTheme( "folder-new" )            );
+    actionEditAddPwd->setIcon(              QIcon::fromTheme( "list-add" )              );
+    actionEditEdit->setIcon(                QIcon::fromTheme( "document-properties" )   );
+    actionEditDel->setIcon(                 QIcon::fromTheme( "list-remove" )           );
+    actionCopyToClipboard->setIcon(         QIcon::fromTheme( "edit-copy" )             );
+    // View
+    actionViewUnExpand->setIcon(            QIcon::fromTheme( "format-indent-less" )    );
+    actionViewExpand->setIcon(              QIcon::fromTheme( "format-indent-more" )    );
+    actionShowPwd->setIcon(                 QIcon::fromTheme( "system-lock-screen" )    );
+    actionViewPrimaryChecks->setIcon(       QIcon::fromTheme( "go-up" )                 );
+
+    // Shortcuts
+    actionNew->setShortcut(                 QKeySequence ( QKeySequence::New )          );
+    actionOpen->setShortcut(                QKeySequence ( QKeySequence::Open )         );
+    actionSave->setShortcut(                QKeySequence ( QKeySequence::Save )         );
+    actionSaveAs->setShortcut(              QKeySequence ( QKeySequence::SaveAs )       );
+    actionExit->setShortcut(                QKeySequence ( QKeySequence::Quit )         );
+    actionEditDel->setShortcut(             QKeySequence ( QKeySequence::Delete )       );
+    actionCopyToClipboard->setShortcut(     QKeySequence ( QKeySequence::Copy )         );
+}
 void MainWindow::initVariables()
 {
     primaryActions = new QActionGroup(this);
@@ -787,13 +823,7 @@ void MainWindow::initVariables()
     macDockMenu = new QMenu(this);
 #endif
 
-    // Shortcuts
-    actionCopyToClipboard->setShortcut(QKeySequence(tr("Ctrl+C")));
-    actionCopyLogin->setShortcut(QKeySequence(tr("Ctrl+Shift+C")));
-    actionEditDel->setShortcut(QKeySequence(Qt::Key_Delete));
-    actionSaveAs->setShortcut(QKeySequence(tr("Ctrl+Shift+S")));
-    actionEditAddFolder->setShortcut(QKeySequence(tr("Alt+F")));
-    actionEditAddPwd->setShortcut(QKeySequence(tr("Alt+N")));
+    initialActions ();
 }
 
 #ifdef Q_WS_MAC

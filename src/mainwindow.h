@@ -34,6 +34,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 {
 Q_OBJECT
 private:
+    void initialActions();
+
     void addItemToModel(bool isFolder);
     void closeEvent(QCloseEvent *event);
     void changeCurrentPassword();
@@ -146,7 +148,4 @@ private slots:
     void primaryActionsTriggered(QAction *act);
 };
 #endif
-
-
-
 
