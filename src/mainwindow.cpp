@@ -321,6 +321,7 @@ void MainWindow::loadDatabase()
     else
         isSimpleXML = false;
 
+    //pwdWidget->setPasswordWidgetType( PasswordWidget::SetPassword );
     cWidget->setCurrentWidget( pwdWidget );
     statusbar->showMessage( trUtf8( "Ожидание авторизации от пользователя" ) );
     return;

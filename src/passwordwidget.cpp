@@ -13,6 +13,85 @@
 PasswordWidget::PasswordWidget(QWidget *parent, Qt::WindowFlags f) : 
 	QWidget(parent, f)
 {
+    _passwordWidgetType = PasswordWidget::AskPassword;
+    initialWidget();
+}
+
+PasswordWidget::~PasswordWidget () 
+{
+    clearWidget();
+}
+
+// Private slots
+void PasswordWidget::buttonBox_accept()
+{
+    emit passwordAccept( lePassword->text() );
+}
+void PasswordWidget::buttonBox_reject()
+{
+    emit passwordReject();
+}
+void PasswordWidget::checkDoublePasswords( const QString &pwd )
+{
+    Q_UNUSED(pwd)
+    bool access = false;
+    QString leap = leAgainPassword->text();
+    QString lep = lePassword->text();
+    if ( leap == lep && !lep.isEmpty() )
+        access = true;
+        
+    ok->setEnabled( access );
+    if ( access ) {
+        connect( lePassword, SIGNAL(returnPressed()), this, SLOT(buttonBox_accept()) );
+        connect( leAgainPassword, SIGNAL(returnPressed()), this, SLOT(buttonBox_accept()) );
+    }
+    else {
+        disconnect( lePassword, SIGNAL(returnPressed()) );
+        disconnect( leAgainPassword, SIGNAL(returnPressed()) );
+    }
+}
+
+// Public methods
+void PasswordWidget::setPasswordWidgetType ( PasswordWidgetType pwt )
+{
+    if ( _passwordWidgetType == pwt )
+        return;
+    _passwordWidgetType = pwt;
+    clearWidget();
+    initialWidget();
+}
+
+PasswordWidget::PasswordWidgetType PasswordWidget::passwordWidgetType () const
+{
+    return _passwordWidgetType;
+}
+
+// Private methods
+void PasswordWidget::clearWidget ()
+{
+    delete labelInformation;
+    labelInformation = 0;
+
+    delete lePassword;
+    lePassword = 0;
+
+    delete leAgainPassword;
+    leAgainPassword = 0;
+
+    delete ok;
+    ok = 0;
+
+    delete cancel;
+    cancel = 0;
+
+    delete vBoxElements;
+    vBoxElements = 0;
+    
+    delete hBox;
+    hBox = 0;
+}
+void PasswordWidget::initialWidget ()
+{
     hBox = new QHBoxLayout;
     vBoxElements = new QVBoxLayout;
 
@@ -21,13 +100,14 @@ PasswordWidget::PasswordWidget(QWidget *parent, Qt::WindowFlags f) :
 
     lePassword = new QLineEdit( this );
     lePassword->setEchoMode( QLineEdit::Password );
-    connect( lePassword, SIGNAL(returnPressed()), this, SLOT(buttonBox_accept()) );
+    leAgainPassword = new QLineEdit ( this );
+    leAgainPassword->setEchoMode( QLineEdit::Password );
 
-    /*buttonBox = new QDialogButtonBox ( this );
-    QPushButton *ok                 = buttonBox->addButton( QDialogButtonBox::Ok );
-    QPushButton *cancel             = buttonBox->addButton( QDialogButtonBox::Cancel );
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(buttonBox_accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(buttonBox_reject()));*/
+    if ( _passwordWidgetType == PasswordWidget::AskPassword ) {
+        connect( lePassword, SIGNAL(returnPressed()), this, SLOT(buttonBox_accept()) );
+        leAgainPassword->hide();
+    }
+
     ok                              = new QPushButton ( trUtf8("ОК") );
     cancel                          = new QPushButton ( trUtf8("Отмена") );
 #ifndef Q_WS_MAC
@@ -36,6 +116,7 @@ PasswordWidget::PasswordWidget(QWidget *parent, Qt::WindowFlags f) :
 #endif
     ok->setDefault( true );
     ok->setAutoDefault( true );
+
     connect( ok, SIGNAL(clicked()), this, SLOT(buttonBox_accept()) );
     connect( cancel, SIGNAL(clicked()), this, SLOT(buttonBox_reject()) );
 
@@ -51,6 +132,14 @@ PasswordWidget::PasswordWidget(QWidget *parent, Qt::WindowFlags f) :
     vBoxElements->addSpacerItem( verticalSpacer1 ); 
     vBoxElements->addWidget( labelInformation );
     vBoxElements->addWidget( lePassword );
+    if ( _passwordWidgetType == PasswordWidget::SetPassword ) {
+        vBoxElements->addWidget( leAgainPassword );
+
+        // connect it to check slot
+        connect ( lePassword, SIGNAL(textChanged(QString)), this, SLOT(checkDoublePasswords(QString)) );
+        connect ( leAgainPassword, SIGNAL(textChanged(QString)), this, SLOT(checkDoublePasswords(QString)) );
+        checkDoublePasswords(QString());
+    }
     vBoxElements->addLayout( buttonLayout );
     vBoxElements->addSpacerItem( verticalSpacer2 );
 
@@ -59,32 +148,4 @@ PasswordWidget::PasswordWidget(QWidget *parent, Qt::WindowFlags f) :
     hBox->addSpacerItem( horizontalSpacer2 );
 
     setLayout( hBox );
-}
-
-PasswordWidget::~PasswordWidget () 
-{
-    delete labelInformation;
-    labelInformation = 0;
-
-    delete lePassword;
-    lePassword = 0;
-
-    //delete buttonBox;
-    //buttonBox = 0;
-
-    delete vBoxElements;
-    vBoxElements = 0;
-    
-    delete hBox;
-    hBox = 0;
-}
-
-// Private slots
-void PasswordWidget::buttonBox_accept()
-{
-    emit passwordAccept( lePassword->text() );
-}
-void PasswordWidget::buttonBox_reject()
-{
-    emit passwordReject();
 }

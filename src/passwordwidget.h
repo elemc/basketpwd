@@ -27,18 +27,28 @@ public:
     PasswordWidget ( QWidget *parent = 0, Qt::WindowFlags f = 0 );
     ~PasswordWidget ();
 
+    enum PasswordWidgetType { AskPassword, SetPassword };
+
+    void setPasswordWidgetType ( PasswordWidgetType pwt );
+    PasswordWidgetType passwordWidgetType() const;
+
 private:
     QLabel              *labelInformation;
     QLineEdit           *lePassword;
-    //QDialogButtonBox    *buttonBox;
+    QLineEdit           *leAgainPassword;
     QVBoxLayout         *vBoxElements;
     QHBoxLayout         *hBox;
     QPushButton         *ok;
     QPushButton         *cancel;
 
+    PasswordWidgetType  _passwordWidgetType;
+    void initialWidget();
+    void clearWidget();
+
 private slots:
     void buttonBox_accept();
     void buttonBox_reject();
+    void checkDoublePasswords( const QString &pwd );
 
 signals:
     void passwordAccept( const QString &password );
