@@ -2,7 +2,7 @@
 
 names=$*
 folders="16x16 22x22 32x32 48x48"
-base_dir="/usr/share/icons/Tango"
+base_dir="/usr/share/icons/oxygen"
 part_dir="actions"
 
 rcc_add=""

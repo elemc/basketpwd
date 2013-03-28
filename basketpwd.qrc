@@ -57,10 +57,6 @@
 <file alias="22x22/list-remove.png">icons/22x22/list-remove.png</file>
 <file alias="32x32/list-remove.png">icons/32x32/list-remove.png</file>
 <file alias="48x48/list-remove.png">icons/48x48/list-remove.png</file>
-<file alias="16x16/media-record.png">icons/16x16/media-record.png</file>
-<file alias="22x22/media-record.png">icons/22x22/media-record.png</file>
-<file alias="32x32/media-record.png">icons/32x32/media-record.png</file>
-<file alias="48x48/media-record.png">icons/48x48/media-record.png</file>
 <file alias="16x16/go-up.png">icons/16x16/go-up.png</file>
 <file alias="22x22/go-up.png">icons/22x22/go-up.png</file>
 <file alias="32x32/go-up.png">icons/32x32/go-up.png</file>
@@ -69,16 +65,17 @@
 <file alias="22x22/basketpwd.png">icons/22x22/basketpwd.png</file>
 <file alias="32x32/basketpwd.png">icons/32x32/basketpwd.png</file>
 <file alias="48x48/basketpwd.png">icons/48x48/basketpwd.png</file>
-<file alias="16x16/format-justify-fill.png">icons/16x16/format-justify-fill.png</file>
-<file alias="22x22/format-justify-fill.png">icons/22x22/format-justify-fill.png</file>
-<file alias="32x32/format-justify-fill.png">icons/32x32/format-justify-fill.png</file>
-<file alias="48x48/format-justify-fill.png">icons/48x48/format-justify-fill.png</file>
-<file alias="16x16/basketpwd.png">icons/16x16/basketpwd.png</file>
-<file alias="22x22/basketpwd.png">icons/22x22/basketpwd.png</file>
-<file alias="32x32/basketpwd.png">icons/32x32/basketpwd.png</file>
-<file alias="48x48/basketpwd.png">icons/48x48/basketpwd.png</file>
 <file alias="64x64/basketpwd.png">icons/64x64/basketpwd.png</file>
 <file alias="48x48/basketpwd.png">icons/128x128/basketpwd.png</file>
 <file alias="48x48/basketpwd.png">icons/256x256/basketpwd.png</file>
+<file alias="16x16/edit-rename.png">icons/16x16/edit-rename.png</file>
+<file alias="22x22/edit-rename.png">icons/22x22/edit-rename.png</file>
+<file alias="32x32/edit-rename.png">icons/32x32/edit-rename.png</file>
+<file alias="48x48/edit-rename.png">icons/48x48/edit-rename.png</file>
+<file alias="16x16/code-variable.png">icons/16x16/code-variable.png</file>
+<file alias="22x22/code-variable.png">icons/22x22/code-variable.png</file>
+<file alias="32x32/code-variable.png">icons/32x32/code-variable.png</file>
+<file alias="48x48/code-variable.png">icons/48x48/code-variable.png</file>
+
 </qresource>
 </RCC>

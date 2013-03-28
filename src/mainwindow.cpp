@@ -794,7 +794,7 @@ void MainWindow::initialActions ()
     actionSave->setIcon(                    QIcon::fromTheme( "document-save" )         );
     actionSaveAs->setIcon(                  QIcon::fromTheme( "document-save-as" )      );
     actionExit->setIcon(                    QIcon::fromTheme( "system-log-out" )        );
-    actionChangeCurrentPassword->setIcon(   QIcon::fromTheme( "media-record" )          );
+    actionChangeCurrentPassword->setIcon(   QIcon::fromTheme( "edit-rename" )           );
     // Edit
     actionEditAddFolder->setIcon(           QIcon::fromTheme( "folder-new" )            );
     actionEditAddPwd->setIcon(              QIcon::fromTheme( "list-add" )              );
