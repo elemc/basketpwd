@@ -66,8 +66,8 @@
 <file alias="32x32/basketpwd.png">icons/32x32/basketpwd.png</file>
 <file alias="48x48/basketpwd.png">icons/48x48/basketpwd.png</file>
 <file alias="64x64/basketpwd.png">icons/64x64/basketpwd.png</file>
-<file alias="48x48/basketpwd.png">icons/128x128/basketpwd.png</file>
-<file alias="48x48/basketpwd.png">icons/256x256/basketpwd.png</file>
+<file alias="128x128/basketpwd.png">icons/128x128/basketpwd.png</file>
+<file alias="256x256/basketpwd.png">icons/256x256/basketpwd.png</file>
 <file alias="16x16/edit-rename.png">icons/16x16/edit-rename.png</file>
 <file alias="22x22/edit-rename.png">icons/22x22/edit-rename.png</file>
 <file alias="32x32/edit-rename.png">icons/32x32/edit-rename.png</file>
