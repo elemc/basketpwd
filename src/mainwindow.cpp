@@ -8,6 +8,7 @@
 void qt_mac_set_dock_menu(QMenu *menu);
 #endif
 
+#include <QDebug>
 
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
@@ -27,12 +28,6 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     // Добавление версии 0.2.5 организация трея
     createTrayIcon();
     initVariables();
-
-    tree->setModel( model );
-    tree->setDragEnabled(true);
-    tree->setAcceptDrops(true);
-    tree->setDropIndicatorShown(true);
-    setCentralWidget(tree);
 
     connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)) );
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
@@ -69,6 +64,7 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     initChangeStyles();
     changeSortMode();
     changeQuitOnClose();
+
 }
 
 void MainWindow::changeQuitOnClose () {
@@ -109,6 +105,18 @@ MainWindow::~MainWindow() {
     if ( macDockMenu )
         delete macDockMenu;
 #endif
+
+    delete pwdWidget;
+    pwdWidget = 0;
+
+    tree->setModel(0);
+    delete model;
+    model = 0;
+    delete tree;
+    tree = 0;
+    
+    delete cWidget;
+    cWidget = 0;
 }
 
 // Виртуалы
@@ -313,6 +321,11 @@ void MainWindow::loadDatabase()
     else
         isSimpleXML = false;
 
+    cWidget->setCurrentWidget( pwdWidget );
+    statusbar->showMessage( trUtf8( "Ожидание авторизации от пользователя" ) );
+    return;
+    //////////////////////////////////////////////////////
+
     QString tempPassword;
     // Запрашиваем и записываем новый пароль для доступа к файлу
     if (!isSimpleXML) {
@@ -321,7 +334,7 @@ void MainWindow::loadDatabase()
                                               trUtf8("Введите пароль для доступа к файлу %1:").arg( fileName ),
                                               QLineEdit::Password, QString(), &acceptDlg );
         if ( (!acceptDlg) || tempPassword.isEmpty() ) {
-            newDatabase ( true );
+            
             return;
         }
     }
@@ -330,35 +343,7 @@ void MainWindow::loadDatabase()
         mainPassword = hashPassword(tempPassword);
     }
 
-    // Пытаемся прочитать файл
-    QFile inFile ( fileName );
-    bool result = inFile.open( QIODevice::ReadOnly );
 
-    if ( !result ) {
-        QMessageBox::critical (this, trUtf8("Ошибка чтения файла"),
-                               trUtf8( "Файл %1 не может быть прочитан, возможно Вы не обладаете правами на чтение данного файла.").
-                               arg(fileName) );
-        fileName = "";
-        return;
-    }
-    QByteArray cipherData = inFile.readAll();
-
-    bool fill_result = model->setModelData(cipherData, BasketUtils::toHex(hashPassword(tempPassword)), !isSimpleXML);
-    // Если же все-таки файл может быть прочитан
-    if ( fill_result ) {
-        mainPassword = hashPassword(tempPassword);
-        tree->setColumnWidth(0, 300);
-        tree->setColumnWidth(1, 200);
-
-        generateContextPrimaries();
-        // перенос в плагины
-        //notifyAboutSelf();
-    }
-    else
-        QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
-
-    setModif ( false );
-    allowActions( true );
 }
 bool MainWindow::querySave()
 {
@@ -833,6 +818,26 @@ void MainWindow::initVariables()
 #endif
 
     initialActions ();
+
+    // 0.4.8, PassswordWidget
+    
+    cWidget = new QStackedWidget( this );
+
+    //
+    pwdWidget = new PasswordWidget( this );    
+    connect(pwdWidget, SIGNAL(passwordAccept(QString)), this, SLOT(passwordEntered(QString)));
+    connect(pwdWidget, SIGNAL(passwordReject()), this, SLOT(passwordCanceled()));
+
+    tree->setModel( model );
+    tree->setDragEnabled(true);
+    tree->setAcceptDrops(true);
+    tree->setDropIndicatorShown(true);
+    
+    cWidget->addWidget( tree );
+    cWidget->addWidget( pwdWidget );
+
+    setCentralWidget(cWidget);
+
 }
 
 #ifdef Q_WS_MAC
@@ -851,3 +856,47 @@ void MainWindow::show()
     QMainWindow::show();
 }
 #endif
+
+void MainWindow::passwordEntered ( const QString &password )
+{
+    cWidget->setCurrentWidget( tree );
+    QString tempPassword = password;
+    // Пытаемся прочитать файл
+    QFile inFile ( fileName );
+    bool result = inFile.open( QIODevice::ReadOnly );
+
+    if ( !result ) {
+        QMessageBox::critical (this, trUtf8("Ошибка чтения файла"),
+                               trUtf8( "Файл %1 не может быть прочитан, возможно Вы не обладаете правами на чтение данного файла.").
+                               arg(fileName) );
+        fileName = "";
+        return;
+    }
+    QByteArray cipherData = inFile.readAll();
+
+    bool fill_result = model->setModelData(cipherData, BasketUtils::toHex(hashPassword(tempPassword)), !isSimpleXML);
+    // Если же все-таки файл может быть прочитан
+    if ( fill_result ) {
+        mainPassword = hashPassword(tempPassword);
+        tree->setColumnWidth(0, 300);
+        tree->setColumnWidth(1, 200);
+
+        generateContextPrimaries();
+        // перенос в плагины
+        //notifyAboutSelf();
+    }
+    else
+        QMessageBox::critical(this, tr("Ошибка чтения файла"), tr("Файл не является файлом XML или пароль не верен!"));
+
+    setModif ( false );
+    allowActions( true );
+
+    
+}
+
+void MainWindow::passwordCanceled ()
+{
+    newDatabase ( true );
+    cWidget->setCurrentWidget( tree );
+}
+

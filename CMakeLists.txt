@@ -33,7 +33,8 @@ set (HEADERS
 	src/mainwindow.h
 	src/settingsdialog.h
 	model/basketmodel.h
-    src/basketcommon.h) 
+    src/basketcommon.h
+    src/passwordwidget.h) 
 set (SOURCES
 	aboutdialog.cpp
 	src/changepassword.cpp
@@ -41,7 +42,8 @@ set (SOURCES
 	src/mainwindow.cpp
 	src/settingsdialog.cpp
 	model/basketmodel.cpp
-    src/basketcommon.cpp)
+    src/basketcommon.cpp
+    src/passwordwidget.cpp)
 set (FORMS
 	aboutdialog.ui
 	ui/mainwindow.ui

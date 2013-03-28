@@ -18,10 +18,12 @@
 #include <QTreeView>
 #include <QStyleFactory>
 #include <QKeyEvent>
+#include <QStackedWidget>
 
 #include "ui_mainwindow.h"
 #include "../model/basketmodel.h"
 #include <basketpwd/basketbaseitem.h>
+#include "passwordwidget.h"
 
 #ifdef Q_WS_MAC
     #include <Carbon/Carbon.h>
@@ -97,6 +99,10 @@ private:
     QMenu *macDockMenu;
 #endif
 
+    // Added 0.4.8
+    PasswordWidget *pwdWidget;
+    QStackedWidget *cWidget;
+
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
     ~MainWindow();
@@ -147,6 +153,9 @@ private slots:
     void on_actionViewPrimaryChecks_triggered(bool checked);
     void generateContextPrimaries();
     void primaryActionsTriggered(QAction *act);
+
+    void passwordEntered( const QString &password );
+    void passwordCanceled();
 };
 #endif
 

@@ -76,6 +76,14 @@
 <file alias="22x22/code-variable.png">icons/22x22/code-variable.png</file>
 <file alias="32x32/code-variable.png">icons/32x32/code-variable.png</file>
 <file alias="48x48/code-variable.png">icons/48x48/code-variable.png</file>
+<file alias="16x16/dialog-ok.png">icons/16x16/dialog-ok.png</file>
+<file alias="22x22/dialog-ok.png">icons/22x22/dialog-ok.png</file>
+<file alias="32x32/dialog-ok.png">icons/32x32/dialog-ok.png</file>
+<file alias="48x48/dialog-ok.png">icons/48x48/dialog-ok.png</file>
+<file alias="16x16/dialog-cancel.png">icons/16x16/dialog-cancel.png</file>
+<file alias="22x22/dialog-cancel.png">icons/22x22/dialog-cancel.png</file>
+<file alias="32x32/dialog-cancel.png">icons/32x32/dialog-cancel.png</file>
+<file alias="48x48/dialog-cancel.png">icons/48x48/dialog-cancel.png</file>
 
 </qresource>
 </RCC>
