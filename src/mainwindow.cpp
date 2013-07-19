@@ -321,13 +321,15 @@ void MainWindow::loadDatabase()
     else
         isSimpleXML = false;
 
-    //pwdWidget->setPasswordWidgetType( PasswordWidget::SetPassword );
+    connect(pwdWidget, SIGNAL(passwordAccept(QString)), this, SLOT(passwordEntered(QString)));
+    connect(pwdWidget, SIGNAL(passwordReject()), this, SLOT(passwordCanceled()));
+
     cWidget->setCurrentWidget( pwdWidget );
     statusbar->showMessage( trUtf8( "Ожидание авторизации от пользователя" ) );
     return;
     //////////////////////////////////////////////////////
 
-    QString tempPassword;
+/*    QString tempPassword;
     // Запрашиваем и записываем новый пароль для доступа к файлу
     if (!isSimpleXML) {
         bool acceptDlg = false;
@@ -342,7 +344,7 @@ void MainWindow::loadDatabase()
     else {
         tempPassword = "1234";
         mainPassword = hashPassword(tempPassword);
-    }
+    }*/
 
 
 }
@@ -399,7 +401,20 @@ void MainWindow::setModif(bool modificator)
 }
 void MainWindow::changeCurrentPassword()
 {
-    ChangePassword cpDlg( this );
+
+    connect(pwdWidget, SIGNAL(passwordAccept(QString)), this, SLOT(passwordChangeEntered(QString)));
+    connect(pwdWidget, SIGNAL(passwordReject()), this, SLOT(passwordChangeCanceled()));
+
+    if ( mainPassword.isNull() ) 
+        pwdWidget->setPasswordWidgetType( PasswordWidget::SetPassword );
+    else
+        pwdWidget->setPasswordWidgetType( PasswordWidget::ChangePassword );
+    cWidget->setCurrentWidget( pwdWidget );
+    statusbar->showMessage( trUtf8( "Ожидание смены пароля" ) );
+    allowActions ( false );
+   
+    return;
+/*    ChangePassword cpDlg( this );
     if ( mainPassword.isNull() )
         cpDlg.setNewPassword( true );
     if ( cpDlg.exec() ) {
@@ -412,7 +427,7 @@ void MainWindow::changeCurrentPassword()
         }
     }
     else if ( mainPassword.isNull() )
-        allowActions ( false );
+        allowActions ( false );*/
 }
 void MainWindow::currentItemChanged ( QModelIndex current_index, QModelIndex previus_index )
 {
@@ -826,8 +841,6 @@ void MainWindow::initVariables()
 
     //
     pwdWidget = new PasswordWidget( this );    
-    connect(pwdWidget, SIGNAL(passwordAccept(QString)), this, SLOT(passwordEntered(QString)));
-    connect(pwdWidget, SIGNAL(passwordReject()), this, SLOT(passwordCanceled()));
 
     tree->setModel( model );
     tree->setDragEnabled(true);
@@ -891,13 +904,48 @@ void MainWindow::passwordEntered ( const QString &password )
 
     setModif ( false );
     allowActions( true );
-
     
+    disconnectPwdWidget ();   
 }
 
 void MainWindow::passwordCanceled ()
 {
     newDatabase ( true );
     cWidget->setCurrentWidget( tree );
+    disconnectPwdWidget ();
 }
+
+void MainWindow::passwordChangeEntered ( const QString &password )
+{
+    QString currentPassword = pwdWidget->currentPassword();
+    if ( !currentPassword.isEmpty() ) {
+        if ( hashPassword(currentPassword) != mainPassword ) {
+            QMessageBox::critical( this, trUtf8("Ошибка смены пароля"),
+                                   trUtf8("Текущий пароль введен неверно! Процедура смены пароля отменена.") );
+            cWidget->setCurrentWidget( tree );
+            return;
+       }
+    }
+
+
+    QByteArray tempPassword = hashPassword(password);
+    if ( model->changePassword( BasketUtils::toHex(tempPassword) ) )
+        mainPassword = tempPassword;
+    setModif( true );
+    allowActions( true );
+    cWidget->setCurrentWidget( tree );
+    disconnectPwdWidget();
+}
+void MainWindow::passwordChangeCanceled ()
+{
+    cWidget->setCurrentWidget( tree );
+    disconnectPwdWidget ();
+    allowActions ( true );
+}
+
+void MainWindow::disconnectPwdWidget ()
+{
+    disconnect( pwdWidget, 0, this, 0 );
+}
+
 

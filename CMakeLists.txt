@@ -1,5 +1,14 @@
 cmake_minimum_required (VERSION 2.6)
 
+if (NOT DEBUG)
+  if ( CMAKE_BUILD_TYPE STREQUAL Debug )
+    set (DEBUG 1)
+  else ( CMAKE_BUILD_TYPE STREQUAL Debug )
+    set (DEBUG 0)
+  endif ( CMAKE_BUILD_TYPE STREQUAL Debug )
+endif (NOT DEBUG)
+
+
 if (NOT PROJECT_PORTABLE)
   set (PROJECT_PORTABLE 0)
 endif ()

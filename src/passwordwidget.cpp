@@ -25,11 +25,15 @@ PasswordWidget::~PasswordWidget ()
 // Private slots
 void PasswordWidget::buttonBox_accept()
 {
+    if ( _passwordWidgetType == PasswordWidget::ChangePassword )
+        _currentPassword = leCurrentPassword->text();
     emit passwordAccept( lePassword->text() );
+    clearPasswordField ();
 }
 void PasswordWidget::buttonBox_reject()
 {
     emit passwordReject();
+    clearPasswordField ();
 }
 void PasswordWidget::checkDoublePasswords( const QString &pwd )
 {
@@ -37,8 +41,14 @@ void PasswordWidget::checkDoublePasswords( const QString &pwd )
     bool access = false;
     QString leap = leAgainPassword->text();
     QString lep = lePassword->text();
-    if ( leap == lep && !lep.isEmpty() )
+    QString lecp = leCurrentPassword->text();
+    
+    if ( leap == lep && !lep.isEmpty() ) {
         access = true;
+        if ( _passwordWidgetType == PasswordWidget::ChangePassword )
+            access &= !lecp.isEmpty();
+            
+    }
         
     ok->setEnabled( access );
     if ( access ) {
@@ -64,6 +74,18 @@ void PasswordWidget::setPasswordWidgetType ( PasswordWidgetType pwt )
 PasswordWidget::PasswordWidgetType PasswordWidget::passwordWidgetType () const
 {
     return _passwordWidgetType;
+}
+
+void PasswordWidget::clearPasswordField ()
+{
+    lePassword->clear();
+    leAgainPassword->clear();
+    leCurrentPassword->clear();
+}
+
+QString PasswordWidget::currentPassword() const
+{
+    return _currentPassword;
 }
 
 // Private methods
@@ -98,6 +120,8 @@ void PasswordWidget::initialWidget ()
     labelInformation = new QLabel ( this );
     labelInformation->setText( trUtf8("Введите пароль для доступа к файлу") );
 
+    leCurrentPassword = new QLineEdit ( this );
+    leCurrentPassword->setEchoMode( QLineEdit::Password );
     lePassword = new QLineEdit( this );
     lePassword->setEchoMode( QLineEdit::Password );
     leAgainPassword = new QLineEdit ( this );
@@ -106,6 +130,10 @@ void PasswordWidget::initialWidget ()
     if ( _passwordWidgetType == PasswordWidget::AskPassword ) {
         connect( lePassword, SIGNAL(returnPressed()), this, SLOT(buttonBox_accept()) );
         leAgainPassword->hide();
+        leCurrentPassword->hide();
+    }
+    else if ( _passwordWidgetType == PasswordWidget::SetPassword ) {
+        leCurrentPassword->hide();
     }
 
     ok                              = new QPushButton ( trUtf8("ОК") );
@@ -124,20 +152,32 @@ void PasswordWidget::initialWidget ()
     buttonLayout->addWidget( ok );
     buttonLayout->addWidget( cancel );
 
-    QSpacerItem *verticalSpacer1    = new QSpacerItem ( 20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding );
-    QSpacerItem *verticalSpacer2    = new QSpacerItem ( 20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding );
-    QSpacerItem *horizontalSpacer1  = new QSpacerItem ( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-    QSpacerItem *horizontalSpacer2  = new QSpacerItem ( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    QSpacerItem *verticalSpacer1    = new QSpacerItem ( 20, 20, QSizePolicy::Minimum, 
+                                                                QSizePolicy::Expanding );
+    QSpacerItem *verticalSpacer2    = new QSpacerItem ( 20, 20, QSizePolicy::Minimum, 
+                                                                QSizePolicy::Expanding );
+    QSpacerItem *horizontalSpacer1  = new QSpacerItem ( 20, 20, QSizePolicy::Expanding, 
+                                                                QSizePolicy::Minimum );
+    QSpacerItem *horizontalSpacer2  = new QSpacerItem ( 20, 20, QSizePolicy::Expanding, 
+                                                                QSizePolicy::Minimum );
 
     vBoxElements->addSpacerItem( verticalSpacer1 ); 
     vBoxElements->addWidget( labelInformation );
-    vBoxElements->addWidget( lePassword );
-    if ( _passwordWidgetType == PasswordWidget::SetPassword ) {
+
+    if ( _passwordWidgetType == PasswordWidget::AskPassword )
+        vBoxElements->addWidget( lePassword );
+    else {
+        if ( _passwordWidgetType == PasswordWidget::ChangePassword ) {
+            vBoxElements->addWidget( leCurrentPassword );
+        }
+        vBoxElements->addWidget( lePassword );
         vBoxElements->addWidget( leAgainPassword );
 
         // connect it to check slot
         connect ( lePassword, SIGNAL(textChanged(QString)), this, SLOT(checkDoublePasswords(QString)) );
         connect ( leAgainPassword, SIGNAL(textChanged(QString)), this, SLOT(checkDoublePasswords(QString)) );
+        connect ( leCurrentPassword, SIGNAL(textChanged(QString)),
+                    this, SLOT( checkDoublePasswords(QString) ) );
         checkDoublePasswords(QString());
     }
     vBoxElements->addLayout( buttonLayout );
@@ -149,3 +189,4 @@ void PasswordWidget::initialWidget ()
 
     setLayout( hBox );
 }
+

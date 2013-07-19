@@ -25,6 +25,8 @@
 #include <basketpwd/basketbaseitem.h>
 #include "passwordwidget.h"
 
+#include "config.h"
+
 #ifdef Q_WS_MAC
     #include <Carbon/Carbon.h>
 #endif
@@ -102,6 +104,7 @@ private:
     // Added 0.4.8
     PasswordWidget *pwdWidget;
     QStackedWidget *cWidget;
+    void disconnectPwdWidget ();
 
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
@@ -156,6 +159,8 @@ private slots:
 
     void passwordEntered( const QString &password );
     void passwordCanceled();
+    void passwordChangeEntered( const QString &password );
+    void passwordChangeCanceled();
 };
 #endif
 
