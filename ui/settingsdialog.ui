@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>480</width>
-    <height>364</height>
+    <width>470</width>
+    <height>541</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -168,6 +168,29 @@
         </item>
         <item>
          <widget class="QComboBox" name="comboBoxIconTheme"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxOSSpecified">
+     <property name="title">
+      <string>Специфичные настройки</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="labelFastPassword">
+          <property name="text">
+           <string>Расположение &quot;быстрых паролей&quot;:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxFastPasswords"/>
         </item>
        </layout>
       </item>

@@ -812,6 +812,7 @@ void BasketModel::reloadSettings()
 {
     QSettings set;
     itemsColor = set.value(tr("ItemColor"), QColor(Qt::darkBlue)).value<QColor>();
+    emit primaryChanged(); 
 }
 void BasketModel::initRoot()
 {

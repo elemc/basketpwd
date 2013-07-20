@@ -43,9 +43,20 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 #endif
     m_ui->comboBoxIconTheme->addItem( trUtf8("Современная (oxygen)"), QString("oxygen-internal") ); 
     m_ui->comboBoxIconTheme->addItem( trUtf8("Классическая"), QString("classic-internal") );
+    m_ui->comboBoxIconTheme->setCurrentIndex( getIconThemeIndex( iconTheme) );
 
+    /* Mac OS X fast passwords */
+#if defined(Q_WS_MAC)
+    QString fastPlace = set.value(QString("FastPasswordsPlace"), QString("dock")).toString();
 
-    m_ui->comboBoxIconTheme->setCurrentIndex( getIconThemeIndex( iconTheme) ); 
+    m_ui->comboBoxFastPasswords->addItem ( trUtf8("Dock + Tray"), QString("dock_tray") );
+    m_ui->comboBoxFastPasswords->addItem ( trUtf8("Dock"), QString("dock") );
+    m_ui->comboBoxFastPasswords->addItem ( trUtf8("Tray"), QString("tray") );
+
+    m_ui->comboBoxFastPasswords->setCurrentIndex( getFastPlace ( fastPlace ) );
+#else
+    m_ui->groupBoxOSSpecified->hide();
+#endif
 }
 SettingsDialog::~SettingsDialog()
 {
@@ -110,6 +121,11 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
         QString themeName = m_ui->comboBoxIconTheme->itemData( 
                             m_ui->comboBoxIconTheme->currentIndex() ).toString();
         set.setValue("IconTheme", themeName );
+#if defined(Q_WS_MAC)
+        QString fastPlace = m_ui->comboBoxFastPasswords->itemData(
+                            m_ui->comboBoxFastPasswords->currentIndex() ).toString();
+        set.setValue("FastPasswordsPlace", fastPlace);
+#endif
 
         QIcon::setThemeName( themeName );
 
@@ -160,3 +176,18 @@ int SettingsDialog::getIconThemeIndex (const QString &themeName) const
 
     return it_idx;
 }
+#if defined(Q_WS_MAC)
+int SettingsDialog::getFastPlace ( const QString &place ) const
+{
+    int idx = -1;
+    if ( place == QString("dock_tray") )
+        idx = 0;
+    else if ( place == QString("dock") )
+        idx = 1;
+    else if ( place == QString("tray") )
+        idx = 2;
+    else
+        idx = 1;
+    return idx;
+}
+#endif

@@ -31,6 +31,9 @@ private:
 
     void setColorToItLabel(QColor &clr);
     int getIconThemeIndex(const QString &themeName) const;
+#if defined(Q_WS_MAC)
+    int getFastPlace( const QString &place ) const;
+#endif
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton* button);

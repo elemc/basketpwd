@@ -696,15 +696,25 @@ void MainWindow::generateContextPrimaries()
     }
 
     if ( primaryActions->actions().size() > 0 ) {
+
+        bool inTray = true;
 #ifdef Q_WS_MAC
-        foreach ( QAction *act, primaryActions->actions() ) {
-            macDockMenu->addAction(act);
+        QSettings set;
+        QString fastPlace = set.value("FastPasswordsPlace", QString("dock")).toString();
+    
+        if ( fastPlace.contains( QString("dock") ) ) {
+
+            foreach ( QAction *act, primaryActions->actions() ) {
+                macDockMenu->addAction(act);
+            }
+            qt_mac_set_dock_menu(macDockMenu);
         }
-        qt_mac_set_dock_menu(macDockMenu);
-#else
-        trayIconMenu->insertActions(minimizeAction, primaryActions->actions());
-        trayIconMenu->insertSeparator(minimizeAction);
+        inTray = fastPlace.contains ( QString("tray") );
 #endif
+        if ( inTray ) {
+            trayIconMenu->insertActions(minimizeAction, primaryActions->actions());
+            trayIconMenu->insertSeparator(minimizeAction);
+        }
     }
 }
 void MainWindow::primaryActionsTriggered(QAction *act)
