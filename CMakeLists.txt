@@ -31,7 +31,7 @@ IF (WIN32)
   endif (NOT NSIS_DIR)
 ENDIF (WIN32)
 
-set (PROJECT_NAME "basketpwd")
+set (PROJECT_NAME basketpwd)
 
 set (PROJECT ${PROJECT_NAME})
 set (LIB_PROJECT basketlib)
@@ -279,12 +279,12 @@ if (UNIX AND NOT APPLE)
 
     foreach (ICON_SIZE ${ICON_SIZES})
         install (
-            FILES icons/${ICON_SIZE}/${PROJECT_NAME}.png 
+            FILES icons/oxygen-internal/${ICON_SIZE}/${PROJECT_NAME}.png 
             DESTINATION share/icons/hicolor/${ICON_SIZE}/apps)
     endforeach ()
 
     install (
-        FILES images/icons/${PROJECT}.svg
+        FILES icons/${PROJECT}.svg
         DESTINATION ${ICON_DEST_PATH}/scalable/apps
     )
     foreach (LIB_HEADER ${LIB_HEADERS})

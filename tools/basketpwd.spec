@@ -11,8 +11,8 @@
 %endif
 
 Name:			basketpwd
-Version:		0.4.7
-Release:		2%{?dist}
+Version:		0.4.8
+Release:		1%{?dist}
 Summary:		Basket of passwords
 Summary(ru):	Корзинка паролей
 
@@ -23,7 +23,7 @@ Group:			Productivity/Security
 %endif
 
 License:		GPLv2
-Source0:		http://elemc.name/repos/sources/%{name}/%{name}-%{version}.tar.bz2
+Source0:		http://elemc.name/repos/sources/%{name}/%{name}-%{version}.tar.xz
 
 %if (0%{?fedora} > 0)
 Source100:		README.RFRemix
@@ -125,6 +125,9 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
 %changelog
+* Sun Jul 21 2013 Alexei Panov <me AT elemc DOT name> 0.4.8-1
+- New upstream release
+
 * Sun Sep 23 2012 Alexei Panov <me AT elemc DOT name> 0.4.7-2
 - Remove qmake build
 
