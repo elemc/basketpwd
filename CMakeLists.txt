@@ -60,10 +60,8 @@ set (FORMS
 	ui/settingsdialog.ui)
 set (LIB_HEADERS
   libs/basketpwd/basketbaseitem.h
-  libs/basketpwd/basketpwd-libs_global.h
   libs/basketpwd/basketutils.h
-  libs/basketpwd/coreplugin.h
-  libs/basketpwd/plugin_share.h)
+  libs/basketpwd/coreplugin.h)
 set (LIB_SOURCES
   libs/basketpwd/basketbaseitem.cpp
   libs/basketpwd/basketutils.cpp
@@ -71,7 +69,6 @@ set (LIB_SOURCES
 
 set (LANG_PATH l10n)
 set (LANGUAGES en)
-#set (RESOURCES icon-images.qrc)
 set (RESOURCES basketpwd.qrc icon-images.qrc)
 set (TRANSLATIONS_BINARY qt_ru.qm)
 set (DESKTOP_FILE tools/${PROJECT}.desktop)

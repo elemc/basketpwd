@@ -98,7 +98,6 @@
     <file alias="48x48/list-remove.png">icons/classic-internal/48x48/list-remove.png</file>
     <file alias="48x48/format-indent-less.png">icons/classic-internal/48x48/format-indent-less.png</file>
     <file alias="48x48/folder-new.png">icons/classic-internal/48x48/folder-new.png</file>
-    <file alias="48x48/basketpwd.png">icons/classic-internal/48x48/basketpwd.png</file>
     <file alias="48x48/code-variable.png">icons/classic-internal/48x48/code-variable.png</file>
     <file alias="48x48/list-add.png">icons/classic-internal/48x48/list-add.png</file>
     <file alias="48x48/document-properties.png">icons/classic-internal/48x48/document-properties.png</file>
@@ -117,7 +116,6 @@
     <file alias="32x32/list-remove.png">icons/classic-internal/32x32/list-remove.png</file>
     <file alias="32x32/format-indent-less.png">icons/classic-internal/32x32/format-indent-less.png</file>
     <file alias="32x32/folder-new.png">icons/classic-internal/32x32/folder-new.png</file>
-    <file alias="32x32/basketpwd.png">icons/classic-internal/32x32/basketpwd.png</file>
     <file alias="32x32/code-variable.png">icons/classic-internal/32x32/code-variable.png</file>
     <file alias="32x32/list-add.png">icons/classic-internal/32x32/list-add.png</file>
     <file alias="32x32/document-properties.png">icons/classic-internal/32x32/document-properties.png</file>
@@ -136,7 +134,6 @@
     <file alias="22x22/list-remove.png">icons/classic-internal/22x22/list-remove.png</file>
     <file alias="22x22/format-indent-less.png">icons/classic-internal/22x22/format-indent-less.png</file>
     <file alias="22x22/folder-new.png">icons/classic-internal/22x22/folder-new.png</file>
-    <file alias="22x22/basketpwd.png">icons/classic-internal/22x22/basketpwd.png</file>
     <file alias="22x22/code-variable.png">icons/classic-internal/22x22/code-variable.png</file>
     <file alias="22x22/list-add.png">icons/classic-internal/22x22/list-add.png</file>
     <file alias="22x22/document-properties.png">icons/classic-internal/22x22/document-properties.png</file>
@@ -155,7 +152,6 @@
     <file alias="16x16/list-remove.png">icons/classic-internal/16x16/list-remove.png</file>
     <file alias="16x16/format-indent-less.png">icons/classic-internal/16x16/format-indent-less.png</file>
     <file alias="16x16/folder-new.png">icons/classic-internal/16x16/folder-new.png</file>
-    <file alias="16x16/basketpwd.png">icons/classic-internal/16x16/basketpwd.png</file>
     <file alias="16x16/code-variable.png">icons/classic-internal/16x16/code-variable.png</file>
     <file alias="16x16/list-add.png">icons/classic-internal/16x16/list-add.png</file>
     <file alias="16x16/document-properties.png">icons/classic-internal/16x16/document-properties.png</file>
@@ -165,9 +161,6 @@
     <file alias="16x16/edit-rename.png">icons/classic-internal/16x16/edit-rename.png</file>
     <file alias="256x256/basketpwd.png">icons/classic-internal/256x256/basketpwd.png</file>
     <file alias="128x128/basketpwd.png">icons/classic-internal/128x128/basketpwd.png</file>
-    <file alias="32x32/basketpwd.png">icons/classic-internal/32x32/basketpwd.png</file>
-    <file alias="22x22/basketpwd.png">icons/classic-internal/22x22/basketpwd.png</file>
-    <file alias="16x16/basketpwd.png">icons/classic-internal/16x16/basketpwd.png</file>
     <file alias="64x64/basketpwd.png">icons/classic-internal/64x64/basketpwd.png</file>
     </qresource>
 </RCC>
