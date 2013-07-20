@@ -37,7 +37,7 @@ set (PROJECT ${PROJECT_NAME})
 set (LIB_PROJECT basketlib)
 set (PROJECT_VERSION 0.4.8)
 set (HEADERS 
-	aboutdialog.h
+	src/aboutdialog.h
 	src/changepassword.h
 	src/mainwindow.h
 	src/settingsdialog.h
@@ -45,7 +45,7 @@ set (HEADERS
     src/basketcommon.h
     src/passwordwidget.h) 
 set (SOURCES
-	aboutdialog.cpp
+	src/aboutdialog.cpp
 	src/changepassword.cpp
 	src/main.cpp
 	src/mainwindow.cpp
@@ -54,7 +54,7 @@ set (SOURCES
     src/basketcommon.cpp
     src/passwordwidget.cpp)
 set (FORMS
-	aboutdialog.ui
+	ui/aboutdialog.ui
 	ui/mainwindow.ui
 	ui/changepassword.ui
 	ui/settingsdialog.ui)

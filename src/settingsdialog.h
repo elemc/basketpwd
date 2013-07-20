@@ -5,6 +5,7 @@
 #include <QAbstractButton>
 #include <QDateTime>
 #include <QColorDialog>
+#include "config.h"
 
 #define SORTING "SortingEnabled"
 
@@ -29,6 +30,7 @@ private:
     QColor selectedColor;
 
     void setColorToItLabel(QColor &clr);
+    int getIconThemeIndex(const QString &themeName) const;
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton* button);

@@ -19,6 +19,14 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     QString defaultPath = set.value(tr("PathToDef"), QString(defPath)).toString();
     int csi             = set.value(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState()).toInt();
     int csort_raw       = set.value(tr(SORTING), true).toInt();
+
+#if defined(Q_WS_X11)
+    QString fallback_theme_name = "";
+#else
+    QString fallback_theme_name = DEFAULT_ICON_THEME;
+#endif
+    QString iconTheme   = set.value("IconTheme", QString(fallback_theme_name)).toString();
+
     Qt::CheckState cs = csi == 0 ? Qt::Unchecked : Qt::Checked;
     Qt::CheckState csort = csort_raw == 0? Qt::Unchecked : Qt::Checked;
     m_ui->checkBoxDontClose->setCheckState(cs);
@@ -28,6 +36,16 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     /* Colors */
     selectedColor       = set.value(tr("ItemColor"), QColor(Qt::darkBlue)).value<QColor>();
     setColorToItLabel(selectedColor);
+
+    /* Icon theme */
+#if defined(Q_WS_X11)
+    m_ui->comboBoxIconTheme->addItem( trUtf8("Системная"), QString("") ); 
+#endif
+    m_ui->comboBoxIconTheme->addItem( trUtf8("Современная (oxygen)"), QString("oxygen-internal") ); 
+    m_ui->comboBoxIconTheme->addItem( trUtf8("Классическая"), QString("classic-internal") );
+
+
+    m_ui->comboBoxIconTheme->setCurrentIndex( getIconThemeIndex( iconTheme) ); 
 }
 SettingsDialog::~SettingsDialog()
 {
@@ -75,9 +93,10 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
         }
 
         else {
-            int result = QMessageBox::warning(this, trUtf8("Предупреждение"),
-                                 trUtf8("Заданный путь не существует.\nВы уверены, что хотите сохранить настройки?"),
-                                 QMessageBox::Yes | QMessageBox::No);
+            int result = QMessageBox::warning(this, 
+                        trUtf8("Предупреждение"),
+                        trUtf8("Заданный путь не существует.\nВы уверены, что хотите сохранить настройки?"),
+                        QMessageBox::Yes | QMessageBox::No);
             if ( result == QMessageBox::No )
                 return;
             else {
@@ -85,9 +104,15 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton* button)
             }
         }
 
-        set.setValue(tr("DontCloseApp"), m_ui->checkBoxDontClose->checkState());
-        set.setValue(tr(SORTING), m_ui->checkBoxSort->checkState());
-        set.setValue(tr("ItemColor"), selectedColor);
+        set.setValue("DontCloseApp", m_ui->checkBoxDontClose->checkState());
+        set.setValue(SORTING, m_ui->checkBoxSort->checkState());
+        set.setValue("ItemColor", selectedColor);
+        QString themeName = m_ui->comboBoxIconTheme->itemData( 
+                            m_ui->comboBoxIconTheme->currentIndex() ).toString();
+        set.setValue("IconTheme", themeName );
+
+        QIcon::setThemeName( themeName );
+
         accept();
     }
     else if ( m_ui->buttonBox->buttonRole( button ) == QDialogButtonBox::RejectRole )
@@ -113,4 +138,25 @@ void SettingsDialog::setColorToItLabel( QColor &clr )
 {
   QString ls = tr("<html><head/><body><p><span style=\"color:%1;\">Цвет записей:</span></p></body></html>").arg(clr.name());
   m_ui->labelColorItems->setText(ls);
+}
+int SettingsDialog::getIconThemeIndex (const QString &themeName) const
+{
+    int it_idx = -1;
+    if ( themeName == "" )
+        it_idx = 0;
+    else if ( themeName == "oxygen-internal" )
+        it_idx = 1;
+    else if ( themeName == "classic-internal" )
+        it_idx = 2;
+
+#if defined(Q_WS_MAC) || defined(Q_WS_WIN)
+    if ( it_idx == -1 )
+        it_idx = 1;
+
+    it_idx -= 1; // trick
+#endif
+    if ( it_idx < 0 )
+        it_idx = 0;
+
+    return it_idx;
 }

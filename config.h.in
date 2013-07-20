@@ -6,3 +6,4 @@
 #include <QDebug>
 #endif
 
+#define DEFAULT_ICON_THEME "oxygen-internal"

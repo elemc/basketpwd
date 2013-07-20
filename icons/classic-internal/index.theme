@@ -1,0 +1,26 @@
+[Icon Theme]
+Name=classic-internal
+Comment=Classic icons for Basket of Password
+Inherits=default
+Directories=16x16,22x22,32x32,48x48,64x64,128x128,256x256
+
+[32x32]
+Size=32
+
+[16x16]
+Size=16
+
+[22x22]
+Size=22
+
+[48x48]
+Size=48
+
+[64x64]
+Size=64
+
+[128x128]
+Size=128
+
+[256x256]
+Size=256

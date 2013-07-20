@@ -157,6 +157,20 @@
         </item>
        </layout>
       </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="labelIconTheme">
+          <property name="text">
+           <string>Выбор темы иконок:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxIconTheme"/>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>

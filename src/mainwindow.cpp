@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "changepassword.h"
-#include "../aboutdialog.h"
+#include "aboutdialog.h"
 #include "settingsdialog.h"
 #include "basketcommon.h"
 
@@ -8,17 +8,23 @@
 void qt_mac_set_dock_menu(QMenu *menu);
 #endif
 
-#include <QDebug>
-
 // Конструктор/деструктор
 MainWindow::MainWindow( QWidget * parent, Qt::WFlags f) 
 	: QMainWindow(parent, f)
 {
     setupUi(this);
+    QSettings set;
+
+    QString iconThemeName = set.value("IconTheme", "").toString();
 
 #if defined(Q_WS_MAC) || defined(Q_WS_WIN)
-    QString fallback_icon_theme = "oxygen-internal";
+    QString fallback_icon_theme = iconThemeName;
+    if ( iconThemeName.isEmpty() )
+        fallback_icon_theme = DEFAULT_ICON_THEME;
     QIcon::setThemeName( fallback_icon_theme );
+#else
+    if ( !iconThemeName.isEmpty() )
+        QIcon::setThemeName( iconThemeName );
 #endif
  
 #ifdef Q_WS_MAC
@@ -29,7 +35,10 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
     createTrayIcon();
     initVariables();
 
-    connect ( tree->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(currentItemChanged(QModelIndex,QModelIndex)) );
+    connect ( tree->selectionModel(), 
+                SIGNAL(currentChanged(QModelIndex,QModelIndex)), 
+                this, 
+                SLOT(currentItemChanged(QModelIndex,QModelIndex)) );
     connect ( model, SIGNAL(modelDataChanged()), this, SLOT(onModelDataChanged()) );
     connect ( model, SIGNAL(ThisIndexIsFold(QModelIndex)), this, SLOT(changeFoldStatus(QModelIndex)) );
     connect ( model, SIGNAL(primaryChanged()), this, SLOT(generateContextPrimaries()) );
@@ -39,7 +48,6 @@ MainWindow::MainWindow( QWidget * parent, Qt::WFlags f)
 
     // Пытаемся обнаружить и загрузить файл с паролями по-умолчанию
     // Добавлено 0.2.6
-    QSettings set;
 
     defaultPath = getDefaultDirectory(); //set.value(tr("PathToDef"), QString(QDir::currentPath())).toString();
     dontCloseApp = set.value(tr("DontCloseApp"), false).toBool();
@@ -254,7 +262,7 @@ void MainWindow::newDatabase( bool isInteracrive )
     setModif(false);
 
     createTreeWidget();
-    mainPassword = QByteArray();
+    mainPassword.clear(); // = QByteArray();
     model->setUpNewModel( mainPassword );
 
     if ( isInteracrive ) {
@@ -895,6 +903,7 @@ void MainWindow::passwordWidgetAsk ( bool forShow )
         connect(pwdWidget, SIGNAL(passwordAccept(QString)), this, SLOT(passwordEnteredForShow(QString)));
     connect(pwdWidget, SIGNAL(passwordReject()), this, SLOT(passwordCanceled()));
 
+    pwdWidget->setPasswordWidgetType( PasswordWidget::AskPassword );
     cWidget->setCurrentWidget( pwdWidget );
     statusbar->showMessage( trUtf8( "Ожидание авторизации от пользователя" ) );
 }
