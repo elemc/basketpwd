@@ -105,6 +105,9 @@ private:
     PasswordWidget *pwdWidget;
     QStackedWidget *cWidget;
     void disconnectPwdWidget ();
+    void passwordWidgetAsk ( bool forShow = false );
+    void passwordWidgetChange ();
+    void disableActionsForPassword ( bool yes = false );
 
 public:
     MainWindow( QWidget * parent = 0, Qt::WFlags f = 0 );
@@ -161,6 +164,7 @@ private slots:
     void passwordCanceled();
     void passwordChangeEntered( const QString &password );
     void passwordChangeCanceled();
+    void passwordEnteredForShow( const QString &password );
 };
 #endif
 
