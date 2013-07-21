@@ -3,7 +3,7 @@
 # Written by Alexei Panov <elemc@atisserv.ru>
 
 PRGNAM=basketpwd
-VERSION=0.4.7
+VERSION=0.4.8
 BUILD=${BUILD:-1}
 TAG=${TAG:-_elemc}
 
@@ -43,7 +43,7 @@ mkdir -p $TMP $PKG $OUTPUT
 cd $TMP
 rm -rf $PRGNAM-$VERSION
 mkdir -p $PRGNAM-$VERSION
-tar xvf $CWD/$PRGNAM-$VERSION.tar.bz2
+tar xvf $CWD/$PRGNAM-$VERSION.tar.xz
 cd $PRGNAM-$VERSION
 chown -R root:root .
 chmod -R a-s,u+w,go+r-w .
