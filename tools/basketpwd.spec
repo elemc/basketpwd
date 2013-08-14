@@ -85,16 +85,19 @@ cp %{SOURCE100} .
 %endif
 
 # Not for Mandriva
-%if (0%{mandriva_release} == 0)
+%if (0%{?mandriva_release} == 0)
+rm -rf build
 mkdir -p build
 pushd build
+%cmake ..
+%else
+%cmake
 %endif
 
-%cmake
 make %{?_smp_mflags}
 
 # Not for Mandriva
-%if (0%{mandriva_release} == 0)
+%if (0%{?mandriva_release} == 0)
 popd
 %endif
 
@@ -116,7 +119,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %doc ChangeLog.txt README
 
 # Only for Mandriva
-%if (0%{mandriva_release} > 0)
+%if (0%{?mandriva_release} > 0)
 %{_docdir}/*
 %endif
 
