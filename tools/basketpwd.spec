@@ -12,9 +12,9 @@
 
 Name:			basketpwd
 Version:		0.4.8
-Release:		1%{?dist}
+Release:		2%{?dist}
 Summary:		Basket of passwords
-Summary(ru):	Корзинка паролей
+Summary(ru):		Корзинка паролей
 
 %if (0%{?fedora} >0) && (0%{?rhel} > 0)
 Group:			Applications/System
@@ -52,6 +52,10 @@ BuildRequires:	 qt-devel
 BuildRequires:	 qt-devel
 %endif
 
+%if %{defined mandriva_release}
+BuildRequires:	 %{_lib}qt4-devel
+%endif
+
 BuildRequires:	 cmake
 
 %description 
@@ -75,23 +79,29 @@ developing plugins that use Basket of passwords
 %setup -q
 
 %build
-
-#README.RFRemix
+# Only for fedora
 %if (0%{?fedora} > 0)
 cp %{SOURCE100} .
 %endif
 
-mkdir build-cmake
-pushd build-cmake
-%cmake ..
+# Not for Mandriva
+%if (0%{mandriva_release} == 0)
+mkdir -p build
+pushd build
+%endif
+
+%cmake
 make %{?_smp_mflags}
+
+# Not for Mandriva
+%if (0%{mandriva_release} == 0)
 popd
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-pushd build-cmake
-make install DESTDIR=$RPM_BUILD_ROOT
+pushd build
+%make_install
 popd
 
 desktop-file-install --dir=${RPM_BUILD_ROOT}%{_datadir}/applications tools/%{name}.desktop
@@ -105,6 +115,12 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor
 %doc ChangeLog.txt README
 
+# Only for Mandriva
+%if (0%{mandriva_release} > 0)
+%{_docdir}/*
+%endif
+
+# Only for Fedora
 %if (0%{?fedora} > 0)
 %doc README.RFRemix
 %endif
@@ -114,7 +130,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_includedir}/*
 
 %clean
-pushd build-cmake
+pushd build
 make clean
 popd
 rm -rf $RPM_BUILD_ROOT
@@ -125,6 +141,9 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
 %changelog
+* Thu Aug 15 2013 Alexei Panov <me AT elemc DOT name> 0.4.8-2
+- Add Mageia support in SPEC file
+
 * Sun Jul 21 2013 Alexei Panov <me AT elemc DOT name> 0.4.8-1
 - New upstream release
 
