@@ -12,7 +12,7 @@
 
 Name:			basketpwd
 Version:		0.4.8
-Release:		2%{?dist}
+Release:		3%{?dist}
 Summary:		Basket of passwords
 Summary(ru):		Корзинка паролей
 
@@ -125,6 +125,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 # Only for Fedora
 %if (0%{?fedora} > 0)
+    %if (0%{?fedora} >= 20)
+        %{_docdir}/*
+    %endif
 %doc README.RFRemix
 %endif
 
@@ -144,6 +147,9 @@ touch --no-create %{_datadir}/icons/hicolor || :
 %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
 
 %changelog
+* Thu Jan 23 2014 Alexei Panov <me AT elemc DOT name> 0.4.8-3
+- Added documents hook for Fedora 20
+
 * Thu Aug 15 2013 Alexei Panov <me AT elemc DOT name> 0.4.8-2
 - Add Mageia support in SPEC file
 
