@@ -35,15 +35,15 @@ set (PROJECT_NAME basketpwd)
 
 set (PROJECT ${PROJECT_NAME})
 set (LIB_PROJECT basketlib)
-set (PROJECT_VERSION 0.4.8)
-set (HEADERS 
+set (BPROJECT_VERSION 0.4.8)
+set (HEADERS
 	src/aboutdialog.h
 	src/changepassword.h
 	src/mainwindow.h
 	src/settingsdialog.h
 	model/basketmodel.h
     src/basketcommon.h
-    src/passwordwidget.h) 
+    src/passwordwidget.h)
 set (SOURCES
 	src/aboutdialog.cpp
 	src/changepassword.cpp
@@ -168,21 +168,27 @@ add_custom_target (
   COMMAND macdeployqt ${MACOSX_BUNDLE_NAME}
 )
 
-set(DMG_DIR "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-build-dmg")
+set(DMG_DIR "${CMAKE_BINARY_DIR}/build-dmg/${PROJECT_NAME}-${BPROJECT_VERSION}")
 set(BUNDLE_DIR "${CMAKE_BINARY_DIR}/Basket of passwords.app")
+set(DMG_NAME "${PROJECT_NAME}-${BPROJECT_VERSION}.dmg")
 add_custom_target (
   mac-dmg
-  DEPENDS mac-bundle
- 
+  DEPENDS mac-dmg-clean mac-bundle
+
   COMMAND mkdir -p ${DMG_DIR}
   COMMAND cp -R ${BUNDLE_DIR} ${DMG_DIR}/
   COMMAND ln -sf /Applications ${DMG_DIR}
   COMMAND cp ${CMAKE_SOURCE_DIR}/icons/${PROJECT_NAME}.icns .VolumeIcon.icns
-  COMMAND hdiutil create ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}.dmg -srcfolder ${DMG_DIR}
+  COMMAND hdiutil create ${CMAKE_BINARY_DIR}/${DMG_NAME} -srcfolder ${DMG_DIR}
   DEPENDS ${PROJECT_NAME}
   COMMENT "Create DMG image"
-   
+
   #COMMAND macdeployqt ${MACOSX_BUNDLE_NAME} -dmg
+)
+add_custom_target (
+  mac-dmg-clean
+  COMMAND rm -rf ${DMG_DIR}
+  COMMAND rm -rf ${DMG_NAME}
 )
 ENDIF (APPLE)
 
@@ -212,7 +218,7 @@ IF ( WIN32 )
       add_custom_target (
         nsis
         DEPENDS ${PROJECT} ${LIB_PROJECT} qt-libs
-        
+
         COMMAND "${NSIS_DIR}/makensis.exe" "${PROJECT_BINARY_DIR}/basketpwd.nsi"
         )
     ELSE ( EXISTS "${NSIS_DIR}/makensis.exe" )
@@ -225,7 +231,7 @@ IF ( WIN32 )
       COMMAND ${CMAKE_COMMAND} -E copy ${QT_BINARY_DIR}/QtGui4.dll ${PROJECT_BINARY_DIR}
       COMMAND ${CMAKE_COMMAND} -E copy ${QT_BINARY_DIR}/QtXml4.dll ${PROJECT_BINARY_DIR}
       COMMAND ${CMAKE_COMMAND} -E copy ${OPENSSL_ROOT_DIR}/bin/libeay32.dll ${PROJECT_BINARY_DIR}
-      
+
       COMMAND ${CMAKE_COMMAND} -E copy ${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe ${PROJECT_BINARY_DIR}
       )
 
@@ -233,7 +239,7 @@ IF ( WIN32 )
     message(STATUS "Microsoft Visual C++ Redistributable Package (vcredist_x${PROJECT_ARCH}.exe) not found.")
   ENDIF ( EXISTS "${VCREDIST_DIR}/vcredist_x${PROJECT_ARCH}.exe" )
 
-ENDIF ( WIN32 )  
+ENDIF ( WIN32 )
 
 include_directories(libs ${OPENSSL_INCLUDE_DIR})
 
@@ -248,7 +254,7 @@ if (WIN32)
   set (GUI_TYPE WIN32)
   set (RC_FILE ${PROJECT_SOURCE_DIR}/basketpwd.rc)
   ADD_CUSTOM_COMMAND( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}.o
-    COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT}.rc 
+    COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT}.rc
     -o ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}.o )
   set (RC_FILE ${PROJECT_SOURCE_DIR}/basketpwd.rc)
 elseif (APPLE)
@@ -274,12 +280,12 @@ if (UNIX AND NOT APPLE)
     IF ( NOT_INSTALL_PROJECT_DOCS )
         message(STATUS "Don't install project documentation")
     ELSE ( NOT_INSTALL_PROJECT_DOCS )
-        install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${PROJECT_VERSION})
+        install (FILES ${DOCS} DESTINATION share/doc/${PROJECT}-${BPROJECT_VERSION})
     ENDIF ( NOT_INSTALL_PROJECT_DOCS )
 
     foreach (ICON_SIZE ${ICON_SIZES})
         install (
-            FILES icons/oxygen-internal/${ICON_SIZE}/${PROJECT_NAME}.png 
+            FILES icons/oxygen-internal/${ICON_SIZE}/${PROJECT_NAME}.png
             DESTINATION share/icons/hicolor/${ICON_SIZE}/apps)
     endforeach ()
 
@@ -294,4 +300,3 @@ if (UNIX AND NOT APPLE)
         )
     endforeach()
 endif (UNIX AND NOT APPLE)
-
