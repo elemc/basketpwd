@@ -1,19 +1,19 @@
 language: cpp
 
 compiler:
-    clang
-    gcc
+    - clang
+      - gcc
  
 before_install:
-    sudo apt-get update -q
+    - sudo apt-get update -q
 
 install:
-    sudo apt-get install libqt4-dev libssl-dev cmake
+    - sudo apt-get install libqt4-dev libssl-dev cmake
 
-script: 
-    rm -rf build
-    mkdir -p build
-    pushd build
-    cmake ..
-    make
-    popd
+before_script:
+    - rm -rf build
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON ..
+
+script: make
