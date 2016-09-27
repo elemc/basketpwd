@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/elemc/basketpwd.svg?branch=master)](https://travis-ci.org/elemc/basketpwd)
+
 General information
 ===================
 Basket of Passwords
