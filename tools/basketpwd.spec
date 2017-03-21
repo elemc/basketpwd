@@ -36,16 +36,10 @@ BuildRequires:	openssl-devel
 BuildRequires:	gcc-c++ 
 BuildRequires:	desktop-file-utils
 
-%if 0%{?rhel} == 6
-BuildRequires:	 qt4-devel
-%endif
-
-%if (0%{?fedora} < 14) && (0%{?fedora} > 0)
-BuildRequires:	 qt4-devel
-%endif
-
-%if 0%{?fedora} >= 14
-BuildRequires:	 qt-devel
+%if 0%{?fedora} >= 14 || %{defined suse_version}
+BuildRequires:  qt-devel
+%else
+BuildRequires:  qt4-devel
 %endif
 
 %if %{defined suse_version}
