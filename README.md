@@ -30,7 +30,7 @@ $ cmake .. -DCMAKE_INSTALL_PREFIX=/usr #(if you have install application in /usr
 
 On Mac OS X
 $ mkdir build
-# cd buld
+# cd build
 $ cmake .. 
 $ make
 $ make mac-bundle # for create only bundle
